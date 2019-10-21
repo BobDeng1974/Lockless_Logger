@@ -17,6 +17,7 @@
 
 #include "logger.h"
 
+//TODO: add additional status codes to describe different errors that occur
 enum statusCodes {
 	STATUS_FAILURE = -1, STATUS_SUCCESS
 };
@@ -93,12 +94,18 @@ inline static int writeSeqOrWrap(char* buf, const int lastWrite,
                                  const char* argsBuf);
 
 /* Initialize all data required by the logger.
- * Note: This method must be called before any other api is used */
+ * Note: This method must be called before any other api is used
+ * Parameters:
+ * threadsNum - must be a non-negative value
+ * privateBuffSize - must be a positive value
+ * sharedBuffSize - must be a positive value
+ * loggingLevel - must be one of the defined logging levels */
 int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
                int loggingLevel) {
 	int i;
 
-	if (0 >= threadsNum || 0 >= privateBuffSize || 0 >= sharedBuffSize) {
+	if (0 > threadsNum || 0 >= privateBuffSize || 0 >= sharedBuffSize
+	        || (loggingLevel < LOG_LEVEL_NONE || loggingLevel > LOG_LEVEL_TRACE)) {
 		return STATUS_FAILURE;
 	}
 
@@ -151,7 +158,6 @@ static int createLogFile() {
 	logFile = fopen("logFile.txt", "w");
 
 	if (NULL == logFile) {
-		//TODO: handle error
 		return STATUS_FAILURE;
 	}
 
@@ -306,6 +312,7 @@ static void freeResources() {
  * Note: 'msg' must be a null-terminated string */
 int logMessage(int loggingLevel, char* file, const int line, const char* func,
                const char* msg, ...) {
+	int writeToPrivateBufferRes;
 	bool isTerminateLoc;
 	pthread_t tid;
 	bufferData* bd;
@@ -319,19 +326,19 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 		return STATUS_FAILURE;
 	}
 
-	tid = pthread_self();
-	bd = getPrivateBuffer(tid);
-
+	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 	/* Don't log if:
 	 * 1) Logger is terminating
-	 * 2) 'msg' is an invalid value
-	 * 3) Unable to retrieve a private buffer for the current thread*/
-	//TODO: think if write from unregistered worker threads should be allowed
-	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
-	if (true == isTerminateLoc || NULL == msg || NULL == bd) {
+	 * 2) 'msg' has an invalid value */
+	if (true == isTerminateLoc || NULL == msg) {
 		return STATUS_FAILURE;
 	}
 
+	/* Check if a current thread is registered, if yes - retrieve its private buffer */
+	tid = pthread_self();
+	bd = getPrivateBuffer(tid);
+
+	/* Prepare all logging information */
 	discardFilenamePrefix(&file);
 	setMsgInfoValues(&msgInfo, file, func, line, tid, loggingLevel);
 
@@ -341,9 +348,20 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 	va_end(arg);
 
 	/* Try each level of writing. If a level fails (buffer full), fall back to a
-	 * lower & slower level */
-	if (STATUS_SUCCESS != writeToPrivateBuffer(bd, &msgInfo, argsBuf)) {
-		/* Recommended not to get here - Increase private buffers size */
+	 * lower & slower level.
+	 * First, try private buffer writing. If private buffer doesn't exist
+	 * (unregistered thread) or unable to write in this method, fall to
+	 * next methods */
+	//TODO: still think if write from unregistered worker threads should be allowed
+	if (NULL != bd) {
+		writeToPrivateBufferRes = writeToPrivateBuffer(bd, &msgInfo, argsBuf);
+	} else {
+		writeToPrivateBufferRes = STATUS_FAILURE;
+	}
+
+	if (STATUS_SUCCESS != writeToPrivateBufferRes) {
+		/* Recommended not to get here - Register all threads and/or increase
+		 * private buffers size */
 		if (STATUS_SUCCESS != writeToSharedBuffer(&msgInfo, argsBuf)) {
 			/* Recommended not to get here - Increase private and shared buffers size */
 			directWriteToFile(&msgInfo, argsBuf);

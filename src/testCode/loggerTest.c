@@ -48,7 +48,7 @@ int main(void) {
 
 	charsLen = strlen(chars);
 
-	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
+	res = initLogger(0, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
 	if (STATUS_LOGGER_SUCCESS == res) {
 		data = malloc(NUM_THRDS * sizeof(char*));
 		createRandomData(data, charsLen);
