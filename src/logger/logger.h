@@ -41,20 +41,19 @@ typedef struct bufferData {
 } bufferData;
 
 typedef struct messageInfo {
-	char* file;
-	const char* func;
 	int line;
-	int msgLen;
-	int millisec;
-	pthread_t tid;
-	struct tm* tm_info;
-	struct timeval tv;
 	int logLevel;
 	int loggingMethod;
+	char* file;
+	const char* func;
+	struct timeval tv;
+	pthread_t tid;
 } messageInfo;
 
+/* initLogger must be called before any other api is used */
 int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
                int loggingLevel);
+
 int registerThread(pthread_t tid);
 
 /* 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG' */
