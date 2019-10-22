@@ -49,6 +49,7 @@ static atomic_bool isTerminate;
 static int privateBufferSize;
 static int sharedBufferSize;
 static FILE* logFile;
+static int fileHandle;
 static int bufferDataArraySize;
 static int nextFreeCell;
 static bufferData** bufferDataArray;
@@ -117,7 +118,6 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 	sharedBufferSize = sharedBuffSize;
 	setLoggingLevel(loggingLevel);
 
-
 	if (STATUS_SUCCESS != createLogFile()) {
 		return STATUS_FAILURE;
 	}
@@ -169,6 +169,7 @@ void initSharedBuffer() {
 static int createLogFile() {
 	//TODO: implement rotating log
 	logFile = fopen("logFile.txt", "w");
+	fileHandle = fileno(logFile);
 
 	if (NULL == logFile) {
 		return STATUS_FAILURE;
@@ -264,7 +265,7 @@ inline static int bufferdWriteToFile(const char* buf, const int lastRead,
 		dataLen = lastWrite - lastRead - 1;
 
 		if (dataLen > 0) {
-			fwrite(buf + lastRead + 1, 1, dataLen, logFile);
+			write(fileHandle, buf + lastRead + 1, dataLen);
 
 			return lastWrite - 1;
 		}
@@ -273,8 +274,8 @@ inline static int bufferdWriteToFile(const char* buf, const int lastRead,
 		dataLen = lenToBufEnd + lastWrite - 1;
 
 		if (dataLen > 0) {
-			fwrite(buf + lastRead + 1, 1, lenToBufEnd, logFile);
-			fwrite(buf, 1, lastWrite, logFile);
+			write(fileHandle, buf + lastRead + 1, lenToBufEnd);
+			write(fileHandle, buf, lastWrite);
 
 			return lastWrite - 1;
 		}
