@@ -37,7 +37,6 @@ typedef struct bufferData {
 	atomic_int lastWrite;
 	int bufSize;
 	char* buf;
-	pthread_t tid;
 } bufferData;
 
 typedef struct messageInfo {
@@ -54,7 +53,7 @@ typedef struct messageInfo {
 int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
                int loggingLevel);
 
-int registerThread(pthread_t tid);
+int registerThread();
 
 /* 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG' */
 int logMessage(int loggingLevel, char* file, const int line, const char* func,

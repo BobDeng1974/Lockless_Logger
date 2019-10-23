@@ -48,7 +48,7 @@ int main(void) {
 
 	charsLen = strlen(chars);
 
-	res = initLogger(0, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
+	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
 	if (STATUS_LOGGER_SUCCESS == res) {
 		data = malloc(NUM_THRDS * sizeof(char*));
 		createRandomData(data, charsLen);
@@ -88,7 +88,7 @@ void createRandomData(char** data, int charsLen) {
 void* threadMethod(void* data) {
 	char* logData = data;
 
-	registerThread(pthread_self());
+	registerThread();
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);

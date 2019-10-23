@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <threads.h>
 
 #include "logger.h"
 
@@ -55,13 +56,14 @@ static pthread_mutex_t loggerLock;
 static pthread_t loggerThread;
 static sharedBuffer sharedBuf;
 static atomic_int logLevel;
+thread_local bufferData* bd;
 
-static void initBufferData(bufferData* bd);
+static void initPrivateBuffer(bufferData* bd);
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
+static void initSharedBuffer();
 
-inline static bufferData* getPrivateBuffer(const pthread_t tid);
 inline static bool isNextWriteOverwrite(const int lastRead,
                                         const atomic_int lastWrite,
                                         const int lenToBufEnd);
@@ -115,7 +117,6 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 	sharedBufferSize = sharedBuffSize;
 	setLoggingLevel(loggingLevel);
 
-	pthread_mutex_init(&loggerLock, NULL);
 
 	if (STATUS_SUCCESS != createLogFile()) {
 		return STATUS_FAILURE;
@@ -126,13 +127,14 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 	bufferDataArray = malloc(threadsNum * sizeof(bufferData*));
 	for (i = 0; i < bufferDataArraySize; ++i) {
 		bufferDataArray[i] = malloc(sizeof(bufferData));
-		initBufferData(bufferDataArray[i]);
+		initPrivateBuffer(bufferDataArray[i]);
 	}
 
 	/* Init shared buffer */
-	sharedBuf.bufSize = sharedBufferSize;
-	sharedBuf.buf = malloc(sharedBufferSize);
-	sharedBuf.lastWrite = 1;
+	initSharedBuffer();
+
+	/* Init mutexes */
+	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBuf.lock, NULL);
 
 	/* Run logger thread */
@@ -147,7 +149,7 @@ void setLoggingLevel(int loggingLevel) {
 }
 
 /* Initialize given bufferData struct */
-void initBufferData(bufferData* bd) {
+void initPrivateBuffer(bufferData* bd) {
 	bd->bufSize = privateBufferSize;
 	//TODO: think if malloc failures need to be handled
 	bd->buf = malloc(privateBufferSize);
@@ -155,6 +157,12 @@ void initBufferData(bufferData* bd) {
 	/* Advance to 1, as an empty buffer is defined by having a difference of 1 between
 	 * lastWrite and lastRead*/
 	bd->lastWrite = 1;
+}
+
+void initSharedBuffer() {
+	sharedBuf.bufSize = sharedBufferSize;
+	sharedBuf.buf = malloc(sharedBufferSize);
+	sharedBuf.lastWrite = 1;
 }
 
 /* Create log file */
@@ -170,14 +178,14 @@ static int createLogFile() {
 }
 
 /* Register a worker thread at the logger and assign one of the buffers to it */
-int registerThread(pthread_t tid) {
+int registerThread() {
 	int res;
 
 	pthread_mutex_lock(&loggerLock); /* Lock */
 	{
 		if (bufferDataArraySize != nextFreeCell) {
 			/* There are still free cells to register to */
-			bufferDataArray[nextFreeCell++]->tid = tid;
+			bd = bufferDataArray[nextFreeCell++];
 			res = STATUS_SUCCESS;
 		} else {
 			/* No more free cells - new threads cannot register for a
@@ -193,23 +201,14 @@ int registerThread(pthread_t tid) {
 /* Logger thread loop */
 static void* runLogger() {
 	bool isTerminateLoc = false;
-	bool isCleanup = false;
 
-	while (false == isTerminateLoc || true == isCleanup) {
+	do {
+		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
 		drainSharedBuffer();
 		/* At each iteration flush buffers to avoid data loss */
 		fflush(logFile);
-		if (true == isCleanup) {
-			break;
-		}
-		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
-		if (isTerminateLoc == true) {
-			isCleanup = true;
-			/* This allows the logger loop to run one last time, ensuring all
-			 * data in the buffers will be written to the log file */
-		}
-	}
+	} while (!isTerminateLoc);
 
 	return NULL;
 }
@@ -319,8 +318,6 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 	bool isTerminateLoc;
 	int writeToPrivateBufferRes;
 	int loggingLevelLoc;
-	pthread_t tid;
-	bufferData* bd;
 	messageInfo msgInfo;
 	va_list arg;
 	char argsBuf[ARGS_LEN];
@@ -340,13 +337,9 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 		return STATUS_FAILURE;
 	}
 
-	/* Check if a current thread is registered, if yes - retrieve its private buffer */
-	tid = pthread_self();
-	bd = getPrivateBuffer(tid);
-
 	/* Prepare all logging information */
 	discardFilenamePrefix(&file);
-	setMsgInfoValues(&msgInfo, file, func, line, tid, loggingLevel);
+	setMsgInfoValues(&msgInfo, file, func, line, pthread_self(), loggingLevel);
 
 	/* Get message arguments values */
 	va_start(arg, msg);
@@ -376,21 +369,6 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 	}
 
 	return STATUS_SUCCESS;
-}
-
-/* Get a buffer assigned to a worker thread based on thread id */
-inline static bufferData* getPrivateBuffer(const pthread_t tid) {
-	int i;
-	bufferData* bd;
-
-	for (i = 0; i < nextFreeCell; ++i) {
-		bd = bufferDataArray[i];
-		if (0 != pthread_equal(bd->tid, tid)) {
-			return bd;
-		}
-	}
-
-	return NULL;
 }
 
 /* Get only the filename out of the full path */
