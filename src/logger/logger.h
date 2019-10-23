@@ -61,6 +61,7 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
                const char* msg, ...);
 
 void terminateLogger();
+void setLoggingLevel(int loggingLevel);
 
 #define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__, __LINE__ ,__PRETTY_FUNCTION__ , msg)
 

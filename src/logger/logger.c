@@ -54,7 +54,7 @@ static bufferData** bufferDataArray;
 static pthread_mutex_t loggerLock;
 static pthread_t loggerThread;
 static sharedBuffer sharedBuf;
-static int logLevel;
+static atomic_int logLevel;
 
 static void initBufferData(bufferData* bd);
 static int createLogFile();
@@ -113,7 +113,7 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 	bufferDataArraySize = threadsNum;
 	privateBufferSize = privateBuffSize;
 	sharedBufferSize = sharedBuffSize;
-	logLevel = loggingLevel;
+	setLoggingLevel(loggingLevel);
 
 	pthread_mutex_init(&loggerLock, NULL);
 
@@ -139,6 +139,11 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 	pthread_create(&loggerThread, NULL, runLogger, NULL);
 
 	return STATUS_SUCCESS;
+}
+
+/* Sets logging level to the specified value */
+void setLoggingLevel(int loggingLevel) {
+	__atomic_store_n(&logLevel, loggingLevel, __ATOMIC_SEQ_CST);
 }
 
 /* Initialize given bufferData struct */
@@ -226,8 +231,7 @@ inline static void drainPrivateBuffers() {
 			                                 bd->bufSize);
 			if (STATUS_FAILURE != newLastRead) {
 				/* Atomic store lastRead, as it is read by the worker thread */
-				__atomic_store_n(&bd->lastRead, newLastRead,
-				__ATOMIC_SEQ_CST);
+				__atomic_store_n(&bd->lastRead, newLastRead, __ATOMIC_SEQ_CST);
 			}
 		}
 	}
@@ -312,8 +316,9 @@ static void freeResources() {
  * Note: 'msg' must be a null-terminated string */
 int logMessage(int loggingLevel, char* file, const int line, const char* func,
                const char* msg, ...) {
-	int writeToPrivateBufferRes;
 	bool isTerminateLoc;
+	int writeToPrivateBufferRes;
+	int loggingLevelLoc;
 	pthread_t tid;
 	bufferData* bd;
 	messageInfo msgInfo;
@@ -322,7 +327,8 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 
 	/* Don't log if trying to log messages with higher level than requested
 	 * of log level was set to LOG_LEVEL_NONE */
-	if (LOG_LEVEL_NONE == logLevel || loggingLevel > logLevel) {
+	__atomic_load(&logLevel, &loggingLevelLoc, __ATOMIC_SEQ_CST);
+	if (LOG_LEVEL_NONE == loggingLevelLoc || loggingLevel > loggingLevelLoc) {
 		return STATUS_FAILURE;
 	}
 
@@ -428,8 +434,7 @@ inline static int writeToPrivateBuffer(bufferData* bd, messageInfo* msgInfo,
 		                              argsBuf);
 
 		/* Atomic store lastWrite, as it is read by the logger thread */
-		__atomic_store_n(&bd->lastWrite, newLastWrite,
-		__ATOMIC_SEQ_CST);
+		__atomic_store_n(&bd->lastWrite, newLastWrite, __ATOMIC_SEQ_CST);
 
 		return STATUS_SUCCESS;
 	}
