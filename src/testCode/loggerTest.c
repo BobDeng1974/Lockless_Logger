@@ -18,8 +18,8 @@
 
 #include "logger.h"
 
-#define ITERATIONS 10000
-#define NUM_THRDS 500
+#define ITERATIONS 100
+#define NUM_THRDS 50
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000
@@ -36,16 +36,12 @@ int main(void) {
 	int i;
 	int res;
 	int charsLen;
-	//TODO: remove, for debug only
 	struct timeval tv1, tv2;
-
-	int s = sizeof(pthread_mutex_t);
 
 	if (access("logFile.txt", F_OK) != -1) {
 		remove("logFile.txt");
 	}
 
-	//TODO: remove, for debug only
 	gettimeofday(&tv1, NULL);
 
 	charsLen = strlen(chars);
@@ -65,7 +61,6 @@ int main(void) {
 
 		terminateLogger();
 
-		//TODO: remove, for debug only
 		printf("Direct writes = %llu\n", cnt);
 		gettimeofday(&tv2, NULL);
 		printf("Total time = %f seconds\n",

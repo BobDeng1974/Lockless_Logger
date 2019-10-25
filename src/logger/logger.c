@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdarg.h>
 #include <threads.h>
 
@@ -37,34 +36,55 @@ enum logSource {
  * with the message */
 #define ARGS_LEN 256
 
-typedef struct sharedBuffer {
+typedef struct sharedBufferData {
 	int lastRead;
 	int lastWrite;
 	int bufSize;
 	char* buf;
 	pthread_mutex_t lock;
-} sharedBuffer;
+} sharedBufferData;
+
+typedef struct privateBuffersManager {
+	int freeSlots;
+	int privateBufferSize;
+	int bufferDataArraySize;
+	privateBufferData** bufferDataArray;
+} privateBuffersManager;
 
 static atomic_bool isTerminate;
-static int privateBufferSize;
-static int sharedBufferSize;
 static FILE* logFile;
 static int fileHandle;
-static int bufferDataArraySize;
-static int nextFreeCell;
-static bufferData** bufferDataArray;
 static pthread_mutex_t loggerLock;
 static pthread_t loggerThread;
-static sharedBuffer sharedBuf;
+static privateBuffersManager pbm;
+static sharedBufferData sbd;
 static atomic_int logLevel;
-thread_local bufferData* bd;
+thread_local privateBufferData* tlpbd; /* Thread Local Private Buffer Data */
 
-static void initPrivateBuffer(bufferData* bd);
+static void initPrivateBuffer(privateBufferData* pbd);
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
-static void initSharedBuffer();
+static void initsharedBufferData(int sharedBufferSize);
+static void initPrivateBuffersManager(int threadsNum, int privateBuffSize);
+static int writeToPrivateBuffer(privateBufferData* pbd, messageInfo* msgInfo,
+                                const char* argsBuf);
+static int writeSeq(char* buf, const int lastWrite, const messageInfo* msgInfo,
+                    const char* argsBuf);
+static int writeWrap(char* buf, const int lastWrite, const int lenToBufEnd,
+                     const messageInfo* msgInfo, const char* argsBuf);
+static int writeTosharedBuffer(messageInfo* msgInfo, const char* argsBuf);
+static int bufferdWriteToFile(const char* buf, const int lastRead,
+                              const int lastWrite, const int bufSize);
+static void drainPrivateBuffers();
+static void drainsharedBufferData();
+static void directWriteToFile(messageInfo* msgInfo, const char* argsBuf);
+static int writeInFormat(char* buf, const messageInfo* msgInfo,
+                         const char* argsBuf);
+static int writeSeqOrWrap(char* buf, const int lastWrite, const int lenToBufEnd,
+                          const messageInfo* msgInfo, const char* argsBuf);
 
+/* Inlining small methods */
 inline static bool isNextWriteOverwrite(const int lastRead,
                                         const atomic_int lastWrite,
                                         const int lenToBufEnd);
@@ -72,29 +92,11 @@ inline static bool isSequentialOverwrite(const int lastRead,
                                          const int lastWrite, const int msgLen);
 inline static bool isWraparoundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd);
-inline static int writeToPrivateBuffer(bufferData* bd, messageInfo* msgInfo,
-                                       const char* argsBuf);
-inline static int writeSeq(char* buf, const int lastWrite,
-                           const messageInfo* msgInfo, const char* argsBuf);
-inline static int writeWrap(char* buf, const int lastWrite,
-                            const int lenToBufEnd, const messageInfo* msgInfo,
-                            const char* argsBuf);
-inline static int writeToSharedBuffer(messageInfo* msgInfo, const char* argsBuf);
-inline static int bufferdWriteToFile(const char* buf, const int lastRead,
-                                     const int lastWrite, const int bufSize);
-inline static void drainPrivateBuffers();
-inline static void drainSharedBuffer();
-inline static void directWriteToFile(messageInfo* msgInfo, const char* argsBuf);
 inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
                                     const char* func, const int line,
                                     const pthread_t tid, const int loggingLevel);
 inline static void discardFilenamePrefix(char** file);
-inline static int writeInFormat(char* buf, const messageInfo* msgInfo,
-                                const char* argsBuf);
-inline static int writeSeqOrWrap(char* buf, const int lastWrite,
-                                 const int lenToBufEnd,
-                                 const messageInfo* msgInfo,
-                                 const char* argsBuf);
+inline static bool isPrivateBuffersAvailable();
 
 /* Initialize all data required by the logger.
  * Note: This method must be called before any other api is used
@@ -112,10 +114,10 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 		return STATUS_FAILURE;
 	}
 
+	/* Init all logger parameters */
 	//TODO: add an option to dynamically change all of these:
-	bufferDataArraySize = threadsNum;
-	privateBufferSize = privateBuffSize;
-	sharedBufferSize = sharedBuffSize;
+	initPrivateBuffersManager(threadsNum, privateBuffSize);
+	initsharedBufferData(sharedBuffSize);
 	setLoggingLevel(loggingLevel);
 
 	if (STATUS_SUCCESS != createLogFile()) {
@@ -124,18 +126,15 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
 
 	/* Init private buffers */
 	//TODO: think if malloc failures need to be handled
-	bufferDataArray = malloc(threadsNum * sizeof(bufferData*));
-	for (i = 0; i < bufferDataArraySize; ++i) {
-		bufferDataArray[i] = malloc(sizeof(bufferData));
-		initPrivateBuffer(bufferDataArray[i]);
+	pbm.bufferDataArray = malloc(threadsNum * sizeof(privateBufferData*));
+	for (i = 0; i < pbm.bufferDataArraySize; ++i) {
+		pbm.bufferDataArray[i] = malloc(sizeof(privateBufferData));
+		initPrivateBuffer(pbm.bufferDataArray[i]);
 	}
-
-	/* Init shared buffer */
-	initSharedBuffer();
 
 	/* Init mutexes */
 	pthread_mutex_init(&loggerLock, NULL);
-	pthread_mutex_init(&sharedBuf.lock, NULL);
+	pthread_mutex_init(&sbd.lock, NULL);
 
 	/* Run logger thread */
 	pthread_create(&loggerThread, NULL, runLogger, NULL);
@@ -148,21 +147,30 @@ void setLoggingLevel(int loggingLevel) {
 	__atomic_store_n(&logLevel, loggingLevel, __ATOMIC_SEQ_CST);
 }
 
-/* Initialize given bufferData struct */
-void initPrivateBuffer(bufferData* bd) {
-	bd->bufSize = privateBufferSize;
+/* Initialize private buffer manager's parameters */
+static void initPrivateBuffersManager(int threadsNum, int privateBuffSize) {
+	pbm.freeSlots = pbm.bufferDataArraySize = threadsNum;
+	pbm.privateBufferSize = privateBuffSize;
+}
+
+/* Initialize given privateBufferData struct */
+void initPrivateBuffer(privateBufferData* pbd) {
+	pbd->bufSize = pbm.privateBufferSize;
 	//TODO: think if malloc failures need to be handled
-	bd->buf = malloc(privateBufferSize);
+	pbd->buf = malloc(pbm.privateBufferSize);
 
 	/* Advance to 1, as an empty buffer is defined by having a difference of 1 between
 	 * lastWrite and lastRead*/
-	bd->lastWrite = 1;
+	pbd->lastWrite = 1;
+
+	pbd->isFree = true;
 }
 
-void initSharedBuffer() {
-	sharedBuf.bufSize = sharedBufferSize;
-	sharedBuf.buf = malloc(sharedBufferSize);
-	sharedBuf.lastWrite = 1;
+/* Initialize shared buffer data parameters */
+static void initsharedBufferData(int sharedBufferSize) {
+	sbd.bufSize = sharedBufferSize;
+	sbd.buf = malloc(sharedBufferSize);
+	sbd.lastWrite = 1;
 }
 
 /* Create log file */
@@ -178,25 +186,43 @@ static int createLogFile() {
 	return STATUS_SUCCESS;
 }
 
-/* Register a worker thread at the logger and assign one of the buffers to it */
+/* Register a worker thread at the logger and assign a private buffers to it */
 int registerThread() {
 	int res;
+	int i;
 
 	pthread_mutex_lock(&loggerLock); /* Lock */
 	{
-		if (bufferDataArraySize != nextFreeCell) {
-			/* There are still free cells to register to */
-			bd = bufferDataArray[nextFreeCell++];
-			res = STATUS_SUCCESS;
-		} else {
-			/* No more free cells - new threads cannot register for a
-			 * private buffer */
-			res = STATUS_FAILURE;
+		if (true == isPrivateBuffersAvailable()) {
+			for (i = 0; i < pbm.bufferDataArraySize; ++i) {
+				if (pbm.bufferDataArray[i]->isFree) {
+					tlpbd = pbm.bufferDataArray[i];
+					--pbm.freeSlots;
+					res = STATUS_SUCCESS;
+					goto Unlock;
+				}
+			}
 		}
+		res = STATUS_FAILURE;
 	}
-	pthread_mutex_unlock(&loggerLock); /* Unlock */
+	Unlock: pthread_mutex_unlock(&loggerLock); /* Unlock */
 
 	return res;
+}
+
+/* Unregister a thread from the logger and free the private buffer for another thread's use */
+void unregisterThread() {
+	tlpbd = NULL;
+	pthread_mutex_lock(&loggerLock); /* Lock */
+	{
+		++pbm.freeSlots;
+	}
+	pthread_mutex_unlock(&loggerLock); /* Unlock */
+}
+
+/* Returns true if private buffers are still available or false otherwise */
+inline static bool isPrivateBuffersAvailable() {
+	return 0 != pbm.freeSlots;
 }
 
 /* Logger thread loop */
@@ -206,7 +232,7 @@ static void* runLogger() {
 	do {
 		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
-		drainSharedBuffer();
+		drainsharedBufferData();
 		/* At each iteration flush buffers to avoid data loss */
 		fflush(logFile);
 	} while (!isTerminateLoc);
@@ -215,42 +241,41 @@ static void* runLogger() {
 }
 
 /* Drain all private buffers assigned to worker threads to the log file */
-inline static void drainPrivateBuffers() {
+static void drainPrivateBuffers() {
 	int i;
 	int newLastRead;
 	atomic_int lastWrite;
-	bufferData* bd;
+	privateBufferData* pbd;
 
-	for (i = 0; i < bufferDataArraySize; ++i) {
-		bd = bufferDataArray[i];
-		if (NULL != bd) {
+	for (i = 0; i < pbm.bufferDataArraySize; ++i) {
+		pbd = pbm.bufferDataArray[i];
+		if (NULL != pbd) {
 			/* Atomic load lastWrite, as it is changed by the worker thread */
-			__atomic_load(&bd->lastWrite, &lastWrite, __ATOMIC_SEQ_CST);
+			__atomic_load(&pbd->lastWrite, &lastWrite, __ATOMIC_SEQ_CST);
 
-			newLastRead = bufferdWriteToFile(bd->buf, bd->lastRead, lastWrite,
-			                                 bd->bufSize);
+			newLastRead = bufferdWriteToFile(pbd->buf, pbd->lastRead, lastWrite,
+			                                 pbd->bufSize);
 			if (STATUS_FAILURE != newLastRead) {
 				/* Atomic store lastRead, as it is read by the worker thread */
-				__atomic_store_n(&bd->lastRead, newLastRead, __ATOMIC_SEQ_CST);
+				__atomic_store_n(&pbd->lastRead, newLastRead, __ATOMIC_SEQ_CST);
 			}
 		}
 	}
 }
 
 /* Drain the buffer which is shared by the worker threads to the log file */
-inline static void drainSharedBuffer() {
+static void drainsharedBufferData() {
 	int newLastRead;
 
-	pthread_mutex_lock(&sharedBuf.lock); /* Lock */
+	pthread_mutex_lock(&sbd.lock); /* Lock */
 	{
-		newLastRead = bufferdWriteToFile(sharedBuf.buf, sharedBuf.lastRead,
-		                                 sharedBuf.lastWrite,
-		                                 sharedBuf.bufSize);
+		newLastRead = bufferdWriteToFile(sbd.buf, sbd.lastRead, sbd.lastWrite,
+		                                 sbd.bufSize);
 		if (STATUS_FAILURE != newLastRead) {
-			sharedBuf.lastRead = newLastRead;
+			sbd.lastRead = newLastRead;
 		}
 	}
-	pthread_mutex_unlock(&sharedBuf.lock); /* Unlock */
+	pthread_mutex_unlock(&sbd.lock); /* Unlock */
 }
 
 /* Perform actual write to log file from a given buffer.
@@ -294,16 +319,16 @@ void terminateLogger() {
 /* Release all malloc'ed resources, destroy mutexs and close open file */
 static void freeResources() {
 	int i;
-	bufferData* bd;
+	privateBufferData* pbd;
 
-	free(sharedBuf.buf);
+	free(sbd.buf);
 
-	pthread_mutex_destroy(&sharedBuf.lock);
+	pthread_mutex_destroy(&sbd.lock);
 
-	for (i = 0; i < bufferDataArraySize; ++i) {
-		bd = bufferDataArray[i];
-		free(bd->buf);
-		free(bd);
+	for (i = 0; i < pbm.bufferDataArraySize; ++i) {
+		pbd = pbm.bufferDataArray[i];
+		free(pbd->buf);
+		free(pbd);
 	}
 
 	pthread_mutex_destroy(&loggerLock);
@@ -353,16 +378,24 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 	 * (unregistered thread) or unable to write in this method, fall to
 	 * next methods */
 	//TODO: still think if write from unregistered worker threads should be allowed
-	if (NULL != bd) {
-		writeToPrivateBufferRes = writeToPrivateBuffer(bd, &msgInfo, argsBuf);
+	if (NULL != tlpbd) {
+		writeToPrivateBufferRes = writeToPrivateBuffer(tlpbd, &msgInfo,
+		                                               argsBuf);
 	} else {
-		writeToPrivateBufferRes = STATUS_FAILURE;
+		/* The current thread doesn't have a private buffer - Try to register,
+		 * maybe there's a free spot */
+		if (STATUS_SUCCESS == registerThread()) {
+			writeToPrivateBufferRes = writeToPrivateBuffer(tlpbd, &msgInfo,
+			                                               argsBuf);
+		} else {
+			writeToPrivateBufferRes = STATUS_FAILURE;
+		}
 	}
 
 	if (STATUS_SUCCESS != writeToPrivateBufferRes) {
 		/* Recommended not to get here - Register all threads and/or increase
 		 * private buffers size */
-		if (STATUS_SUCCESS != writeToSharedBuffer(&msgInfo, argsBuf)) {
+		if (STATUS_SUCCESS != writeTosharedBuffer(&msgInfo, argsBuf)) {
 			/* Recommended not to get here - Increase private and shared buffers size */
 			directWriteToFile(&msgInfo, argsBuf);
 			++cnt; //TODO: remove, for debug only (also - not accurate as not synchronized)
@@ -394,26 +427,26 @@ inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
 	msgInfo->logLevel = loggingLevel;
 }
 
-/* Add a message from a worker thread to its private buffer */
-inline static int writeToPrivateBuffer(bufferData* bd, messageInfo* msgInfo,
-                                       const char* argsBuf) {
+/* Add a message from a worker thread to it's private buffer */
+static int writeToPrivateBuffer(privateBufferData* pbd, messageInfo* msgInfo,
+                                const char* argsBuf) {
 	int lastRead;
 	int lastWrite;
 	int lenToBufEnd;
 	int newLastWrite;
 
-	__atomic_load(&bd->lastRead, &lastRead, __ATOMIC_SEQ_CST);
+	__atomic_load(&pbd->lastRead, &lastRead, __ATOMIC_SEQ_CST);
 
-	lastWrite = bd->lastWrite;
-	lenToBufEnd = bd->bufSize - lastWrite;
+	lastWrite = pbd->lastWrite;
+	lenToBufEnd = pbd->bufSize - lastWrite;
 
 	if (false == isNextWriteOverwrite(lastRead, lastWrite, lenToBufEnd)) {
 		msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
-		newLastWrite = writeSeqOrWrap(bd->buf, lastWrite, lenToBufEnd, msgInfo,
+		newLastWrite = writeSeqOrWrap(pbd->buf, lastWrite, lenToBufEnd, msgInfo,
 		                              argsBuf);
 
 		/* Atomic store lastWrite, as it is read by the logger thread */
-		__atomic_store_n(&bd->lastWrite, newLastWrite, __ATOMIC_SEQ_CST);
+		__atomic_store_n(&pbd->lastWrite, newLastWrite, __ATOMIC_SEQ_CST);
 
 		return STATUS_SUCCESS;
 	}
@@ -421,31 +454,31 @@ inline static int writeToPrivateBuffer(bufferData* bd, messageInfo* msgInfo,
 }
 
 /* Add a message from a worker thread to the shared buffer */
-inline static int writeToSharedBuffer(messageInfo* msgInfo, const char* argsBuf) {
+static int writeTosharedBuffer(messageInfo* msgInfo, const char* argsBuf) {
 	int res;
 	int lastRead;
 	int lastWrite;
 	int lenToBufEnd;
 	int newLastWrite;
 
-	pthread_mutex_lock(&sharedBuf.lock); /* Lock */
+	pthread_mutex_lock(&sbd.lock); /* Lock */
 	{
-		lastRead = sharedBuf.lastRead;
-		lastWrite = sharedBuf.lastWrite;
-		lenToBufEnd = sharedBuf.bufSize - sharedBuf.lastWrite;
+		lastRead = sbd.lastRead;
+		lastWrite = sbd.lastWrite;
+		lenToBufEnd = sbd.bufSize - sbd.lastWrite;
 
 		if (false == isNextWriteOverwrite(lastRead, lastWrite, lenToBufEnd)) {
 			msgInfo->loggingMethod = LS_SHARED_BUFFER;
-			newLastWrite = writeSeqOrWrap(sharedBuf.buf, lastWrite, lenToBufEnd,
+			newLastWrite = writeSeqOrWrap(sbd.buf, lastWrite, lenToBufEnd,
 			                              msgInfo, argsBuf);
 
-			sharedBuf.lastWrite = newLastWrite;
+			sbd.lastWrite = newLastWrite;
 			res = STATUS_SUCCESS;
 		} else {
 			res = STATUS_FAILURE;
 		}
 	}
-	pthread_mutex_unlock(&sharedBuf.lock); /* Unlock */
+	pthread_mutex_unlock(&sbd.lock); /* Unlock */
 
 	return res;
 }
@@ -455,10 +488,8 @@ inline static int writeToSharedBuffer(messageInfo* msgInfo, const char* argsBuf)
  * Wrap-around - If space at the end of the buffer is insufficient
  * 'space at the end of the buffer' is regarded as 'MAX_MSG_LEN' at this point,
  * as the true length of the message is unknown until it's fully composed*/
-inline static int writeSeqOrWrap(char* buf, const int lastWrite,
-                                 const int lenToBufEnd,
-                                 const messageInfo* msgInfo,
-                                 const char* argsBuf) {
+static int writeSeqOrWrap(char* buf, const int lastWrite, const int lenToBufEnd,
+                          const messageInfo* msgInfo, const char* argsBuf) {
 	int newLastWrite;
 
 	newLastWrite =
@@ -495,8 +526,8 @@ inline static bool isWraparoundOverwrite(const int lastRead, const int msgLen,
 }
 
 /* Write sequentially to a designated buffer */
-inline static int writeSeq(char* buf, const int lastWrite,
-                           const messageInfo* msgInfo, const char* argsBuf) {
+static int writeSeq(char* buf, const int lastWrite, const messageInfo* msgInfo,
+                    const char* argsBuf) {
 	int msgLen;
 
 	msgLen = writeInFormat(buf + lastWrite, msgInfo, argsBuf);
@@ -506,9 +537,8 @@ inline static int writeSeq(char* buf, const int lastWrite,
 
 /* Space at the end of the buffer is insufficient - write what is possible to
  * the end of the buffer, the rest write at the beginning of the buffer */
-inline static int writeWrap(char* buf, const int lastWrite,
-                            const int lenToBufEnd, const messageInfo* msgInfo,
-                            const char* argsBuf) {
+static int writeWrap(char* buf, const int lastWrite, const int lenToBufEnd,
+                     const messageInfo* msgInfo, const char* argsBuf) {
 	int msgLen;
 	char locBuf[MAX_MSG_LEN];
 	/* local buffer is used as in the case of wrap-around write, writing is split to 2
@@ -536,7 +566,7 @@ inline static int writeWrap(char* buf, const int lastWrite,
 }
 
 /* Worker thread directly writes to the log file */
-inline static void directWriteToFile(messageInfo* msgInfo, const char* argsBuf) {
+static void directWriteToFile(messageInfo* msgInfo, const char* argsBuf) {
 	int msgLen;
 	char locBuf[MAX_MSG_LEN];
 
@@ -555,8 +585,8 @@ inline static void directWriteToFile(messageInfo* msgInfo, const char* argsBuf) 
  * tid - Thread identifier
  * loc - Location in the format of (file):(line):(method)
  * msg - The message provided for the current log line */
-inline static int writeInFormat(char* buf, const messageInfo* msgInfo,
-                                const char* argsBuf) {
+static int writeInFormat(char* buf, const messageInfo* msgInfo,
+                         const char* argsBuf) {
 	int msgLen;
 	static char logLevelsIds[] = { ' ', /* NONE */
 	                               'M', /* EMERGENCY */

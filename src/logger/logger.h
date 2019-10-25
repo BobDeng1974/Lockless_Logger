@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <stdatomic.h>
 #include <sys/time.h>
+#include <stdbool.h>
 
 enum loggerStatusCodes {
 	STATUS_LOGGER_FAILURE = -1, STATUS_LOGGER_SUCCESS
@@ -32,12 +33,13 @@ enum logLevels {
 //TODO: remove, for debug only
 long long cnt;
 
-typedef struct bufferData {
+typedef struct privateBufferData {
+	bool isFree;
 	atomic_int lastRead;
 	atomic_int lastWrite;
 	int bufSize;
 	char* buf;
-} bufferData;
+} privateBufferData;
 
 typedef struct messageInfo {
 	int line;
@@ -54,6 +56,7 @@ int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
                int loggingLevel);
 
 int registerThread();
+void unregisterThread();
 
 /* 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG' */
 int logMessage(int loggingLevel, char* file, const int line, const char* func,
