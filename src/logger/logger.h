@@ -33,19 +33,12 @@ enum logLevels {
 //TODO: remove, for debug only
 long long cnt;
 
-typedef struct privateBufferData {
-	bool isFree;
-	atomic_int lastRead;
-	atomic_int lastWrite;
-	int bufSize;
-	char* buf;
-} privateBufferData;
-
 typedef struct messageInfo {
 	int line;
 	int logLevel;
 	int loggingMethod;
 	char* file;
+	char* argsBuf;
 	const char* func;
 	struct timeval tv;
 	pthread_t tid;
@@ -74,13 +67,12 @@ void unregisterThread();
  * Note: 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG' */
 int logMessage(int loggingLevel, char* file, const int line, const char* func,
                const char* msg, ...);
+#define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__, __LINE__ ,__PRETTY_FUNCTION__ , msg)
 
 /* Terminate the logger thread and release resources */
 void terminateLogger();
 
 /* Sets logging level to the specified value */
 void setLoggingLevel(int loggingLevel);
-
-#define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__, __LINE__ ,__PRETTY_FUNCTION__ , msg)
 
 #endif /* LOGGER */
