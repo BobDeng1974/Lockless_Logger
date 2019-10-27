@@ -14,7 +14,6 @@
 #include <pthread.h>
 #include <stdatomic.h>
 #include <sys/time.h>
-#include <stdbool.h>
 
 enum loggerStatusCodes {
 	LOG_STATUS_FAILURE = -1, LOG_STATUS_SUCCESS

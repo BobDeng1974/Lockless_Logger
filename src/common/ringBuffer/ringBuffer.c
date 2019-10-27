@@ -55,9 +55,8 @@ void initRingBuffer(ringBuffer* rb, int privateBuffSize) {
 	//TODO: think if malloc failures need to be handled
 	rb->buf = malloc(privateBuffSize);
 
-	/* Advance to 1, as an empty buffer is defined by having a difference of 1 between
-	 * lastWrite and lastRead*/
-	rb->lastWrite = 1;
+	rb->lastWrite = 1; // Advance to 1, as an empty buffer is defined by having a difference of 1 between
+	                   // lastWrite and lastRead
 }
 
 /* API method - Description located at .h file */
@@ -69,8 +68,7 @@ int writeToRingBuffer(ringBuffer* rb, const int safetyLen, void* data,
 		newLastWrite = writeSeqOrWrap(rb, safetyLen, data, formatMethod);
 
 		/* Atomic store lastWrite, as it's read by a different thread */
-		__atomic_store_n(&rb->lastWrite, newLastWrite,
-		__ATOMIC_SEQ_CST);
+		__atomic_store_n(&rb->lastWrite, newLastWrite, __ATOMIC_SEQ_CST);
 
 		return RB_STATUS_SUCCESS;
 	}
@@ -140,13 +138,12 @@ static int writeWrap(ringBuffer* rb, const int safetyLen, void* data,
 	int msgLen;
 	int lastWrite;
 	int lenToBufEnd;
-	char locBuf[safetyLen];
-	/* local buffer is used as in the case of wrap-around write, writing is split to 2
-	 * portions - write whatever possible at the end of the buffer and the rest write in
-	 * the beginning. Since we don't know in advance the real length of the message we can't
-	 * assume there is enough space at the end, therefore a temporary, long enough buffer is
-	 * required into which data will be written sequentially and then copied back to the
-	 * original buffer, either in sequential of wrap-around manner */
+	char locBuf[safetyLen]; // local buffer is used as in the case of wrap-around write, writing is split to 2
+	                        // portions - write whatever possible at the end of the buffer and the rest write in
+	                        // the beginning. Since we don't know in advance the real length of the message we can't
+	                        // assume there is enough space at the end, therefore a temporary, long enough buffer is
+	                        // required into which data will be written sequentially and then copied back to the
+	                        // original buffer, either in sequential of wrap-around manner
 
 	lastWrite = rb->lastWrite;
 	lenToBufEnd = rb->lenToBufEnd;
@@ -175,8 +172,7 @@ void drainBufferToFile(ringBuffer* rb, const int file) {
 	int newLastRead;
 
 	/* Atomic load lastWrite, as it's read by a different thread */
-	__atomic_load(&rb->lastWrite, &lastWrite,
-	__ATOMIC_SEQ_CST);
+	__atomic_load(&rb->lastWrite, &lastWrite, __ATOMIC_SEQ_CST);
 
 	if (lastWrite > rb->lastRead) {
 		dataLen = lastWrite - rb->lastRead - 1;
@@ -186,8 +182,7 @@ void drainBufferToFile(ringBuffer* rb, const int file) {
 
 			newLastRead = lastWrite - 1;
 			/* Atomic store lastRead, as it's read by a different thread */
-			__atomic_store_n(&rb->lastRead, newLastRead,
-			__ATOMIC_SEQ_CST);
+			__atomic_store_n(&rb->lastRead, newLastRead, __ATOMIC_SEQ_CST);
 		}
 	} else {
 		lenToBufEnd = rb->bufSize - rb->lastRead - 1;
@@ -199,8 +194,7 @@ void drainBufferToFile(ringBuffer* rb, const int file) {
 
 			newLastRead = lastWrite - 1;
 			/* Atomic store lastRead, as it's read by a different thread */
-			__atomic_store_n(&rb->lastRead, newLastRead,
-			__ATOMIC_SEQ_CST);
+			__atomic_store_n(&rb->lastRead, newLastRead, __ATOMIC_SEQ_CST);
 		}
 	}
 }

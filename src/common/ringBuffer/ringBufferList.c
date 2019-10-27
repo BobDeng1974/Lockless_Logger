@@ -8,6 +8,9 @@
  ============================================================================
  */
 
+#include <pthread.h>
+#include <stdlib.h>
+
 #include "ringBufferList.h"
 
 typedef struct ringBufferListNode {
