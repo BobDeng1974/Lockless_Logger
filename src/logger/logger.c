@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <threads.h>
+#include <stdbool.h>
 
 #include "logger.h"
 #include "ringBuffer.h"
@@ -39,13 +40,13 @@ static int fileHandle;
 static FILE* logFile;
 static pthread_mutex_t loggerLock;
 static pthread_t loggerThread;
-static struct ringBufferList* privateBuffers;
-static struct ringBufferList* availablePrivateBuffers;
-static struct ringBufferList* inUsePrivateBuffers;
+static struct ringBufferList* privateBuffers; // A list of all private buffers in the system
+static struct ringBufferList* availablePrivateBuffers; ///A list of available private buffers for threads to register to
+static struct ringBufferList* inUsePrivateBuffers; // A list of private buffers currently in use by threads
 static struct ringBuffer* sharedBuffer;
 static pthread_mutex_t sharedBufferlock;
 
-thread_local struct ringBuffer* tlrb; /* Thread Local Private Buffer */
+thread_local struct ringBuffer* tlrb; // Thread Local Private Buffer
 
 static int createLogFile();
 static void* runLogger();
@@ -177,7 +178,8 @@ static void* runLogger() {
 static void drainPrivateBuffers() {
 	struct ringBufferListNode* node;
 
-	node = getHead(privateBuffers);
+	node = getHead(privateBuffers); // Access is lockless, because if this list changes, private
+	                                // buffers will be temporarily blocked
 
 	while (NULL != node) {
 		struct ringBuffer* rb;
@@ -206,6 +208,8 @@ void terminateLogger() {
 
 /* Release all malloc'ed resources, destroy mutexs and close the open file */
 static void freeResources() {
+	/* Freeing 'privateBuffers' using the 'freeRingBufferList' API takes care of freeing all alooctaed
+	 * Node and buffers so for 'inUsePrivateBuffers' and 'availablePrivateBuffers' normal free is enough */
 	freeRingBufferList(privateBuffers);
 	free(inUsePrivateBuffers);
 	free(availablePrivateBuffers);

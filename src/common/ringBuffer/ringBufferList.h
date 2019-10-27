@@ -11,9 +11,7 @@
 #ifndef DATASTRUCTURES
 #define DATASTRUCTURES
 
-#include <stdlib.h>
 #include <stdbool.h>
-#include <pthread.h>
 
 #include "ringBuffer.h"
 
@@ -29,8 +27,7 @@ void addNode(struct ringBufferList* rbl, struct ringBuffer* data);
 /* Remove the first node in the list and return it */
 struct ringBufferListNode* removeHead(struct ringBufferList* rbl);
 
-/* Remove from the list the first occurrence of a node containing 'data',
- * If not found - return NULL */
+/* Remove from the list the first occurrence of a node containing 'data', if not found - return NULL */
 struct ringBuffer* removeNode(struct ringBufferList* rbl,
                               const struct ringBuffer* data);
 
