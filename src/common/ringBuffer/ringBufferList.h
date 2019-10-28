@@ -44,6 +44,6 @@ struct ringBufferListNode* getHead(const struct ringBufferList* rbl);
 struct ringBufferListNode* getNext(const struct ringBufferListNode* node);
 
 /* Returns the 'ringBuffer' pointer of the node */
-ringBuffer* getRingBuffer(const struct ringBufferListNode* node);
+struct ringBuffer* getNodeRingBuffer(const struct ringBufferListNode* node);
 
 #endif /* DATASTRUCTURES */

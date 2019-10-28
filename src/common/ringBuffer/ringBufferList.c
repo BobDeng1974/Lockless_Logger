@@ -11,7 +11,7 @@
 #include "ringBufferList.h"
 
 typedef struct ringBufferListNode {
-	ringBuffer* rb;
+	struct ringBuffer* rb;
 	struct ringBufferListNode* next;
 } ringBufferListNode;
 
@@ -23,7 +23,7 @@ typedef struct ringBufferList {
 
 /* Inlining light methods */
 inline static bool isNodeContainingData(const ringBufferListNode* node,
-                                                const ringBuffer* data);
+                                        const struct ringBuffer* data);
 
 /* API method - Description located at .h file */
 ringBufferList* getNewList() {
@@ -40,7 +40,7 @@ ringBufferList* getNewList() {
 }
 
 /* API method - Description located at .h file */
-void addNode(ringBufferList* rbl, ringBuffer* data) {
+void addNode(ringBufferList* rbl, struct ringBuffer* data) {
 	//TODO: think if malloc failures need to be handled
 	ringBufferListNode* newNode = malloc(sizeof(ringBufferListNode));
 
@@ -60,7 +60,8 @@ void addNode(ringBufferList* rbl, ringBuffer* data) {
 }
 
 /* API method - Description located at .h file */
-ringBuffer* removeNode(ringBufferList* rbl, const ringBuffer* data) {
+struct ringBuffer* removeNode(ringBufferList* rbl,
+                              const struct ringBuffer* data) {
 	ringBufferListNode* next;
 
 	pthread_mutex_lock(&rbl->lock); /* Lock */
@@ -107,7 +108,7 @@ ringBufferListNode* removeHead(ringBufferList* rbl) {
 
 /* Return true if the data of 2 nodes is the same of false otherwise */
 inline static bool isNodeContainingData(const ringBufferListNode* node,
-                                                const ringBuffer* data) {
+                                        const struct ringBuffer* data) {
 	return (node->rb == data) ? true : false;
 }
 
@@ -118,11 +119,10 @@ void freeRingBufferList(ringBufferList* rbl) {
 	node = rbl->head;
 
 	while (NULL != node) {
-		ringBuffer* rb;
+		struct ringBuffer* rb;
 
 		rb = node->rb;
-		free(rb->buf);
-		free(rb);
+		deleteRingBuffer(rb);
 
 		node = node->next;
 	}
@@ -139,6 +139,6 @@ ringBufferListNode* getNext(const ringBufferListNode* node) {
 }
 
 /* API method - Description located at .h file */
-ringBuffer* getRingBuffer(const ringBufferListNode* node) {
+struct ringBuffer* getNodeRingBuffer(const ringBufferListNode* node) {
 	return node->rb;
 }

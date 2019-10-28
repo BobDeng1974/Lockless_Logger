@@ -42,17 +42,17 @@ static pthread_t loggerThread;
 static struct ringBufferList* privateBuffers;
 static struct ringBufferList* availablePrivateBuffers;
 static struct ringBufferList* inUsePrivateBuffers;
-static ringBuffer sharedBuffer;
+static struct ringBuffer* sharedBuffer;
 static pthread_mutex_t sharedBufferlock;
 
-thread_local ringBuffer* tlrb; /* Thread Local Private Buffer */
+thread_local struct ringBuffer* tlrb; /* Thread Local Private Buffer */
 
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
 static void initsharedBuffer(const int sharedBufferSize);
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize);
-static int writeToPrivateBuffer(ringBuffer* rb, messageInfo* msgInfo);
+static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo);
 static int writeTosharedBuffer(messageInfo* msgInfo);
 static void drainPrivateBuffers();
 static void drainsharedBuffer();
@@ -67,8 +67,8 @@ inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
 inline static void discardFilenamePrefix(char** file);
 
 /* API method - Description located at .h file */
-int initLogger(const int threadsNum, const int privateBuffSize, const int sharedBuffSize,
-               const int loggingLevel) {
+int initLogger(const int threadsNum, const int privateBuffSize,
+               const int sharedBuffSize, const int loggingLevel) {
 	if (0 > threadsNum || 0 >= privateBuffSize || 0 >= sharedBuffSize
 	        || (loggingLevel < LOG_LEVEL_NONE || loggingLevel > LOG_LEVEL_TRACE)) {
 		return LOG_STATUS_FAILURE;
@@ -110,10 +110,9 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 	/* Init private buffers */
 	//TODO: think if malloc failures need to be handled
 	for (i = 0; i < threadsNum; ++i) {
-		ringBuffer* rb;
+		struct ringBuffer* rb;
 
-		rb = malloc(sizeof(ringBuffer));
-		initRingBuffer(rb, privateBuffSize);
+		rb = gerRingBuffer(privateBuffSize);
 		addNode(privateBuffers, rb);
 		addNode(availablePrivateBuffers, rb);
 	}
@@ -121,7 +120,7 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 
 /* Initialize shared buffer data parameters */
 static void initsharedBuffer(const int sharedBufferSize) {
-	initRingBuffer(&sharedBuffer, sharedBufferSize);
+	sharedBuffer = gerRingBuffer(sharedBufferSize);
 }
 
 /* Create log file */
@@ -139,7 +138,7 @@ static int createLogFile() {
 
 /* API method - Description located at .h file */
 int registerThread() {
-	tlrb = getRingBuffer(removeHead(availablePrivateBuffers));
+	tlrb = getNodeRingBuffer(removeHead(availablePrivateBuffers));
 
 	if (NULL != tlrb) {
 		addNode(inUsePrivateBuffers, tlrb);
@@ -150,7 +149,7 @@ int registerThread() {
 
 /* API method - Description located at .h file */
 void unregisterThread() {
-	ringBuffer* rb;
+	struct ringBuffer* rb;
 
 	rb = removeNode(inUsePrivateBuffers, tlrb);
 	if (NULL != rb) {
@@ -180,23 +179,10 @@ static void drainPrivateBuffers() {
 	node = getHead(privateBuffers);
 
 	while (NULL != node) {
-		ringBuffer* rb;
-		int newLastRead;
-		atomic_int lastWrite;
+		struct ringBuffer* rb;
 
-		rb = getRingBuffer(node);
-		/* Atomic load lastWrite, as it is changed by the worker thread */
-		__atomic_load(&rb->lastWrite, &lastWrite,
-		__ATOMIC_SEQ_CST);
-
-		newLastRead = drainBufferToFile(fileHandle, rb->buf, rb->lastRead,
-		                                lastWrite, rb->bufSize);
-		if (LOG_STATUS_FAILURE != newLastRead) {
-			/* Atomic store lastRead, as it is read by the worker thread */
-			__atomic_store_n(&rb->lastRead, newLastRead,
-			__ATOMIC_SEQ_CST);
-		}
-
+		rb = getNodeRingBuffer(node);
+		drainBufferToFile(rb, fileHandle);
 		node = getNext(node);
 	}
 }
@@ -205,15 +191,7 @@ static void drainPrivateBuffers() {
 static void drainsharedBuffer() {
 	pthread_mutex_lock(&sharedBufferlock); /* Lock */
 	{
-		int newLastRead;
-
-		newLastRead = drainBufferToFile(fileHandle, sharedBuffer.buf,
-		                                sharedBuffer.lastRead,
-		                                sharedBuffer.lastWrite,
-		                                sharedBuffer.bufSize);
-		if (LOG_STATUS_FAILURE != newLastRead) {
-			sharedBuffer.lastRead = newLastRead;
-		}
+		drainBufferToFile(sharedBuffer, fileHandle);
 	}
 	pthread_mutex_unlock(&sharedBufferlock); /* Unlock */
 }
@@ -225,11 +203,11 @@ void terminateLogger() {
 	freeResources();
 }
 
-/* Release all malloc'ed resources, destroy mutexs and close open file */
+/* Release all malloc'ed resources, destroy mutexs and close the open file */
 static void freeResources() {
 	freeRingBufferList(privateBuffers);
 
-	free(sharedBuffer.buf);
+	deleteRingBuffer(sharedBuffer);
 
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
@@ -238,8 +216,8 @@ static void freeResources() {
 }
 
 /* API method - Description located at .h file */
-int logMessage(const int loggingLevel, char* file, const int line, const char* func,
-               const char* msg, ...) {
+int logMessage(const int loggingLevel, char* file, const int line,
+               const char* func, const char* msg, ...) {
 	bool isTerminateLoc;
 	int writeToPrivateBufferRes;
 	int loggingLevelLoc;
@@ -328,64 +306,29 @@ inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
 }
 
 /* Add a message from a worker thread to it's private buffer */
-static int writeToPrivateBuffer(ringBuffer* rb, messageInfo* msgInfo) {
-	int lastRead;
-	int lastWrite;
-	int lenToBufEnd;
-	int newLastWrite;
+static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo) {
+	int res;
+	msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
 
-	__atomic_load(&rb->lastRead, &lastRead, __ATOMIC_SEQ_CST);
+	res = writeToRingBuffer(rb, MAX_MSG_LEN, msgInfo, writeInFormat);
 
-	lastWrite = rb->lastWrite;
-	lenToBufEnd = rb->bufSize - lastWrite;
-
-	if (false == isNextWriteOverwrite(lastRead, lastWrite, lenToBufEnd,
-	MAX_MSG_LEN)) {
-		msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
-		newLastWrite = writeSeqOrWrap(rb->buf, lastWrite, lenToBufEnd,
-		MAX_MSG_LEN,
-		                              msgInfo, writeInFormat);
-
-		/* Atomic store lastWrite, as it is read by the logger thread */
-		__atomic_store_n(&rb->lastWrite, newLastWrite,
-		__ATOMIC_SEQ_CST);
-
-		return LOG_STATUS_SUCCESS;
-	}
-	return LOG_STATUS_FAILURE;
+	return (RB_STATUS_SUCCESS == res) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
 
 /* Add a message from a worker thread to the shared buffer */
 static int writeTosharedBuffer(messageInfo* msgInfo) {
 	int res;
 
+	msgInfo->loggingMethod = LS_SHARED_BUFFER;
+
 	pthread_mutex_lock(&sharedBufferlock); /* Lock */
 	{
-		int lastRead;
-		int lastWrite;
-		int lenToBufEnd;
-		int newLastWrite;
-
-		lastRead = sharedBuffer.lastRead;
-		lastWrite = sharedBuffer.lastWrite;
-		lenToBufEnd = sharedBuffer.bufSize - sharedBuffer.lastWrite;
-
-		if (false == isNextWriteOverwrite(lastRead, lastWrite, lenToBufEnd,
-		MAX_MSG_LEN)) {
-			msgInfo->loggingMethod = LS_SHARED_BUFFER;
-			newLastWrite = writeSeqOrWrap(sharedBuffer.buf, lastWrite,
-			                              lenToBufEnd, MAX_MSG_LEN, msgInfo,
-			                              writeInFormat);
-
-			sharedBuffer.lastWrite = newLastWrite;
-			res = LOG_STATUS_SUCCESS;
-		} else {
-			res = LOG_STATUS_FAILURE;
-		}
+		res = writeToRingBuffer(sharedBuffer, MAX_MSG_LEN, msgInfo,
+		                        writeInFormat);
 	}
 	pthread_mutex_unlock(&sharedBufferlock); /* Unlock */
 
-	return res;
+	return (RB_STATUS_SUCCESS == res) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
 
 /* Worker thread directly writes to the log file */
