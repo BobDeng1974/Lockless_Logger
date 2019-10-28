@@ -103,16 +103,16 @@ void setLoggingLevel(const int loggingLevel) {
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) {
 	int i;
 
-	privateBuffers = getNewList();
-	availablePrivateBuffers = getNewList();
-	inUsePrivateBuffers = getNewList();
+	privateBuffers = newRingBufferList();
+	availablePrivateBuffers = newRingBufferList();
+	inUsePrivateBuffers = newRingBufferList();
 
 	/* Init private buffers */
 	//TODO: think if malloc failures need to be handled
 	for (i = 0; i < threadsNum; ++i) {
 		struct ringBuffer* rb;
 
-		rb = gerRingBuffer(privateBuffSize);
+		rb = newRingBuffer(privateBuffSize);
 		addNode(privateBuffers, rb);
 		addNode(availablePrivateBuffers, rb);
 	}
@@ -120,7 +120,7 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 
 /* Initialize shared buffer data parameters */
 static void initsharedBuffer(const int sharedBufferSize) {
-	sharedBuffer = gerRingBuffer(sharedBufferSize);
+	sharedBuffer = newRingBuffer(sharedBufferSize);
 }
 
 /* Create log file */
@@ -138,7 +138,10 @@ static int createLogFile() {
 
 /* API method - Description located at .h file */
 int registerThread() {
-	tlrb = getNodeRingBuffer(removeHead(availablePrivateBuffers));
+	struct ringBufferListNode* node;
+
+	node = removeHead(availablePrivateBuffers);
+	tlrb = getRingBuffer(node);
 
 	if (NULL != tlrb) {
 		addNode(inUsePrivateBuffers, tlrb);
@@ -152,9 +155,7 @@ void unregisterThread() {
 	struct ringBuffer* rb;
 
 	rb = removeNode(inUsePrivateBuffers, tlrb);
-	if (NULL != rb) {
-		addNode(availablePrivateBuffers, rb);
-	}
+	addNode(availablePrivateBuffers, rb);
 }
 
 /* Logger thread loop */
@@ -181,7 +182,7 @@ static void drainPrivateBuffers() {
 	while (NULL != node) {
 		struct ringBuffer* rb;
 
-		rb = getNodeRingBuffer(node);
+		rb = getRingBuffer(node);
 		drainBufferToFile(rb, fileHandle);
 		node = getNext(node);
 	}
@@ -206,6 +207,8 @@ void terminateLogger() {
 /* Release all malloc'ed resources, destroy mutexs and close the open file */
 static void freeResources() {
 	freeRingBufferList(privateBuffers);
+	free(inUsePrivateBuffers);
+	free(availablePrivateBuffers);
 
 	deleteRingBuffer(sharedBuffer);
 

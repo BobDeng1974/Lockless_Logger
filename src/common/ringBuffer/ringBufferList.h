@@ -21,7 +21,7 @@ struct ringBufferListNode;
 struct ringBufferList;
 
 /* Allocate new list and reset it's values */
-struct ringBufferList* getNewList();
+struct ringBufferList* newRingBufferList();
 
 /* Add a new node which contains the relevant data to the specified list */
 void addNode(struct ringBufferList* rbl, struct ringBuffer* data);
@@ -44,6 +44,6 @@ struct ringBufferListNode* getHead(const struct ringBufferList* rbl);
 struct ringBufferListNode* getNext(const struct ringBufferListNode* node);
 
 /* Returns the 'ringBuffer' pointer of the node */
-struct ringBuffer* getNodeRingBuffer(const struct ringBufferListNode* node);
+struct ringBuffer* getRingBuffer(const struct ringBufferListNode* node);
 
 #endif /* DATASTRUCTURES */

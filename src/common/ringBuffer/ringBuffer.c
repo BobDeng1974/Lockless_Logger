@@ -29,17 +29,15 @@ static inline bool isSequentialOverwrite(const int lastRead,
 static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd);
 
-static int writeSeq(char* buf, const int lastWrite, void* data,
-                    const int (*formatMethod)());
-static int writeWrap(char* buf, const int lastWrite, const int lenToBufEnd,
-                     const int safetyLen, void* data,
+static int writeSeq(ringBuffer* rb, void* data, const int (*formatMethod)());
+static int writeWrap(ringBuffer* rb, const int safetyLen, void* data,
                      const int (*formatMethod)());
 
 /* API method - Description located at .h file */
-ringBuffer* gerRingBuffer(int privateBuffSize) {
+ringBuffer* newRingBuffer(int privateBuffSize) {
 	ringBuffer* rb;
 
-	rb = malloc(sizeof(struct ringBuffer));
+	rb = malloc(sizeof(ringBuffer));
 	initRingBuffer(rb, privateBuffSize);
 
 	return rb;
@@ -70,7 +68,7 @@ int writeToRingBuffer(ringBuffer* rb, const int safetyLen, void* data,
 
 		newLastWrite = writeSeqOrWrap(rb, safetyLen, data, formatMethod);
 
-		/* Atomic store lastWrite, as it is read by the logger thread */
+		/* Atomic store lastWrite, as it's read by a different thread */
 		__atomic_store_n(&rb->lastWrite, newLastWrite,
 		__ATOMIC_SEQ_CST);
 
@@ -83,14 +81,15 @@ int writeToRingBuffer(ringBuffer* rb, const int safetyLen, void* data,
 bool isNextWriteOverwrite(ringBuffer* rb, const int safetyLen) {
 	int lastRead;
 	int lastWrite;
+	int lenToBufEnd;
 
+	/* Atomic load lastRead, as it's written by a different thread */
 	__atomic_load(&rb->lastRead, &lastRead, __ATOMIC_SEQ_CST);
 	lastWrite = rb->lastWrite;
-	rb->lenToBufEnd = rb->bufSize - lastWrite;
-	lastRead = rb->lastRead;
+	lenToBufEnd = rb->lenToBufEnd = rb->bufSize - lastWrite;
 
 	return (isSequentialOverwrite(lastRead, lastWrite, safetyLen)
-	        || isWrapAroundOverwrite(lastRead, safetyLen, rb->lenToBufEnd));
+	        || isWrapAroundOverwrite(lastRead, safetyLen, lenToBufEnd));
 }
 
 /* Check for sequential data override */
@@ -117,29 +116,30 @@ int writeSeqOrWrap(ringBuffer* rb, const int safetyLen, void* data,
 
 	newLastWrite =
 	        (rb->lenToBufEnd >= safetyLen) ?
-	                writeSeq(rb->buf, rb->lastWrite, data, formatMethod) :
-	                writeWrap(rb->buf, rb->lastWrite, rb->lenToBufEnd,
-	                          safetyLen, data, formatMethod);
+	                writeSeq(rb, data, formatMethod) :
+	                writeWrap(rb, safetyLen, data, formatMethod);
 
 	return newLastWrite;
 }
 
 /* Write sequentially to a designated buffer */
-static int writeSeq(char* buf, const int lastWrite, void* data,
-                    const int (*formatMethod)()) {
+static int writeSeq(ringBuffer* rb, void* data, const int (*formatMethod)()) {
 	int msgLen;
+	int lastWrite;
 
-	msgLen = formatMethod(buf + lastWrite, data);
+	lastWrite = rb->lastWrite;
+	msgLen = formatMethod(rb->buf + lastWrite, data);
 
 	return lastWrite + msgLen;
 }
 
 /* Space at the end of the buffer is insufficient - write what is possible to
  * the end of the buffer, the rest write at the beginning of the buffer */
-static int writeWrap(char* buf, const int lastWrite, const int lenToBufEnd,
-                     const int safetyLen, void* data,
+static int writeWrap(ringBuffer* rb, const int safetyLen, void* data,
                      const int (*formatMethod)()) {
 	int msgLen;
+	int lastWrite;
+	int lenToBufEnd;
 	char locBuf[safetyLen];
 	/* local buffer is used as in the case of wrap-around write, writing is split to 2
 	 * portions - write whatever possible at the end of the buffer and the rest write in
@@ -148,18 +148,20 @@ static int writeWrap(char* buf, const int lastWrite, const int lenToBufEnd,
 	 * required into which data will be written sequentially and then copied back to the
 	 * original buffer, either in sequential of wrap-around manner */
 
+	lastWrite = rb->lastWrite;
+	lenToBufEnd = rb->lenToBufEnd;
 	msgLen = formatMethod(locBuf, data);
 
-	if (lenToBufEnd >= msgLen) {
+	if (rb->lenToBufEnd >= msgLen) {
 		/* Space at the end of the buffer is sufficient - copy everything at once */
-		memcpy(buf + lastWrite, locBuf, msgLen);
-		return lastWrite + msgLen;
+		memcpy(rb->buf + lastWrite, locBuf, msgLen);
+		return rb->lastWrite + msgLen;
 	} else {
 		/* Space at the end of the buffer is insufficient - copy
 		 * data written in the end and then data written back at the beginning */
 		int bytesRemaining = msgLen - lenToBufEnd;
-		memcpy(buf + lastWrite, locBuf, lenToBufEnd);
-		memcpy(buf, locBuf + lenToBufEnd, bytesRemaining);
+		memcpy(rb->buf + lastWrite, locBuf, lenToBufEnd);
+		memcpy(rb->buf, locBuf + lenToBufEnd, bytesRemaining);
 		return bytesRemaining;
 	}
 
@@ -172,7 +174,7 @@ void drainBufferToFile(ringBuffer* rb, const int file) {
 	int lastWrite;
 	int newLastRead;
 
-	/* Atomic load lastWrite, as it is changed by the worker thread */
+	/* Atomic load lastWrite, as it's read by a different thread */
 	__atomic_load(&rb->lastWrite, &lastWrite,
 	__ATOMIC_SEQ_CST);
 
@@ -183,6 +185,7 @@ void drainBufferToFile(ringBuffer* rb, const int file) {
 			write(file, rb->buf + rb->lastRead + 1, dataLen);
 
 			newLastRead = lastWrite - 1;
+			/* Atomic store lastRead, as it's read by a different thread */
 			__atomic_store_n(&rb->lastRead, newLastRead,
 			__ATOMIC_SEQ_CST);
 		}
@@ -195,6 +198,7 @@ void drainBufferToFile(ringBuffer* rb, const int file) {
 			write(file, rb->buf, lastWrite);
 
 			newLastRead = lastWrite - 1;
+			/* Atomic store lastRead, as it's read by a different thread */
 			__atomic_store_n(&rb->lastRead, newLastRead,
 			__ATOMIC_SEQ_CST);
 		}

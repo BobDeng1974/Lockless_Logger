@@ -20,7 +20,7 @@ enum rinBuffertatusCodes {
 struct ringBuffer;
 
 /* Allocate a new ring buffer */
-struct ringBuffer* gerRingBuffer(int privateBuffSize);
+struct ringBuffer* newRingBuffer(int privateBuffSize);
 
 /* Release all allocated resources to the given ring buffer */
 void deleteRingBuffer(struct ringBuffer* rb);

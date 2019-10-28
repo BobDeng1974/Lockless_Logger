@@ -18,8 +18,8 @@
 
 #include "logger.h"
 
-#define ITERATIONS 10000
-#define NUM_THRDS 500
+#define ITERATIONS 100
+#define NUM_THRDS 50
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000
@@ -89,8 +89,10 @@ void* threadMethod(void* data) {
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-		unregisterThread();
+//		unregisterThread();
 	}
+
+	unregisterThread();
 
 	return NULL;
 }

@@ -22,11 +22,11 @@ typedef struct ringBufferList {
 } ringBufferList;
 
 /* Inlining light methods */
-inline static bool isNodeContainingData(const ringBufferListNode* node,
-                                        const struct ringBuffer* data);
+inline static bool isContains(const ringBufferListNode* node,
+                              const struct ringBuffer* data);
 
 /* API method - Description located at .h file */
-ringBufferList* getNewList() {
+ringBufferList* newRingBufferList() {
 	ringBufferList* rbl;
 
 	//TODO: think if malloc failures need to be handled
@@ -62,32 +62,32 @@ void addNode(ringBufferList* rbl, struct ringBuffer* data) {
 /* API method - Description located at .h file */
 struct ringBuffer* removeNode(ringBufferList* rbl,
                               const struct ringBuffer* data) {
-	ringBufferListNode* next;
+	ringBufferListNode* node;
 
 	pthread_mutex_lock(&rbl->lock); /* Lock */
 	{
 		ringBufferListNode* prev = NULL;
 
-		next = rbl->head;
-		while (NULL != next) {
-			if (true == isNodeContainingData(next, data)) {
+		node = rbl->head;
+		while (NULL != node) {
+			if (true == isContains(node, data)) {
 				if (NULL == prev) {
 					/* Matching node is the first node */
 					rbl->head = rbl->tail = NULL;
 					goto Unlock;
 				} else {
 					/* Matching node is an arbitrary node */
-					prev->next = next->next;
+					prev->next = node->next;
 					goto Unlock;
 				}
 			}
-			prev = next;
-			next = next->next;
+			prev = node;
+			node = node->next;
 		}
 	}
 	Unlock: pthread_mutex_unlock(&rbl->lock); /* Unlock */
 
-	return (NULL != next) ? next->rb : NULL;
+	return (NULL != node) ? node->rb : NULL;
 }
 
 /* API method - Description located at .h file */
@@ -107,8 +107,8 @@ ringBufferListNode* removeHead(ringBufferList* rbl) {
 }
 
 /* Return true if the data of 2 nodes is the same of false otherwise */
-inline static bool isNodeContainingData(const ringBufferListNode* node,
-                                        const struct ringBuffer* data) {
+inline static bool isContains(const ringBufferListNode* node,
+                              const struct ringBuffer* data) {
 	return (node->rb == data) ? true : false;
 }
 
@@ -120,12 +120,17 @@ void freeRingBufferList(ringBufferList* rbl) {
 
 	while (NULL != node) {
 		struct ringBuffer* rb;
+		ringBufferListNode* tmp;
 
 		rb = node->rb;
 		deleteRingBuffer(rb);
 
+		tmp = node;
 		node = node->next;
+		free(tmp);
 	}
+
+	free(rbl);
 }
 
 /* API method - Description located at .h file */
@@ -139,6 +144,6 @@ ringBufferListNode* getNext(const ringBufferListNode* node) {
 }
 
 /* API method - Description located at .h file */
-struct ringBuffer* getNodeRingBuffer(const ringBufferListNode* node) {
+struct ringBuffer* getRingBuffer(const ringBufferListNode* node) {
 	return node->rb;
 }

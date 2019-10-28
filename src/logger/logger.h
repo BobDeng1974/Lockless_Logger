@@ -48,25 +48,30 @@ typedef struct messageInfo {
  * Note: This method must be called before any other api is used, and it can be
  * called only once
  * Parameters:
- * threadsNum - must be a non-negative value
- * privateBuffSize - must be a positive value
- * sharedBuffSize - must be a positive value
- * loggingLevel - must be one of the defined logging levels */
-int initLogger(const int threadsNum, const int privateBuffSize, const int sharedBuffSize,
-               const int loggingLevel);
+ * 'threadsNum' - must be a non-negative value
+ * 'privateBuffSize' - must be a positive value
+ * 'sharedBuffSize' - must be a positive value
+ * 'loggingLevel' - must be one of the defined logging levels */
+int initLogger(const int threadsNum, const int privateBuffSize,
+               const int sharedBuffSize, const int loggingLevel);
 
 /* Register a worker thread at the logger and assign a private buffers to it */
 int registerThread();
 
-/* Unregister a thread from the logger and free the private buffer for another thread's use */
+/* Unregister a thread from the logger and free the private buffer for another
+ * thread's use
+ * NOTE: each registered thread must unregister before termination */
 void unregisterThread();
+
+/* See description for 'LOG_MSG'
+ * Note: 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG'*/
+int logMessage(const int loggingLevel, char* file, const int line,
+               const char* func, const char* msg, ...);
 
 /* Add a message from a worker thread to a buffer or write it directly to file
  * if buffers are full.
- * Note: 'msg' must be a null-terminated string
- * Note: 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG' */
-int logMessage(const int loggingLevel, char* file, const int line, const char* func,
-               const char* msg, ...);
+ * 'loggingLevel' - must be a level specified in 'logLevels'
+ * 'msg' - must be a null-terminated string */
 #define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__, __LINE__ ,__PRETTY_FUNCTION__ , msg)
 
 /* Terminate the logger thread and release resources */
