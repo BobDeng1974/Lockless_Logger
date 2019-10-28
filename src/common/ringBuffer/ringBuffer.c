@@ -10,18 +10,14 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "ringBuffer.h"
 
-//TODO: add additional status codes to describe different errors that occur
-enum statusCodes {
-	STATUS_FAILURE = -1, STATUS_SUCCESS
-};
-
-/* Inlining small methods */
+/* Inlining light methods */
 static inline bool isSequentialOverwrite(const int lastRead,
                                          const int lastWrite, const int msgLen);
-static inline bool isWraparoundOverwrite(const int lastRead, const int msgLen,
+static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd);
 
 static int writeSeq(char* buf, const int lastWrite, void* data,
@@ -30,10 +26,21 @@ static int writeWrap(char* buf, const int lastWrite, const int lenToBufEnd,
                      const int safetyLen, void* data, int (*formatMethod)());
 
 /* API method - Description located at .h file */
+void initRingBuffer(ringBuffer* rb, int privateBuffSize) {
+	rb->bufSize = privateBuffSize;
+	//TODO: think if malloc failures need to be handled
+	rb->buf = malloc(privateBuffSize);
+
+	/* Advance to 1, as an empty buffer is defined by having a difference of 1 between
+	 * lastWrite and lastRead*/
+	rb->lastWrite = 1;
+}
+
+/* API method - Description located at .h file */
 bool isNextWriteOverwrite(const int lastRead, const atomic_int lastWrite,
                           const int lenToBufEnd, const int safetyLen) {
 	return (isSequentialOverwrite(lastRead, lastWrite, safetyLen)
-	        || isWraparoundOverwrite(lastRead, safetyLen, lenToBufEnd));
+	        || isWrapAroundOverwrite(lastRead, safetyLen, lenToBufEnd));
 }
 
 /* Check for sequential data override */
@@ -43,7 +50,7 @@ static inline bool isSequentialOverwrite(const int lastRead,
 }
 
 /* Check for wrap-around data override */
-static inline bool isWraparoundOverwrite(const int lastRead, const int msgLen,
+static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd) {
 	if (msgLen > lenToBufEnd) {
 		int bytesRemaining = msgLen - lenToBufEnd;
@@ -59,7 +66,7 @@ int writeSeqOrWrap(char* buf, const int lastWrite, const int lenToBufEnd,
 	int newLastWrite;
 
 	newLastWrite =
-	        lenToBufEnd >= safetyLen ?
+	        (lenToBufEnd >= safetyLen) ?
 	                writeSeq(buf, lastWrite, data, formatMethod) :
 	                writeWrap(buf, lastWrite, lenToBufEnd, safetyLen, data,
 	                          formatMethod);
@@ -133,5 +140,5 @@ int drainBufferToFile(const int file, const char* buf, const int lastRead,
 		}
 	}
 
-	return STATUS_FAILURE;
+	return RB_STATUS_FAILURE;
 }

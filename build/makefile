@@ -1,7 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
 -include ../makefile.init
 
 RM := rm -rf
@@ -10,7 +6,7 @@ RM := rm -rf
 -include sources.mk
 -include src/testCode/subdir.mk
 -include src/logger/subdir.mk
--include src/common/subdir.mk
+-include src/common/ringBuffer/subdir.mk
 -include subdir.mk
 -include objects.mk
 

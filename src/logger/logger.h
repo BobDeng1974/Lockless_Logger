@@ -17,7 +17,7 @@
 #include <stdbool.h>
 
 enum loggerStatusCodes {
-	STATUS_LOGGER_FAILURE = -1, STATUS_LOGGER_SUCCESS
+	LOG_STATUS_FAILURE = -1, LOG_STATUS_SUCCESS
 };
 
 enum logLevels {
@@ -52,8 +52,8 @@ typedef struct messageInfo {
  * privateBuffSize - must be a positive value
  * sharedBuffSize - must be a positive value
  * loggingLevel - must be one of the defined logging levels */
-int initLogger(const int threadsNum, int privateBuffSize, int sharedBuffSize,
-               int loggingLevel);
+int initLogger(const int threadsNum, const int privateBuffSize, const int sharedBuffSize,
+               const int loggingLevel);
 
 /* Register a worker thread at the logger and assign a private buffers to it */
 int registerThread();
@@ -65,7 +65,7 @@ void unregisterThread();
  * if buffers are full.
  * Note: 'msg' must be a null-terminated string
  * Note: 'logMessage' should be called only by using the macro 'LOG_LEVEL_MSG' */
-int logMessage(int loggingLevel, char* file, const int line, const char* func,
+int logMessage(const int loggingLevel, char* file, const int line, const char* func,
                const char* msg, ...);
 #define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__, __LINE__ ,__PRETTY_FUNCTION__ , msg)
 
@@ -73,6 +73,6 @@ int logMessage(int loggingLevel, char* file, const int line, const char* func,
 void terminateLogger();
 
 /* Sets logging level to the specified value */
-void setLoggingLevel(int loggingLevel);
+void setLoggingLevel(const int loggingLevel);
 
 #endif /* LOGGER */
