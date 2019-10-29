@@ -37,6 +37,7 @@ static int writeWrap(ringBuffer* rb, const int safetyLen, void* data,
 ringBuffer* newRingBuffer(int privateBuffSize) {
 	ringBuffer* rb;
 
+	//TODO: think if malloc failures need to be handled
 	rb = malloc(sizeof(ringBuffer));
 	initRingBuffer(rb, privateBuffSize);
 
@@ -62,6 +63,7 @@ void initRingBuffer(ringBuffer* rb, int privateBuffSize) {
 /* API method - Description located at .h file */
 int writeToRingBuffer(ringBuffer* rb, const int safetyLen, void* data,
                       const int (*formatMethod)()) {
+
 	if (false == isNextWriteOverwrite(rb, safetyLen)) {
 		int newLastWrite;
 
@@ -126,6 +128,7 @@ static int writeSeq(ringBuffer* rb, void* data, const int (*formatMethod)()) {
 	int lastWrite;
 
 	lastWrite = rb->lastWrite;
+
 	msgLen = formatMethod(rb->buf + lastWrite, data);
 
 	return lastWrite + msgLen;
@@ -144,7 +147,6 @@ static int writeWrap(ringBuffer* rb, const int safetyLen, void* data,
 	                        // assume there is enough space at the end, therefore a temporary, long enough buffer is
 	                        // required into which data will be written sequentially and then copied back to the
 	                        // original buffer, either in sequential of wrap-around manner
-
 	lastWrite = rb->lastWrite;
 	lenToBufEnd = rb->lenToBufEnd;
 	msgLen = formatMethod(locBuf, data);

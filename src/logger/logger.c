@@ -108,14 +108,19 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 	availablePrivateBuffers = newRingBufferList();
 	inUsePrivateBuffers = newRingBufferList();
 
-	/* Init private buffers */
-	//TODO: think if malloc failures need to be handled
 	for (i = 0; i < threadsNum; ++i) {
 		struct ringBuffer* rb;
+		struct ringBufferListNode* node;
 
 		rb = newRingBuffer(privateBuffSize);
-		addNode(privateBuffers, rb);
-		addNode(availablePrivateBuffers, rb);
+
+		node = newringBufferNode(rb);
+		addRingBufferNode(privateBuffers, node); // This list will hold pointers to *all* allocated buffers.
+		                                         // This is required in order to keep track of all allocated
+		                                         // buffer, so they may be freed even in not all threads unregistered
+
+		node = newringBufferNode(rb);
+		addRingBufferNode(availablePrivateBuffers, node); // Filling this list up so threads may take buffers from it
 	}
 }
 
@@ -141,11 +146,13 @@ static int createLogFile() {
 int registerThread() {
 	struct ringBufferListNode* node;
 
+	/* Take a node from the 'available buffers' pool */
 	node = removeHead(availablePrivateBuffers);
-	tlrb = getRingBuffer(node);
 
-	if (NULL != tlrb) {
-		addNode(inUsePrivateBuffers, tlrb);
+	if (NULL != node) {
+		tlrb = getRingBuffer(node);
+		/* Add this node to the 'inUse' pool without allocating additional space */
+		addRingBufferNode(inUsePrivateBuffers, node);
 	}
 
 	return (NULL != tlrb) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
@@ -153,10 +160,15 @@ int registerThread() {
 
 /* API method - Description located at .h file */
 void unregisterThread() {
-	struct ringBuffer* rb;
+	struct ringBufferListNode* node;
 
-	rb = removeNode(inUsePrivateBuffers, tlrb);
-	addNode(availablePrivateBuffers, rb);
+	/* Find the note which contains 'rb' and remove it from the 'inUse' pool */
+	node = removeNode(inUsePrivateBuffers, tlrb);
+	if (NULL != node) {
+		/* Return this node to the 'available buffers' pool */
+		addRingBufferNode(availablePrivateBuffers, node);
+		tlrb = NULL;
+	}
 }
 
 /* Logger thread loop */
@@ -208,11 +220,13 @@ void terminateLogger() {
 
 /* Release all malloc'ed resources, destroy mutexs and close the open file */
 static void freeResources() {
-	/* Freeing 'privateBuffers' using the 'freeRingBufferList' API takes care of freeing all alooctaed
-	 * Node and buffers so for 'inUsePrivateBuffers' and 'availablePrivateBuffers' normal free is enough */
-	freeRingBufferList(privateBuffers);
+	/* Freeing 'privateBuffers' using the 'freeRingBufferList' API takes care of freeing all allocated
+	 * nodes *and ring buffers* so for 'availablePrivateBuffers' there is no need to free ring buffers
+	 * as they are the same object, and for 'inUsePrivateBuffers'there is no need to free anything
+	 * except the list object itself */
+	deepDeleteRingBufferList(privateBuffers);
+	shallowDeleteRingBufferList(availablePrivateBuffers);
 	free(inUsePrivateBuffers);
-	free(availablePrivateBuffers);
 
 	deleteRingBuffer(sharedBuffer);
 

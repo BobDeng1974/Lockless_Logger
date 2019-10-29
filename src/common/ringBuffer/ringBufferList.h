@@ -21,18 +21,24 @@ struct ringBufferList;
 /* Allocate new list and reset it's values */
 struct ringBufferList* newRingBufferList();
 
-/* Add a new node which contains the relevant data to the specified list */
-void addNode(struct ringBufferList* rbl, struct ringBuffer* data);
+/* Allocate new node containing ring buffer 'rb' */
+struct ringBufferListNode* newringBufferNode(struct ringBuffer* rb);
 
-/* Remove the first node in the list and return it */
+/* Add a new node 'node' to a ring buffer list 'rbl' */
+void addRingBufferNode(struct ringBufferList* rbl, struct ringBufferListNode* node);
+
+/* Removes the first node in the list and return it */
 struct ringBufferListNode* removeHead(struct ringBufferList* rbl);
 
-/* Remove from the list the first occurrence of a node containing 'data', if not found - return NULL */
-struct ringBuffer* removeNode(struct ringBufferList* rbl,
-                              const struct ringBuffer* data);
+/* Remove the first occurrence of a node containing 'rb' from the list 'rbl', if not found - return NULL */
+struct ringBufferListNode* removeNode(struct ringBufferList* rbl,
+                                      const struct ringBuffer* rb);
 
-/* Frees all resources allocated to the list */
-void freeRingBufferList(struct ringBufferList* rbl);
+/* Frees all nodes and ring buffers allocated to the list */
+void deepDeleteRingBufferList(struct ringBufferList* rbl);
+
+/* Frees all nodes (but not ring buffers) allocated to the list */
+void shallowDeleteRingBufferList(struct ringBufferList* rbl);
 
 /* Returns the first node in a list (if the list is empty, it'll return NULL) */
 struct ringBufferListNode* getHead(const struct ringBufferList* rbl);

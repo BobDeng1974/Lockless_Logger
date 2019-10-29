@@ -43,28 +43,34 @@ ringBufferList* newRingBufferList() {
 }
 
 /* API method - Description located at .h file */
-void addNode(ringBufferList* rbl, struct ringBuffer* data) {
+ringBufferListNode* newringBufferNode(struct ringBuffer* rb) {
 	//TODO: think if malloc failures need to be handled
-	ringBufferListNode* newNode = malloc(sizeof(ringBufferListNode));
+	ringBufferListNode* node = malloc(sizeof(ringBufferListNode));
 
-	newNode->rb = data;
+	node->rb = rb;
+
+	return node;
+}
+
+/* API method - Description located at .h file */
+void addRingBufferNode(ringBufferList* rbl, ringBufferListNode* node) {
+	//TODO: think if malloc failures need to be handled
 
 	pthread_mutex_lock(&rbl->lock); /* Lock */
 	{
 		if (NULL == rbl->head) {
-			rbl->head = newNode;
+			rbl->head = node;
 		} else {
-			rbl->tail->next = newNode;
+			rbl->tail->next = node;
 		}
-		rbl->tail = newNode;
+		rbl->tail = node;
 		rbl->tail->next = NULL;
 	}
 	pthread_mutex_unlock(&rbl->lock); /* Unlock */
 }
 
 /* API method - Description located at .h file */
-struct ringBuffer* removeNode(ringBufferList* rbl,
-                              const struct ringBuffer* data) {
+ringBufferListNode* removeNode(ringBufferList* rbl, const struct ringBuffer* rb) {
 	ringBufferListNode* node;
 
 	pthread_mutex_lock(&rbl->lock); /* Lock */
@@ -73,7 +79,7 @@ struct ringBuffer* removeNode(ringBufferList* rbl,
 
 		node = rbl->head;
 		while (NULL != node) {
-			if (true == isContains(node, data)) {
+			if (true == isContains(node, rb)) {
 				if (NULL == prev) {
 					/* Matching node is the first node */
 					rbl->head = rbl->tail = NULL;
@@ -90,7 +96,7 @@ struct ringBuffer* removeNode(ringBufferList* rbl,
 	}
 	Unlock: pthread_mutex_unlock(&rbl->lock); /* Unlock */
 
-	return (NULL != node) ? node->rb : NULL;
+	return node;
 }
 
 /* API method - Description located at .h file */
@@ -102,6 +108,9 @@ ringBufferListNode* removeHead(ringBufferList* rbl) {
 		node = rbl->head;
 		if (NULL != node) {
 			rbl->head = node->next;
+			if (NULL == rbl->head) {
+				rbl->tail = NULL;
+			}
 		}
 	}
 	pthread_mutex_unlock(&rbl->lock); /* Unlock */
@@ -116,7 +125,7 @@ inline static bool isContains(const ringBufferListNode* node,
 }
 
 /* API method - Description located at .h file */
-void freeRingBufferList(ringBufferList* rbl) {
+void deepDeleteRingBufferList(ringBufferList* rbl) {
 	ringBufferListNode* node;
 
 	node = rbl->head;
@@ -127,6 +136,23 @@ void freeRingBufferList(ringBufferList* rbl) {
 
 		rb = node->rb;
 		deleteRingBuffer(rb);
+
+		tmp = node;
+		node = node->next;
+		free(tmp);
+	}
+
+	free(rbl);
+}
+
+/* API method - Description located at .h file */
+void shallowDeleteRingBufferList(ringBufferList* rbl) {
+	ringBufferListNode* node;
+
+	node = rbl->head;
+
+	while (NULL != node) {
+		ringBufferListNode* tmp;
 
 		tmp = node;
 		node = node->next;
