@@ -116,9 +116,9 @@ inline void setLoggingLevel(const int loggingLevel) {
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) {
 	int i;
 
-	privateBuffers = newLinkedList(isContains);
-	availablePrivateBuffers = newLinkedList(isContains);
-	inUsePrivateBuffers = newLinkedList(isContains);
+	privateBuffers = newLinkedList(compareMethod);
+	availablePrivateBuffers = newLinkedList(compareMethod);
+	inUsePrivateBuffers = newLinkedList(compareMethod);
 
 	for (i = 0; i < threadsNum; ++i) {
 		struct ringBuffer* rb;

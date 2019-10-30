@@ -60,8 +60,10 @@ struct LinkedListNode* removeHead(LinkedList* ll) {
 	{
 		node = ll->head;
 		if (NULL != node) {
-			setNext(ll->head, getNext(node));
+			/* List contains at least 1 node */
+			ll->head = getNext(node);
 			if (NULL == ll->head) {
+				/* List is empty */
 				ll->tail = NULL;
 			}
 		}

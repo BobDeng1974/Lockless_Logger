@@ -16,7 +16,7 @@
 #include "ringBuffer/ringBuffer.h"
 
 /* API method - Description located at .h file */
-bool isContains(const struct LinkedListNode* node, const void* data) {
+bool compareMethod(const struct LinkedListNode* node, const void* data) {
 	return (getData(node) == data) ? true : false;
 }
 
