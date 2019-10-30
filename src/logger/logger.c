@@ -116,9 +116,9 @@ inline void setLoggingLevel(const int loggingLevel) {
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) {
 	int i;
 
-	privateBuffers = newLinkedList(compareMethod);
-	availablePrivateBuffers = newLinkedList(compareMethod);
-	inUsePrivateBuffers = newLinkedList(compareMethod);
+	privateBuffers = newRingBufferList();
+	availablePrivateBuffers = newRingBufferList();
+	inUsePrivateBuffers = newRingBufferList();
 
 	for (i = 0; i < threadsNum; ++i) {
 		struct ringBuffer* rb;
@@ -128,8 +128,8 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 
 		node = newLinkedListNode(rb);
 		addNode(privateBuffers, node); // This list will hold pointers to *all* allocated buffers.
-		                                         // This is required in order to keep track of all allocated
-		                                         // buffer, so they may be freed even in not all threads unregistered
+		                               // This is required in order to keep track of all allocated
+		                               // buffer, so they may be freed even in not all threads unregistered
 
 		node = newLinkedListNode(rb);
 		addNode(availablePrivateBuffers, node); // Filling this list up so threads may take buffers from it

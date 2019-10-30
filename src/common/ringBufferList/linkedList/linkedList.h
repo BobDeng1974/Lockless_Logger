@@ -17,7 +17,7 @@
 
 struct LinkedList;
 
-/* lllocate new list and reset it's values */
+/* Allocates new list and reset it's values */
 struct LinkedList* newLinkedList(bool (*comparisonMethod)());
 
 /* Add a new node 'node' to a ring buffer list 'rbl' */

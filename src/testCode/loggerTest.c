@@ -38,15 +38,15 @@ int main(void) {
 	int charsLen;
 	struct timeval tv1, tv2;
 
+	gettimeofday(&tv1, NULL);
+
 	if (access("logFile.txt", F_OK) != -1) {
 		remove("logFile.txt");
 	}
 
-	gettimeofday(&tv1, NULL);
-
 	charsLen = strlen(chars);
 
-	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
+	res = initLogger(1, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
 	if (LOG_STATUS_SUCCESS == res) {
 		data = malloc(NUM_THRDS * sizeof(char*));
 		createRandomData(data, charsLen);
@@ -89,7 +89,7 @@ void* threadMethod(void* data) {
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-//		unregisterThread();
+		unregisterThread();
 	}
 
 	unregisterThread();
