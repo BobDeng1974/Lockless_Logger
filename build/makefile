@@ -1,3 +1,7 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
 -include ../makefile.init
 
 RM := rm -rf
@@ -6,7 +10,10 @@ RM := rm -rf
 -include sources.mk
 -include src/testCode/subdir.mk
 -include src/logger/subdir.mk
--include src/common/ringBuffer/subdir.mk
+-include src/common/ringBufferList/ringBuffer/subdir.mk
+-include src/common/ringBufferList/linkedList/node/subdir.mk
+-include src/common/ringBufferList/linkedList/subdir.mk
+-include src/common/ringBufferList/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -21,19 +28,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Logger
+all: Loggrer
 
 # Tool invocations
-Logger: $(OBJS) $(USER_OBJS)
+Loggrer: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc -pthread -o "Logger" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -pthread -o "Loggrer" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Logger
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Loggrer
 	-@echo ' '
 
 .PHONY: all clean dependents
