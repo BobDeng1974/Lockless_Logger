@@ -8,8 +8,8 @@
  ============================================================================
  */
 
-#ifndef RINGBUFFER
-#define RINGBUFFER
+#ifndef RINGBUFFER_H
+#define RINGBUFFER_H
 
 #include <stdbool.h>
 
@@ -47,4 +47,4 @@ int writeSeqOrWrap(struct ringBuffer* rb, const int safetyLen, void* data,
 /* Write to file 'file' from the buffer located in ringBuffer 'rb' */
 void drainBufferToFile(struct ringBuffer* rb, const int file);
 
-#endif /* RINGBUFFER */
+#endif /* RINGBUFFER_H */

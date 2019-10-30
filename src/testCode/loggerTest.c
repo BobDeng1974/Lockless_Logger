@@ -16,10 +16,10 @@
 #include <sys/time.h>
 #include <stdarg.h>
 
-#include "logger.h"
+#include "../api/logger.h"
 
-#define ITERATIONS 100
-#define NUM_THRDS 50
+#define ITERATIONS 10000
+#define NUM_THRDS 500
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000
@@ -46,7 +46,7 @@ int main(void) {
 
 	charsLen = strlen(chars);
 
-	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
+	res = initLogger(NUM_THRDS / 50, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
 	if (LOG_STATUS_SUCCESS == res) {
 		data = malloc(NUM_THRDS * sizeof(char*));
 		createRandomData(data, charsLen);
@@ -89,7 +89,7 @@ void* threadMethod(void* data) {
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-//		unregisterThread();
+		unregisterThread();
 	}
 
 	unregisterThread();

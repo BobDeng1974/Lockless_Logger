@@ -16,13 +16,25 @@
 #include <threads.h>
 #include <stdbool.h>
 
-#include "logger.h"
-#include "ringBuffer.h"
-#include "ringBufferList.h"
+#include "../api/logger.h"
+#include "../common/ringBufferList/linkedList/linkedList.h"
+#include "../common/ringBufferList/ringBuffer/ringBuffer.h"
+#include "../common/ringBufferList/ringBufferList.h"
 
 enum logSource {
 	LS_PRIVATE_BUFFER, LS_SHARED_BUFFER, LS_DIRECT_WRITE
 };
+
+typedef struct messageInfo {
+	int line;
+	int logLevel;
+	int loggingMethod;
+	char* file;
+	char* argsBuf;
+	const char* func;
+	struct timeval tv;
+	pthread_t tid;
+} messageInfo;
 
 /* Defines maximum allowed message length.
  * This value is primarily used to prevent data overwrite in the ring buffer,
@@ -40,9 +52,9 @@ static int fileHandle;
 static FILE* logFile;
 static pthread_mutex_t loggerLock;
 static pthread_t loggerThread;
-static struct ringBufferList* privateBuffers; // A list of all private buffers in the system
-static struct ringBufferList* availablePrivateBuffers; ///A list of available private buffers for threads to register to
-static struct ringBufferList* inUsePrivateBuffers; // A list of private buffers currently in use by threads
+static struct LinkedList* privateBuffers; // A list of all private buffers in the system
+static struct LinkedList* availablePrivateBuffers; ///A list of available private buffers for threads to register to
+static struct LinkedList* inUsePrivateBuffers; // A list of private buffers currently in use by threads
 static struct ringBuffer* sharedBuffer;
 static pthread_mutex_t sharedBufferlock;
 
@@ -96,7 +108,7 @@ int initLogger(const int threadsNum, const int privateBuffSize,
 }
 
 /* API method - Description located at .h file */
-void setLoggingLevel(const int loggingLevel) {
+inline void setLoggingLevel(const int loggingLevel) {
 	__atomic_store_n(&logLevel, loggingLevel, __ATOMIC_SEQ_CST);
 }
 
@@ -104,23 +116,23 @@ void setLoggingLevel(const int loggingLevel) {
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) {
 	int i;
 
-	privateBuffers = newRingBufferList();
-	availablePrivateBuffers = newRingBufferList();
-	inUsePrivateBuffers = newRingBufferList();
+	privateBuffers = newLinkedList(isContains);
+	availablePrivateBuffers = newLinkedList(isContains);
+	inUsePrivateBuffers = newLinkedList(isContains);
 
 	for (i = 0; i < threadsNum; ++i) {
 		struct ringBuffer* rb;
-		struct ringBufferListNode* node;
+		struct LinkedListNode* node;
 
 		rb = newRingBuffer(privateBuffSize);
 
-		node = newringBufferNode(rb);
-		addRingBufferNode(privateBuffers, node); // This list will hold pointers to *all* allocated buffers.
+		node = newLinkedListNode(rb);
+		addNode(privateBuffers, node); // This list will hold pointers to *all* allocated buffers.
 		                                         // This is required in order to keep track of all allocated
 		                                         // buffer, so they may be freed even in not all threads unregistered
 
-		node = newringBufferNode(rb);
-		addRingBufferNode(availablePrivateBuffers, node); // Filling this list up so threads may take buffers from it
+		node = newLinkedListNode(rb);
+		addNode(availablePrivateBuffers, node); // Filling this list up so threads may take buffers from it
 	}
 }
 
@@ -144,7 +156,7 @@ static int createLogFile() {
 
 /* API method - Description located at .h file */
 int registerThread() {
-	struct ringBufferListNode* node;
+	struct LinkedListNode* node;
 
 	/* Take a node from the 'available buffers' pool */
 	node = removeHead(availablePrivateBuffers);
@@ -152,7 +164,7 @@ int registerThread() {
 	if (NULL != node) {
 		tlrb = getRingBuffer(node);
 		/* Add this node to the 'inUse' pool without allocating additional space */
-		addRingBufferNode(inUsePrivateBuffers, node);
+		addNode(inUsePrivateBuffers, node);
 	}
 
 	return (NULL != tlrb) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
@@ -160,13 +172,13 @@ int registerThread() {
 
 /* API method - Description located at .h file */
 void unregisterThread() {
-	struct ringBufferListNode* node;
+	struct LinkedListNode* node;
 
 	/* Find the note which contains 'rb' and remove it from the 'inUse' pool */
 	node = removeNode(inUsePrivateBuffers, tlrb);
 	if (NULL != node) {
 		/* Return this node to the 'available buffers' pool */
-		addRingBufferNode(availablePrivateBuffers, node);
+		addNode(availablePrivateBuffers, node);
 		tlrb = NULL;
 	}
 }
@@ -188,7 +200,7 @@ static void* runLogger() {
 
 /* Drain all private buffers assigned to worker threads to the log file */
 static void drainPrivateBuffers() {
-	struct ringBufferListNode* node;
+	struct LinkedListNode* node;
 
 	node = getHead(privateBuffers); // Access is lockless, because if this list changes, private
 	                                // buffers will be temporarily blocked
@@ -329,8 +341,8 @@ inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
 /* Add a message from a worker thread to it's private buffer */
 static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo) {
 	int res;
-	msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
 
+	msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
 	res = writeToRingBuffer(rb, MAX_MSG_LEN, msgInfo, writeInFormat);
 
 	return (RB_STATUS_SUCCESS == res) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;

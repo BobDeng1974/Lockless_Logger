@@ -8,12 +8,12 @@
  ============================================================================
  */
 
+#include "../ringBuffer/ringBuffer.h"
+
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdatomic.h>
-
-#include "ringBuffer.h"
 
 typedef struct ringBuffer {
 	atomic_int lastRead;
@@ -23,7 +23,6 @@ typedef struct ringBuffer {
 	char* buf;
 } ringBuffer;
 
-/* Inlining light methods */
 static inline bool isSequentialOverwrite(const int lastRead,
                                          const int lastWrite, const int msgLen);
 static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
@@ -45,7 +44,7 @@ ringBuffer* newRingBuffer(int privateBuffSize) {
 }
 
 /* API method - Description located at .h file */
-void deleteRingBuffer(ringBuffer* rb) {
+inline void deleteRingBuffer(ringBuffer* rb) {
 	free(rb->buf);
 	free(rb);
 }

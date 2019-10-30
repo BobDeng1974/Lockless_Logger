@@ -8,8 +8,8 @@
  ============================================================================
  */
 
-#ifndef LOGGER
-#define LOGGER
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include <pthread.h>
 #include <stdatomic.h>
@@ -31,17 +31,6 @@ enum logLevels {
 
 //TODO: remove, for debug only
 long long cnt;
-
-typedef struct messageInfo {
-	int line;
-	int logLevel;
-	int loggingMethod;
-	char* file;
-	char* argsBuf;
-	const char* func;
-	struct timeval tv;
-	pthread_t tid;
-} messageInfo;
 
 /* Initialize all data required by the logger.
  * Note: This method must be called before any other api is used, and it can be
@@ -79,4 +68,4 @@ void terminateLogger();
 /* Sets logging level to the specified value */
 void setLoggingLevel(const int loggingLevel);
 
-#endif /* LOGGER */
+#endif /* LOGGER_H */
