@@ -2,9 +2,10 @@
  ============================================================================
  Name        : ringBuffer.h
  Author      : Barak Sason Rofman
- Version     : TODO: update
  Copyright   : TODO: update
- Description : TODO: update
+ Description : This module provides a lockless implementation of a
+ 	 	 	   ring buffer for a single produce - single consumer
+ 	 	 	   use-case.
  ============================================================================
  */
 

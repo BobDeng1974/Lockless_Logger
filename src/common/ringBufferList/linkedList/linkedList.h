@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : LinkedList.h
+ Name        : abstractList.h
  Author      : Barak Sason Rofman
- Version     : TODO: update
  Copyright   : TODO: update
- Description : TODO: update
+ Description : This module provides a generic linked list
+ 	 	 	   implementation and is based on 'linkedListNode' module.
  ============================================================================
  */
 

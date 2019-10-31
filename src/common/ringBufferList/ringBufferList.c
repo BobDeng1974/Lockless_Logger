@@ -2,9 +2,10 @@
  ============================================================================
  Name        : ringBufferList.c
  Author      : Barak Sason Rofman
- Version     : TODO: update
  Copyright   : TODO: update
- Description : TODO: update
+ Description : This module provides implementation of a ring buffer list.
+ 	 	 	   This module is based on the submodules - 'linkedList' and
+ 	 	 	   'ringBuffer'
  ============================================================================
  */
 

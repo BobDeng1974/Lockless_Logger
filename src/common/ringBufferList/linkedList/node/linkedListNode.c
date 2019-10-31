@@ -2,9 +2,10 @@
  ============================================================================
  Name        : linkedListNode.c
  Author      : Barak Sason Rofman
- Version     : TODO: update
  Copyright   : TODO: update
- Description : TODO: update
+ Description : This module provides implementation for node operations
+ 	 	 	   in a generic linked list. This module is a sub-module
+ 	 	 	   for 'linkedList' implementation.
  ============================================================================
  */
 

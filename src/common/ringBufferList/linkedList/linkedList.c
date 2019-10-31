@@ -2,9 +2,9 @@
  ============================================================================
  Name        : abstractList.c
  Author      : Barak Sason Rofman
- Version     : TODO: update
  Copyright   : TODO: update
- Description : TODO: update
+ Description : This module provides a generic linked list
+ 	 	 	   implementation and is based on 'linkedListNode' module.
  ============================================================================
  */
 
@@ -24,12 +24,14 @@ typedef struct LinkedList {
 LinkedList* newLinkedList(bool (*comparisonMethod)()) {
 	LinkedList* ll;
 
-	//TODO: think if malloc failures need to be handled
-	ll = calloc(1, sizeof(LinkedList));
-	if (NULL != ll) {
-		pthread_mutex_init(&ll->lock, NULL);
-		ll->comparisonMethod = comparisonMethod;
-		return ll;
+	if (NULL != comparisonMethod) {
+		//TODO: think if malloc failures need to be handled
+		ll = calloc(1, sizeof(LinkedList));
+		if (NULL != ll) {
+			pthread_mutex_init(&ll->lock, NULL);
+			ll->comparisonMethod = comparisonMethod;
+			return ll;
+		}
 	}
 
 	return NULL;
