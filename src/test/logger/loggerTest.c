@@ -19,8 +19,8 @@
 
 #include "../../core/api/logger.h"
 
-#define ITERATIONS 100
-#define NUM_THRDS 50
+#define ITERATIONS 10000
+#define NUM_THRDS 500
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000

@@ -4,8 +4,8 @@
  Author      : Barak Sason Rofman
  Copyright   : TODO: update
  Description : This module provides implementation for node operations
- 	 	 	   in a generic linked list. This module is a sub-module
- 	 	 	   for 'linkedList' implementation.
+ in a generic linked list. This module is a sub-module
+ for 'linkedList' implementation.
  ============================================================================
  */
 
@@ -23,6 +23,7 @@ LinkedListNode* newLinkedListNode(void* data) {
 	//TODO: think if malloc failures need to be handled
 	LinkedListNode* node = malloc(sizeof(LinkedListNode));
 
+	setNext(node, NULL);
 	node->data = data;
 
 	return node;

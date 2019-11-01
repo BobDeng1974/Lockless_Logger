@@ -34,7 +34,7 @@ all: Loggrer
 Loggrer: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc -pthread -ftest-coverage -fprofile-arcs -o "Loggrer" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -pthread -o "Loggrer" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
