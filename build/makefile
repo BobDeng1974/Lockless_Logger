@@ -8,12 +8,12 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include src/testCode/subdir.mk
--include src/logger/subdir.mk
--include src/common/ringBufferList/ringBuffer/subdir.mk
--include src/common/ringBufferList/linkedList/node/subdir.mk
--include src/common/ringBufferList/linkedList/subdir.mk
--include src/common/ringBufferList/subdir.mk
+-include src/test/logger/subdir.mk
+-include src/core/logger/subdir.mk
+-include src/core/common/ringBufferList/ringBuffer/subdir.mk
+-include src/core/common/ringBufferList/linkedList/node/subdir.mk
+-include src/core/common/ringBufferList/linkedList/subdir.mk
+-include src/core/common/ringBufferList/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -34,7 +34,7 @@ all: Loggrer
 Loggrer: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc -pthread -o "Loggrer" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -pthread -ftest-coverage -fprofile-arcs -o "Loggrer" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

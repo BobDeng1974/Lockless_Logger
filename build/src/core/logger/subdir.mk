@@ -4,20 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/logger/logger.c 
+../src/core/logger/logger.c 
 
 OBJS += \
-./src/logger/logger.o 
+./src/core/logger/logger.o 
 
 C_DEPS += \
-./src/logger/logger.d 
+./src/core/logger/logger.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-src/logger/%.o: ../src/logger/%.c
+src/core/logger/%.o: ../src/core/logger/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross GCC Compiler'
-	gcc -std=c11 -D_POSIX_C_SOURCE -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	gcc -std=c11 -D_POSIX_C_SOURCE -O0 -g3 -ftest-coverage -fprofile-arcs -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

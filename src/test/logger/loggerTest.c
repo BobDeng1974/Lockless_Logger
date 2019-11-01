@@ -15,11 +15,12 @@
 #include <pthread.h>
 #include <sys/time.h>
 #include <stdarg.h>
+#include <errno.h>
 
-#include "../api/logger.h"
+#include "../../core/api/logger.h"
 
-#define ITERATIONS 10000
-#define NUM_THRDS 500
+#define ITERATIONS 100
+#define NUM_THRDS 50
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000
@@ -28,8 +29,8 @@
 char chars[] = "0123456789abcdefghijklmnopqrstuvwqxy";
 char** data;
 
-void createRandomData(char** data, int charsLen);
-void* threadMethod();
+static void createRandomData(char** data, int charsLen);
+static void* threadMethod();
 
 int main(void) {
 	pthread_t threads[NUM_THRDS];
@@ -40,9 +41,7 @@ int main(void) {
 
 	gettimeofday(&tv1, NULL);
 
-	if (access("logFile.txt", F_OK) != -1) {
-		remove("logFile.txt");
-	}
+	remove("logFile.txt");
 
 	charsLen = strlen(chars);
 
@@ -61,6 +60,8 @@ int main(void) {
 
 		terminateLogger();
 
+		free(data);
+
 		printf("Direct writes = %llu\n", cnt);
 		gettimeofday(&tv2, NULL);
 		printf("Total time = %f seconds\n",
@@ -71,7 +72,7 @@ int main(void) {
 	return res;
 }
 
-void createRandomData(char** data, int charsLen) {
+static void createRandomData(char** data, int charsLen) {
 	int i;
 	for (i = 0; i < NUM_THRDS; ++i) {
 		int j;
@@ -82,14 +83,14 @@ void createRandomData(char** data, int charsLen) {
 	}
 }
 
-void* threadMethod(void* data) {
+static void* threadMethod(void* data) {
 	char* logData = data;
 
 	registerThread();
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-//		unregisterThread();
+		unregisterThread();
 	}
 
 	unregisterThread();
