@@ -41,6 +41,8 @@ static int createNodeAndCheckData() {
 		return UT_STATUS_FAILURE;
 	}
 
+	free(node);
+
 	return UT_STATUS_SUCCESS;
 }
 
@@ -65,6 +67,9 @@ static int createTwoNodeAndCheckData() {
 		PRINT_FAILURE;
 		return UT_STATUS_FAILURE;
 	}
+
+	free(node1);
+	free(node2);
 
 	return UT_STATUS_SUCCESS;
 }

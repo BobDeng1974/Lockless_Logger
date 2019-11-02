@@ -21,17 +21,19 @@ typedef struct ringBuffer {
 	atomic_int lastWrite;
 	int bufSize;
 	int lenToBufEnd;
+	int safetyLen;
 	char* buf;
 } ringBuffer;
 
 static inline bool isSequentialOverwrite(const int lastRead,
-                                         const int lastWrite, const int msgLen);
+                                         const int lastWrite, const int safetyLen);
 static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd);
 static int writeSeq(ringBuffer* rb, void* data, const int (*formatMethod)());
 static int checkWriteWrap(ringBuffer* rb, const int safetyLen, void* data,
                           const int (*formatMethod)());
-static void initRingBuffer(struct ringBuffer* rb, int privateBuffSize);
+static void initRingBuffer(struct ringBuffer* rb, int privateBuffSize,
+                           const int safetyLen);
 static bool isNextWriteOverwrite(struct ringBuffer* rb, const int safetyLen);
 static int writeSeqOrWrap(struct ringBuffer* rb, const int safetyLen,
                           void* data, const int (*formatMethod)());
@@ -43,35 +45,33 @@ static int copySeq(ringBuffer* rb, char* locBuf, int msgLen);
 static int writeWrap(ringBuffer* rb, char* locBuf, int msgLen, int lenToBufEnd);
 
 /* API method - Description located at .h file */
-ringBuffer* newRingBuffer(int privateBuffSize) {
+ringBuffer* newRingBuffer(const int privateBuffSize, const int safetyLen) {
 	ringBuffer* rb;
 
 	//TODO: think if malloc failures need to be handled
 	rb = malloc(sizeof(ringBuffer));
-	initRingBuffer(rb, privateBuffSize);
+	initRingBuffer(rb, privateBuffSize, safetyLen);
 
 	return rb;
 }
 
-/* API method - Description located at .h file */
-inline void deleteRingBuffer(ringBuffer* rb) {
-	free(rb->buf);
-	free(rb);
-}
-
 /* Initialize given privateBufferData struct */
-static void initRingBuffer(ringBuffer* rb, int privateBuffSize) {
+static void initRingBuffer(ringBuffer* rb, const int privateBuffSize,
+                           const int safetyLen) {
 	rb->bufSize = privateBuffSize;
 	//TODO: think if malloc failures need to be handled
 	rb->buf = malloc(privateBuffSize);
 
 	rb->lastWrite = 1; // Advance to 1, as an empty buffer is defined by having a difference of 1 between
 	                   // lastWrite and lastRead
+	rb->safetyLen = safetyLen;
 }
 
 /* API method - Description located at .h file */
-int writeToRingBuffer(ringBuffer* rb, const int safetyLen, void* data,
-                      const int (*formatMethod)()) {
+int writeToRingBuffer(ringBuffer* rb, void* data, const int (*formatMethod)()) {
+	int safetyLen;
+
+	safetyLen = rb->safetyLen;
 
 	if (false == isNextWriteOverwrite(rb, safetyLen)) {
 		int newLastWrite;
@@ -102,15 +102,15 @@ static bool isNextWriteOverwrite(ringBuffer* rb, const int safetyLen) {
 
 /* Check for sequential data override */
 static inline bool isSequentialOverwrite(const int lastRead,
-                                         const int lastWrite, const int msgLen) {
-	return (lastWrite < lastRead && ((lastWrite + msgLen) >= lastRead));
+                                         const int lastWrite, const int safetyLen) {
+	return (lastWrite < lastRead && ((lastWrite + safetyLen) >= lastRead));
 }
 
 /* Check for wrap-around data override */
-static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
+static inline bool isWrapAroundOverwrite(const int lastRead, const int safetyLen,
                                          const int lenToBufEnd) {
-	if (msgLen > lenToBufEnd) {
-		int bytesRemaining = msgLen - lenToBufEnd;
+	if (safetyLen > lenToBufEnd) {
+		int bytesRemaining = safetyLen - lenToBufEnd;
 		return bytesRemaining >= lastRead;
 	}
 
@@ -243,4 +243,10 @@ static void drainWrap(ringBuffer* rb, const int file, int lastRead,
 		/* Atomic store lastRead, as it's read by a different thread */
 		__atomic_store_n(&rb->lastRead, newLastRead, __ATOMIC_SEQ_CST);
 	}
+}
+
+/* API method - Description located at .h file */
+inline void deleteRingBuffer(ringBuffer* rb) {
+	free(rb->buf);
+	free(rb);
 }

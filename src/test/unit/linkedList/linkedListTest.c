@@ -10,10 +10,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "linkedListTest.h"
 #include "../../unit/unitTests.h"
 #include "../../../core/common/ringBufferList/linkedList/linkedList.h"
-#include "linkedListTest.h"
-
 #include "../../testsCommon.h"
 
 inline static bool compareMethod(const struct LinkedListNode* node,
@@ -45,6 +44,8 @@ static int createListAndCheckData() {
 		return UT_STATUS_FAILURE;
 	}
 
+	free(ll);
+
 	return UT_STATUS_SUCCESS;
 }
 
@@ -74,6 +75,9 @@ static int addNodeToListAndCheckData() {
 		return UT_STATUS_FAILURE;
 	}
 
+	free(node1);
+	free(ll);
+
 	return UT_STATUS_SUCCESS;
 }
 
@@ -98,6 +102,9 @@ static int removeHeadMatchindNode() {
 		PRINT_FAILURE;
 		return UT_STATUS_FAILURE;
 	}
+
+	free(node1);
+	free(ll);
 
 	return UT_STATUS_SUCCESS;
 }
@@ -129,6 +136,10 @@ static int removeArbitraryMatchindNode() {
 		PRINT_FAILURE;
 		return UT_STATUS_FAILURE;
 	}
+
+	free(node2);
+	free(node1);
+	free(ll);
 
 	return UT_STATUS_SUCCESS;
 }

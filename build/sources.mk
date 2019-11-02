@@ -21,5 +21,6 @@ src/core/logger \
 src/test/logger \
 src/test/unit/linkedList \
 src/test/unit/node \
+src/test/unit/ringBuffer \
 src/test/unit \
 

@@ -136,7 +136,7 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 		struct ringBuffer* rb;
 		struct LinkedListNode* node;
 
-		rb = newRingBuffer(privateBuffSize);
+		rb = newRingBuffer(privateBuffSize, MAX_MSG_LEN);
 
 		node = newLinkedListNode(rb);
 		addNode(privateBuffers, node); // This list will hold pointers to *all* allocated buffers.
@@ -150,7 +150,7 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 
 /* Initialize shared buffer data parameters */
 static void initsharedBuffer(const int sharedBufferSize) {
-	sharedBuffer = newRingBuffer(sharedBufferSize);
+	sharedBuffer = newRingBuffer(sharedBufferSize, MAX_MSG_LEN);
 }
 
 /* Create log file */
@@ -356,7 +356,7 @@ static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo) {
 	int res;
 
 	msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
-	res = writeToRingBuffer(rb, MAX_MSG_LEN, msgInfo, writeInFormat);
+	res = writeToRingBuffer(rb, msgInfo, writeInFormat);
 
 	return (RB_STATUS_SUCCESS == res) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
@@ -369,8 +369,7 @@ static int writeTosharedBuffer(messageInfo* msgInfo) {
 
 	pthread_mutex_lock(&sharedBufferlock); /* Lock */
 	{
-		res = writeToRingBuffer(sharedBuffer, MAX_MSG_LEN, msgInfo,
-		                        writeInFormat);
+		res = writeToRingBuffer(sharedBuffer, msgInfo, writeInFormat);
 	}
 	pthread_mutex_unlock(&sharedBufferlock); /* Unlock */
 

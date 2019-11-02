@@ -8,11 +8,15 @@
  */
 
 #include "unitTests.h"
+#include "node/nodeTest.h"
+#include "linkedList/linkedListTest.h"
+#include "ringBuffer/ringBufferTest.h"
 
 /* API method - Description located at .h file */
 int runUnitTests() {
 	if ((UT_STATUS_SUCCESS != runNodeTests())
-	        || (UT_STATUS_SUCCESS != runListTests())) {
+	        || (UT_STATUS_SUCCESS != runListTests())
+	        || (UT_STATUS_SUCCESS != runRingBufferTests())) {
 		return UT_STATUS_FAILURE;
 	}
 	return UT_STATUS_SUCCESS;

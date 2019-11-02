@@ -10,9 +10,6 @@
 #ifndef UNITTESTS_H_
 #define UNITTESTS_H_
 
-#include "node/nodeTest.h"
-#include "linkedList/linkedListTest.h"
-
 enum unitTestStatusCodes {
 	UT_STATUS_FAILURE = -1, UT_STATUS_SUCCESS
 };
