@@ -19,6 +19,7 @@ src/core/common/ringBufferList/ringBuffer \
 src/core/common/ringBufferList \
 src/core/logger \
 src/test/logger \
+src/test/unit/linkedList \
 src/test/unit/node \
 src/test/unit \
 

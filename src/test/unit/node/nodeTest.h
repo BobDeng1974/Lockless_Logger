@@ -1,13 +1,16 @@
 /*
- * nodeTest.h
- *
- *  Created on: Nov 1, 2019
- *      Author: root
+ ============================================================================
+ Name        : nodeTest.h
+ Author      : Barak Sason Rofman
+ Copyright   : TODO: update
+ Description : This module contains tests for the node submodule
+ ============================================================================
  */
 
 #ifndef NODETEST_H_
 #define NODETEST_H_
 
+/* Run unit tests for the node submodule */
 int runNodeTests();
 
-#endif /* TEST_UNIT_NODE_NODETEST_H_ */
+#endif /* NODETEST_H_ */

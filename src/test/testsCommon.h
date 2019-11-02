@@ -1,8 +1,10 @@
 /*
- * testsCommon.h
- *
- *  Created on: Nov 1, 2019
- *      Author: root
+ ============================================================================
+ Name        : testsCommon.c
+ Author      : Barak Sason Rofman
+ Copyright   : TODO: update
+ Description : This module provides common functionality for all tests
+ ============================================================================
  */
 
 #ifndef TESTSCOMMON_H_

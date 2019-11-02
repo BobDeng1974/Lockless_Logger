@@ -1,8 +1,10 @@
 /*
- * nodeTest.c
- *
- *  Created on: Nov 1, 2019
- *      Author: root
+ ============================================================================
+ Name        : nodeTest.c
+ Author      : Barak Sason Rofman
+ Copyright   : TODO: update
+ Description : This module contains tests for the node submodule
+ ============================================================================
  */
 
 #include <stdlib.h>
@@ -15,14 +17,17 @@
 static int createNodeAndCheckData();
 static int createTwoNodeAndCheckData();
 
+/* API method - Description located at .h file */
 int runNodeTests() {
-	if (UT_STATUS_FAILURE == createNodeAndCheckData()
-	        || UT_STATUS_FAILURE == createTwoNodeAndCheckData()) {
+	if ((UT_STATUS_FAILURE == createNodeAndCheckData())
+	        || (UT_STATUS_FAILURE == createTwoNodeAndCheckData())) {
 		return UT_STATUS_FAILURE;
 	}
 	return UT_STATUS_SUCCESS;
 }
 
+/* Create a node with data and verify getNext() and getData() APIs on
+ * that node */
 static int createNodeAndCheckData() {
 	int data;
 	struct LinkedListNode* node;
@@ -39,6 +44,8 @@ static int createNodeAndCheckData() {
 	return UT_STATUS_SUCCESS;
 }
 
+/* Create 2 nodes with data and verify getNext() and getData() APIs on
+ * those nodes, in respect for each other */
 static int createTwoNodeAndCheckData() {
 	int data1;
 	int data2;

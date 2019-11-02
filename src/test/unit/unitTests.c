@@ -1,14 +1,18 @@
 /*
- * unitTests.c
- *
- *  Created on: Nov 1, 2019
- *      Author: root
+ ============================================================================
+ Name        : unitTests.c
+ Author      : Barak Sason Rofman
+ Copyright   : TODO: update
+ Description : This module run all unit tests of all submodules
+ ============================================================================
  */
 
 #include "unitTests.h"
 
+/* API method - Description located at .h file */
 int runUnitTests() {
-	if (UT_STATUS_SUCCESS != runNodeTests()) {
+	if ((UT_STATUS_SUCCESS != runNodeTests())
+	        || (UT_STATUS_SUCCESS != runListTests())) {
 		return UT_STATUS_FAILURE;
 	}
 	return UT_STATUS_SUCCESS;
