@@ -18,9 +18,10 @@
 #include <errno.h>
 
 #include "../../core/api/logger.h"
+#include "../unit/unitTests.h"
 
-#define ITERATIONS 10000
-#define NUM_THRDS 500
+#define ITERATIONS 100
+#define NUM_THRDS 50
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000
@@ -41,32 +42,35 @@ int main(void) {
 
 	gettimeofday(&tv1, NULL);
 
-	remove("logFile.txt");
+	res = runUnitTests();
+	if (UT_STATUS_SUCCESS == res) {
+		remove("logFile.txt");
 
-	charsLen = strlen(chars);
+		charsLen = strlen(chars);
 
-	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
-	if (LOG_STATUS_SUCCESS == res) {
-		data = malloc(NUM_THRDS * sizeof(char*));
-		createRandomData(data, charsLen);
+		res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
+		if (LOG_STATUS_SUCCESS == res) {
+			data = malloc(NUM_THRDS * sizeof(char*));
+			createRandomData(data, charsLen);
 
-		for (i = 0; i < NUM_THRDS; ++i) {
-			pthread_create(&threads[i], NULL, threadMethod, data[i]);
+			for (i = 0; i < NUM_THRDS; ++i) {
+				pthread_create(&threads[i], NULL, threadMethod, data[i]);
+			}
+
+			for (i = 0; i < NUM_THRDS; ++i) {
+				pthread_join(threads[i], NULL);
+			}
+
+			terminateLogger();
+
+			free(data);
+
+			printf("Direct writes = %llu\n", cnt);
+			gettimeofday(&tv2, NULL);
+			printf("Total time = %f seconds\n",
+			       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000
+			               + (double) (tv2.tv_sec - tv1.tv_sec));
 		}
-
-		for (i = 0; i < NUM_THRDS; ++i) {
-			pthread_join(threads[i], NULL);
-		}
-
-		terminateLogger();
-
-		free(data);
-
-		printf("Direct writes = %llu\n", cnt);
-		gettimeofday(&tv2, NULL);
-		printf("Total time = %f seconds\n",
-		       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000
-		               + (double) (tv2.tv_sec - tv1.tv_sec));
 	}
 
 	return res;

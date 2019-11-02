@@ -146,18 +146,18 @@ static int writeSeq(ringBuffer* rb, void* data, const int (*formatMethod)()) {
 	return lastWrite + msgLen;
 }
 
-/* Space at the end of the buffer is insufficient - write what is possible to
- * the end of the buffer, the rest write at the beginning of the buffer */
+/* Space at the end of the buffer might be insufficient - calculate the length of the
+ * message and based on the length decide whether to use sequential or wrap-around method */
 static int checkWriteWrap(ringBuffer* rb, const int safetyLen, void* data,
                           const int (*formatMethod)()) {
 	int msgLen;
 	int lenToBufEnd;
-	char locBuf[safetyLen]; // local buffer is used as in the case of wrap-around write, writing is split to 2
-	                        // portions - write whatever possible at the end of the buffer and the rest write in
-	                        // the beginning. Since we don't know in advance the real length of the message we can't
-	                        // assume there is enough space at the end, therefore a temporary, long enough buffer is
-	                        // required into which data will be written sequentially and then copied back to the
-	                        // original buffer, either in sequential of wrap-around manner
+	char locBuf[safetyLen]; // local buffer is used since we don't know in advance the
+	                        // real length of the message we can't assume there is enough
+	                        // space at the end, therefore a temporary, long enough buffer
+	                        // is required into which data will be written sequentially
+	                        // and then copied back to the original buffer, either in
+	                        // sequential of wrap-around manner
 	msgLen = formatMethod(locBuf, data);
 	lenToBufEnd = rb->lenToBufEnd;
 

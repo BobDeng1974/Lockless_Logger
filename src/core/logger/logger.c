@@ -262,8 +262,8 @@ static void freeResources() {
 }
 
 /* API method - Description located at .h file */
-int logMessage(const int loggingLevel, char* file, const int line,
-               const char* func, const char* msg, ...) {
+int logMessage(const int loggingLevel, char* file, const char* func,
+               const int line, const char* msg, ...) {
 	bool isTerminateLoc;
 	int writeToPrivateBufferRes;
 	int loggingLevelLoc;
@@ -418,13 +418,13 @@ static int writeInFormat(char* buf, void* data) {
 
 	msgLen =
 	        sprintf(buf,
-	                "[mid: %x:%.5x] [ll: %c] [lm: %s] [tid: %.8x] [loc: %s:%d:%s] [msg: %s]\n",
+	                "[mid: %x:%.5x] [ll: %c] [lm: %s] [tid: %.8x] [loc: %s:%s:%d] [msg: %s]\n",
 	                (unsigned int) msgInfo->tv.tv_sec,
 	                (unsigned int) msgInfo->tv.tv_usec,
 	                logLevelsIds[msgInfo->logLevel],
 	                logMethods[msgInfo->loggingMethod],
-	                (unsigned int) msgInfo->tid, msgInfo->file, msgInfo->line,
-	                msgInfo->func, msgInfo->argsBuf);
+	                (unsigned int) msgInfo->tid, msgInfo->file, msgInfo->func,
+	                msgInfo->line, msgInfo->argsBuf);
 
 	return msgLen;
 }
