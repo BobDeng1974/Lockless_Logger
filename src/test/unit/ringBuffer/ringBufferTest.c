@@ -45,13 +45,13 @@ static int writeInFormat(char* buf, void* data) {
 /* Write sequentially to file, without overwrite and read data written
  * to verify */
 static int writeSeqNoOverwrite() {
-	struct ringBuffer* rb;
+	struct ringBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
-	char* fileName;
+	char* fileName = NULL;
 	int safetyLen;
 	char* msg;
-	char* tmpBuf;
+	char* tmpBuf = NULL;
 	int byetsRead;
 	int msgLen;
 	int res;
@@ -99,14 +99,14 @@ static int writeSeqNoOverwrite() {
 /* Write sequentially and then in a wrap-around manner to file, without overwrite and
  * read data written to verify */
 static int writeWrapNoOverwriteCopySeq() {
-	struct ringBuffer* rb;
+	struct ringBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
-	char* fileName;
+	char* fileName = NULL;
 	int safetyLen;
 	char* msg;
 	char* shortMsg;
-	char* tmpBuf;
+	char* tmpBuf = NULL;
 	int byetsRead;
 	int msgLen;
 	int shortMsgLen;
@@ -173,13 +173,13 @@ static int writeWrapNoOverwriteCopySeq() {
 /* Write sequentially and then in a wrap-around manner to file, without overwrite and
  * read data written to verify */
 static int writeWrapNoOverwriteCopyWrap() {
-	struct ringBuffer* rb;
+	struct ringBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
-	char* fileName;
+	char* fileName = NULL;
 	int safetyLen;
 	char* msg;
-	char* tmpBuf;
+	char* tmpBuf = NULL;
 	int byetsRead;
 	int msgLen;
 	int res;
@@ -243,13 +243,13 @@ static int writeWrapNoOverwriteCopyWrap() {
 /* Write to buffer sequentially and then in wrap-around manner (cause potential wrap-around
  * overwrite) and check handling, drain buffer to file and verify data */
 static int wrapOverwrite() {
-	struct ringBuffer* rb;
+	struct ringBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
-	char* fileName;
+	char* fileName = NULL;
 	int safetyLen;
 	char* msg;
-	char* tmpBuf;
+	char* tmpBuf = NULL;
 	int byetsRead;
 	int msgLen;
 	int res;
@@ -312,13 +312,13 @@ static int wrapOverwrite() {
  * overwrite) and check handling, drain buffer to file , perform another write and
  * verify data */
 static int writeAfterWrapOverwrite() {
-	struct ringBuffer* rb;
+	struct ringBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
-	char* fileName;
+	char* fileName = NULL;
 	int safetyLen;
 	char* msg;
-	char* tmpBuf;
+	char* tmpBuf = NULL;
 	int byetsRead;
 	int msgLen;
 	int res;
@@ -397,13 +397,13 @@ static int writeAfterWrapOverwrite() {
  * overwrite) and check handling, drain buffer to file , perform another write and then
  * another write (cause potential sequential overwrite) and verify data */
 static int sqeOverwrite() {
-	struct ringBuffer* rb;
+	struct ringBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
-	char* fileName;
+	char* fileName = NULL;
 	int safetyLen;
 	char* msg;
-	char* tmpBuf;
+	char* tmpBuf = NULL;
 	int byetsRead;
 	int msgLen;
 	int res;

@@ -35,86 +35,97 @@ int runListTests() {
 
 /* Create an empty list and verify that head is NULL */
 static int createListAndCheckData() {
-	struct LinkedList* ll;
+	int res;
+	struct LinkedList* ll = NULL;
 
 	ll = newLinkedList(compareMethod);
 
 	if (NULL != getHead(ll)) {
 		PRINT_FAILURE;
-		return UT_STATUS_FAILURE;
+		res = UT_STATUS_FAILURE;
+		goto Exit;
 	}
 
-	free(ll);
+	res = UT_STATUS_SUCCESS;
 
-	return UT_STATUS_SUCCESS;
+	Exit: free(ll);
+
+	return res;
 }
 
 /* Create a list, add a node with data, verify getHead() API,
  * verify removeHead() API */
 static int addNodeToListAndCheckData() {
-	struct LinkedList* ll;
-	struct LinkedListNode* node1;
+	int res;
+	struct LinkedList* ll = NULL;
+	struct LinkedListNode* node1 = NULL;
 	struct LinkedListNode* node2;
 
 	ll = newLinkedList(compareMethod);
-
 	node1 = newLinkedListNode(NULL);
-
 	addNode(ll, node1);
 
 	node2 = getHead(ll);
 
 	if (node1 != node2) {
 		PRINT_FAILURE;
-		return UT_STATUS_FAILURE;
+		res = UT_STATUS_FAILURE;
+		goto Exit;
 	}
 
 	node2 = removeHead(ll);
+
 	if ((node1 != node2) || NULL != getHead(ll)) {
 		PRINT_FAILURE;
-		return UT_STATUS_FAILURE;
+		res = UT_STATUS_FAILURE;
+		goto Exit;
 	}
 
-	free(node1);
+	res = UT_STATUS_SUCCESS;
+
+	Exit: free(node1);
 	free(ll);
 
-	return UT_STATUS_SUCCESS;
+	return res;
 }
 
 /* Create a list, add a node with data, verify removeNode() API in the case
  * that the matching node is head node */
 static int removeHeadMatchindNode() {
-	struct LinkedList* ll;
-	struct LinkedListNode* node1;
+	int res;
+	struct LinkedList* ll = NULL;
+	struct LinkedListNode* node1 = NULL;
 	struct LinkedListNode* node2;
 	int data1;
 
 	ll = newLinkedList(compareMethod);
 	data1 = 42;
-
 	node1 = newLinkedListNode(&data1);
-
 	addNode(ll, node1);
 
 	node2 = removeNode(ll, &data1);
 
 	if (node1 != node2) {
 		PRINT_FAILURE;
-		return UT_STATUS_FAILURE;
+		res = UT_STATUS_FAILURE;
+		goto Exit;
 	}
 
-	free(node1);
+	res = UT_STATUS_SUCCESS;
+
+	Exit: free(node1);
 	free(ll);
 
-	return UT_STATUS_SUCCESS;
+	return res;
 }
 
 /* Create a list, add a node with data, verify removeNode() API in the case
  * that the matching node is an arbitrary node */
 static int removeArbitraryMatchindNode() {
-	struct LinkedList* ll;
-	struct LinkedListNode* node1;
-	struct LinkedListNode* node2;
+	int res;
+	struct LinkedList* ll = NULL;
+	struct LinkedListNode* node1 = NULL;
+	struct LinkedListNode* node2 = NULL;
 	struct LinkedListNode* node3;
 	int data1;
 	int data2;
@@ -134,14 +145,17 @@ static int removeArbitraryMatchindNode() {
 
 	if (node2 != node3) {
 		PRINT_FAILURE;
-		return UT_STATUS_FAILURE;
+		res = UT_STATUS_FAILURE;
+		goto Exit;
 	}
 
-	free(node2);
+	res = UT_STATUS_SUCCESS;
+
+	Exit: free(node2);
 	free(node1);
 	free(ll);
 
-	return UT_STATUS_SUCCESS;
+	return res;
 }
 
 /* Returns true if the the node 'node' contains data 'data' or false otherwise */

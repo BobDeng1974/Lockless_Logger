@@ -51,8 +51,9 @@ static int createNodeAndCheckData() {
 static int createTwoNodeAndCheckData() {
 	int data1;
 	int data2;
-	struct LinkedListNode* node1;
-	struct LinkedListNode* node2;
+	int res;
+	struct LinkedListNode* node1 = NULL;
+	struct LinkedListNode* node2 = NULL;
 
 	data1 = 42;
 	data2 = -42;
@@ -65,11 +66,14 @@ static int createTwoNodeAndCheckData() {
 	if (node2 != getNext(node1) || (data1 != *((int*) getData(node1)))
 	        || (data2 != *((int*) (getData(getNext(node1)))))) {
 		PRINT_FAILURE;
-		return UT_STATUS_FAILURE;
+		res = UT_STATUS_FAILURE;
+		goto Exit;
 	}
 
-	free(node1);
+	res = UT_STATUS_SUCCESS;
+
+	Exit: free(node1);
 	free(node2);
 
-	return UT_STATUS_SUCCESS;
+	return res;
 }
