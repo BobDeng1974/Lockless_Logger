@@ -15,6 +15,7 @@
 #include <stdbool.h>
 
 #include "linkedList/linkedList.h"
+#include "ringBuffer/ringBuffer.h"
 
 /* Allocates new list using a specific comparison method and reset it's values */
 struct LinkedList* newRingBufferList();

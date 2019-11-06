@@ -82,7 +82,7 @@ static int writeTosharedBuffer(messageInfo* msgInfo);
 static void drainPrivateBuffers();
 static void drainsharedBuffer();
 static void directWriteToFile(messageInfo* msgInfo);
-static int writeInFormat(char* buf, void* data);
+static int writeInFormat(char* buf, const void* data, const int maxMessageLen);
 
 /* Inlining light methods */
 inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
@@ -382,7 +382,7 @@ static void directWriteToFile(messageInfo* msgInfo) {
 	char locBuf[MAX_MSG_LEN];
 
 	msgInfo->loggingMethod = LS_DIRECT_WRITE;
-	msgLen = writeInFormat(locBuf, msgInfo);
+	msgLen = writeInFormat(locBuf, msgInfo, MAX_MSG_LEN);
 
 	fwrite(locBuf, 1, msgLen, logFile);
 }
@@ -396,7 +396,7 @@ static void directWriteToFile(messageInfo* msgInfo) {
  * tid - Thread identifier
  * loc - Location in the format of (file):(line):(method)
  * msg - The message provided for the current log line */
-static int writeInFormat(char* buf, void* data) {
+static int writeInFormat(char* buf, const void* data, const int maxMessageLen) {
 	int msgLen;
 	messageInfo* msgInfo;
 
@@ -416,7 +416,9 @@ static int writeInFormat(char* buf, void* data) {
 	msgInfo = (messageInfo*) data;
 
 	msgLen =
-	        sprintf(buf,
+	        snprintf(
+	                buf,
+	                maxMessageLen,
 	                "[mid: %x:%.5x] [ll: %c] [lm: %s] [tid: %.8x] [loc: %s:%s:%d] [msg: %s]\n",
 	                (unsigned int) msgInfo->tv.tv_sec,
 	                (unsigned int) msgInfo->tv.tv_usec,

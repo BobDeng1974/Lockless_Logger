@@ -3,7 +3,7 @@
  Name        : ringBufferTest.c
  Author      : Barak Sason Rofman
  Copyright   : TODO: update
- Description : This module contains tests for the linked list submodule
+ Description : This module contains tests for the ring buffer submodule
  ============================================================================
  */
 
@@ -49,7 +49,7 @@ static int writeSeqNoOverwrite() {
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
-	int safetyLen;
+	int maxMessageLen;
 	char* msg;
 	char* tmpBuf = NULL;
 	int byetsRead;
@@ -60,12 +60,12 @@ static int writeSeqNoOverwrite() {
 	msg = "This message is 30 chars long!";
 	msgLen = strlen(msg);
 	buffSize = 50;
-	safetyLen = msgLen;
+	maxMessageLen = msgLen;
 	tmpBuf = malloc(buffSize);
 
 	remove(fileName);
 
-	rb = newRingBuffer(buffSize, safetyLen);
+	rb = newRingBuffer(buffSize, maxMessageLen);
 	testFile = open(fileName, O_RDWR | O_CREAT);
 
 	/* This write will be sequential */
@@ -103,7 +103,7 @@ static int writeWrapNoOverwriteCopySeq() {
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
-	int safetyLen;
+	int maxMessageLen;
 	char* msg;
 	char* shortMsg;
 	char* tmpBuf = NULL;
@@ -118,12 +118,12 @@ static int writeWrapNoOverwriteCopySeq() {
 	msgLen = strlen(msg);
 	shortMsgLen = strlen(shortMsg);
 	buffSize = 50;
-	safetyLen = msgLen;
+	maxMessageLen = msgLen;
 	tmpBuf = malloc(buffSize);
 
 	remove(fileName);
 
-	rb = newRingBuffer(buffSize, safetyLen);
+	rb = newRingBuffer(buffSize, maxMessageLen);
 	testFile = open(fileName, O_RDWR | O_CREAT);
 
 	/* This write will be sequential */
@@ -177,7 +177,7 @@ static int writeWrapNoOverwriteCopyWrap() {
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
-	int safetyLen;
+	int maxMessageLen;
 	char* msg;
 	char* tmpBuf = NULL;
 	int byetsRead;
@@ -188,12 +188,12 @@ static int writeWrapNoOverwriteCopyWrap() {
 	msg = "This message is 30 chars long!";
 	msgLen = strlen(msg);
 	buffSize = 50;
-	safetyLen = msgLen;
+	maxMessageLen = msgLen;
 	tmpBuf = malloc(buffSize);
 
 	remove(fileName);
 
-	rb = newRingBuffer(buffSize, safetyLen);
+	rb = newRingBuffer(buffSize, maxMessageLen);
 	testFile = open(fileName, O_RDWR | O_CREAT);
 
 	/* This write will be sequential */
@@ -247,7 +247,7 @@ static int wrapOverwrite() {
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
-	int safetyLen;
+	int maxMessageLen;
 	char* msg;
 	char* tmpBuf = NULL;
 	int byetsRead;
@@ -258,12 +258,12 @@ static int wrapOverwrite() {
 	msg = "This message is 30 chars long!";
 	msgLen = strlen(msg);
 	buffSize = 50;
-	safetyLen = msgLen;
+	maxMessageLen = msgLen;
 	tmpBuf = malloc(buffSize);
 
 	remove(fileName);
 
-	rb = newRingBuffer(buffSize, safetyLen);
+	rb = newRingBuffer(buffSize, maxMessageLen);
 	testFile = open(fileName, O_RDWR | O_CREAT);
 
 	/* This write will be sequential */
@@ -316,7 +316,7 @@ static int writeAfterWrapOverwrite() {
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
-	int safetyLen;
+	int maxMessageLen;
 	char* msg;
 	char* tmpBuf = NULL;
 	int byetsRead;
@@ -327,12 +327,12 @@ static int writeAfterWrapOverwrite() {
 	msg = "This message is 30 chars long!";
 	msgLen = strlen(msg);
 	buffSize = 50;
-	safetyLen = msgLen;
+	maxMessageLen = msgLen;
 	tmpBuf = malloc(buffSize);
 
 	remove(fileName);
 
-	rb = newRingBuffer(buffSize, safetyLen);
+	rb = newRingBuffer(buffSize, maxMessageLen);
 	testFile = open(fileName, O_RDWR | O_CREAT);
 
 	/* This write will be sequential */
@@ -401,7 +401,7 @@ static int sqeOverwrite() {
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
-	int safetyLen;
+	int maxMessageLen;
 	char* msg;
 	char* tmpBuf = NULL;
 	int byetsRead;
@@ -412,12 +412,12 @@ static int sqeOverwrite() {
 	msg = "This message is 30 chars long!";
 	msgLen = strlen(msg);
 	buffSize = 50;
-	safetyLen = msgLen;
+	maxMessageLen = msgLen;
 	tmpBuf = malloc(buffSize);
 
 	remove(fileName);
 
-	rb = newRingBuffer(buffSize, safetyLen);
+	rb = newRingBuffer(buffSize, maxMessageLen);
 	testFile = open(fileName, O_RDWR | O_CREAT);
 
 	/* This write will be sequential */

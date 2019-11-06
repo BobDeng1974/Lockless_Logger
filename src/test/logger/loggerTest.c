@@ -20,8 +20,8 @@
 #include "../../core/api/logger.h"
 #include "../unit/unitTests.h"
 
-#define ITERATIONS 100
-#define NUM_THRDS 50
+#define ITERATIONS 10000
+#define NUM_THRDS 500
 #define BUF_SIZE 75
 
 #define BUFFSIZE 1000000
@@ -40,10 +40,10 @@ int main(void) {
 	int charsLen;
 	struct timeval tv1, tv2;
 
-	gettimeofday(&tv1, NULL);
-
 	res = runUnitTests();
 	if (UT_STATUS_SUCCESS == res) {
+		gettimeofday(&tv1, NULL);
+
 		remove("logFile.txt");
 
 		charsLen = strlen(chars);
@@ -56,6 +56,9 @@ int main(void) {
 			for (i = 0; i < NUM_THRDS; ++i) {
 				pthread_create(&threads[i], NULL, threadMethod, data[i]);
 			}
+
+			sleep(1);
+			setLoggingLevel(LOG_LEVEL_NONE);
 
 			for (i = 0; i < NUM_THRDS; ++i) {
 				pthread_join(threads[i], NULL);

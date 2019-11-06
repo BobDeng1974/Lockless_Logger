@@ -22,14 +22,14 @@ struct ringBuffer;
 
 /* Allocate a new ring buffer and sets it's parameters.
  * 'privateBuffSize' - the size of the inner buffer.
- *  'safetyLen' - a length that is used to check whether or not the next write will
+ *  'maxMessageLen' - a length that is used to check whether or not the next write will
  *  need to wrap-around.
- *  NOTE: 'safetyLen' *MUST* be bigger than the maximum possible message
+ *  NOTE: 'maxMessageLen' *MUST* be bigger than the maximum possible message
  *  length, otherwise a write-out-of-bound will occur.*/
-struct ringBuffer* newRingBuffer(const int privateBuffSize, const int safetyLen);
+struct ringBuffer* newRingBuffer(const int privateBuffSize, const int maxMessageLen);
 
 /* Write 'data' to ring buffer 'rb' in the format created by 'formatMethod' and by using
- * theoretical message len 'safetyLen' */
+ * theoretical message len 'maxMessageLen' */
 int writeToRingBuffer(struct ringBuffer* rb, void* data,
                       const int (*formatMethod)());
 

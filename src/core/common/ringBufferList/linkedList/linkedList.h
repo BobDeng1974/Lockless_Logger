@@ -17,7 +17,9 @@
 
 struct LinkedList;
 
-/* Allocates new list and reset it's values */
+/* Allocates new list and reset it's values
+ * 'comparisonMethod' - a method that returns true if 2 nodes are identical
+ * or false otherwise*/
 struct LinkedList* newLinkedList(bool (*comparisonMethod)());
 
 /* Add a new node 'node' to a ring buffer list 'll' */

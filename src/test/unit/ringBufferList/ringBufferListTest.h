@@ -3,15 +3,15 @@
  Name        : ringBufferTest.h
  Author      : Barak Sason Rofman
  Copyright   : TODO: update
- Description : This module contains tests for the ring buffer submodule
+ Description : This module contains tests for the ring buffer list submodule
  ============================================================================
  */
 
 
-#ifndef RINGBUFFERTEST_H_
-#define RINGBUFFERTEST_H_
+#ifndef RINGBUFFERLISTTEST_H_
+#define RINGBUFFERLISTTEST_H_
 
 /* Run unit tests for the ring buffer submodule */
-int runRingBufferTests();
+int runRingBufferListTests();
 
-#endif /* RINGBUFFERTEST_H_ */
+#endif /* RINGBUFFERLISTTEST_H_ */
