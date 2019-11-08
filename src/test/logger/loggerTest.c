@@ -57,8 +57,8 @@ int main(void) {
 				pthread_create(&threads[i], NULL, threadMethod, data[i]);
 			}
 
-			sleep(1);
-			setLoggingLevel(LOG_LEVEL_NONE);
+//			sleep(1);
+//			setLoggingLevel(LOG_LEVEL_NONE);
 
 			for (i = 0; i < NUM_THRDS; ++i) {
 				pthread_join(threads[i], NULL);

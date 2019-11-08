@@ -4,8 +4,8 @@
  Author      : Barak Sason Rofman
  Copyright   : TODO: update
  Description : This module provides implementation of a ring buffer list.
- 	 	 	   This module is based on the submodules - 'linkedList' and
- 	 	 	   'ringBuffer'
+ This module is based on the submodules - 'linkedList' and
+ 'ringBuffer'
  ============================================================================
  */
 
@@ -16,18 +16,9 @@
 
 #include "ringBuffer/ringBuffer.h"
 
-inline static bool compareMethod(const struct LinkedListNode* node,
-                                 const void* data);
-
 /* API method - Description located at .h file */
 inline struct LinkedList* newRingBufferList() {
-	return newLinkedList(compareMethod);
-}
-
-/* Returns true if the the node 'node' contains data 'data' or false otherwise */
-inline static bool compareMethod(const struct LinkedListNode* node,
-                                 const void* data) {
-	return (getData(node) == data) ? true : false;
+	return newLinkedList();
 }
 
 /* API method - Description located at .h file */

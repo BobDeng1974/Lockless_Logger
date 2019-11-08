@@ -46,7 +46,7 @@ static int compareRingBufferListNodeData() {
 	data1 = 42;
 	node1 = newLinkedListNode(&data1);
 	addNode(ll, node1);
-	node2 = removeNode(ll, &data1);
+	node2 = removeNode(ll, node1);
 
 	if (node1 != node2) {
 		PRINT_FAILURE;

@@ -26,7 +26,8 @@ typedef struct ringBuffer {
 } ringBuffer;
 
 static inline bool isSequentialOverwrite(const int lastRead,
-                                         const int lastWrite, const int maxMessageLen);
+                                         const int lastWrite,
+                                         const int maxMessageLen);
 static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd);
 static int writeSeq(ringBuffer* rb, void* data, const int (*formatMethod)());
@@ -46,11 +47,13 @@ static int writeWrap(ringBuffer* rb, char* locBuf, int msgLen, int lenToBufEnd);
 
 /* API method - Description located at .h file */
 ringBuffer* newRingBuffer(const int privateBuffSize, const int maxMessageLen) {
-	ringBuffer* rb;
+	ringBuffer* rb = NULL;
 
 	//TODO: think if malloc failures need to be handled
 	rb = malloc(sizeof(ringBuffer));
-	initRingBuffer(rb, privateBuffSize, maxMessageLen);
+	if (NULL != rb) {
+		initRingBuffer(rb, privateBuffSize, maxMessageLen);
+	}
 
 	return rb;
 }
@@ -62,6 +65,7 @@ static void initRingBuffer(ringBuffer* rb, const int privateBuffSize,
 	//TODO: think if malloc failures need to be handled
 	rb->buf = malloc(privateBuffSize);
 
+	rb->lastRead = 0;
 	rb->lastWrite = 1; // Advance to 1, as an empty buffer is defined by having a difference of 1 between
 	                   // lastWrite and lastRead
 	rb->maxMessageLen = maxMessageLen;
@@ -102,12 +106,14 @@ static bool isNextWriteOverwrite(ringBuffer* rb, const int maxMessageLen) {
 
 /* Check for sequential data override */
 static inline bool isSequentialOverwrite(const int lastRead,
-                                         const int lastWrite, const int maxMessageLen) {
+                                         const int lastWrite,
+                                         const int maxMessageLen) {
 	return (lastWrite < lastRead && ((lastWrite + maxMessageLen) >= lastRead));
 }
 
 /* Check for wrap-around data override */
-static inline bool isWrapAroundOverwrite(const int lastRead, const int maxMessageLen,
+static inline bool isWrapAroundOverwrite(const int lastRead,
+                                         const int maxMessageLen,
                                          const int lenToBufEnd) {
 	if (maxMessageLen > lenToBufEnd) {
 		int bytesRemaining = maxMessageLen - lenToBufEnd;
@@ -153,11 +159,11 @@ static int checkWriteWrap(ringBuffer* rb, const int maxMessageLen, void* data,
 	int msgLen;
 	int lenToBufEnd;
 	char locBuf[maxMessageLen]; // local buffer is used since we don't know in advance the
-	                        // real length of the message we can't assume there is enough
-	                        // space at the end, therefore a temporary, long enough buffer
-	                        // is required into which data will be written sequentially
-	                        // and then copied back to the original buffer, either in
-	                        // sequential of wrap-around manner
+	// real length of the message we can't assume there is enough
+	// space at the end, therefore a temporary, long enough buffer
+	// is required into which data will be written sequentially
+	// and then copied back to the original buffer, either in
+	// sequential of wrap-around manner
 	msgLen = formatMethod(locBuf, data, maxMessageLen);
 	lenToBufEnd = rb->lenToBufEnd;
 

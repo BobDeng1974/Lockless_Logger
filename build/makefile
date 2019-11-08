@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/test/unit/ringBufferList/subdir.mk
 -include src/test/unit/ringBuffer/subdir.mk
 -include src/test/unit/node/subdir.mk
 -include src/test/unit/linkedList/subdir.mk
@@ -32,19 +33,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: Loggrer
+all: Logger
 
 # Tool invocations
-Loggrer: $(OBJS) $(USER_OBJS)
+Logger: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc -pthread -o "Loggrer" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -pthread -o "Logger" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Loggrer
+	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) Logger
 	-@echo ' '
 
 .PHONY: all clean dependents

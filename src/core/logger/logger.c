@@ -70,7 +70,7 @@ static struct LinkedList* inUsePrivateBuffers; // A list of private buffers curr
 static struct ringBuffer* sharedBuffer;
 static pthread_mutex_t sharedBufferlock;
 
-thread_local struct ringBuffer* tlrb; // Thread Local Private Buffer
+thread_local struct LinkedListNode* rbn; // Ring Buffer Node
 
 static int createLogFile();
 static void* runLogger();
@@ -169,31 +169,39 @@ static int createLogFile() {
 
 /* API method - Description located at .h file */
 int registerThread() {
-	struct LinkedListNode* node;
+	if (NULL != getHead(availablePrivateBuffers)) { // check if it's worth fighting
+	                                                // for the mutex
+		pthread_mutex_lock(&loggerLock); /* Lock */
+		{
+			/* Take a node from the 'available buffers' pool */
+			rbn = removeHead(availablePrivateBuffers);
 
-	/* Take a node from the 'available buffers' pool */
-	node = removeHead(availablePrivateBuffers);
-
-	if (NULL != node) {
-		tlrb = getRingBuffer(node);
-		/* Add this node to the 'inUse' pool without allocating additional space */
-		addNode(inUsePrivateBuffers, node);
+			if (NULL != rbn) {
+				/* Add this node to the 'inUse' pool without allocating additional space */
+				addNode(inUsePrivateBuffers, rbn);
+			}
+		}
+		pthread_mutex_unlock(&loggerLock); /* Unlock */
 	}
 
-	return (NULL != tlrb) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
+	return (NULL != rbn) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
 
 /* API method - Description located at .h file */
 void unregisterThread() {
-	struct LinkedListNode* node;
+	pthread_mutex_lock(&loggerLock); /* Lock */
+	{
+		struct LinkedListNode* node;
 
-	/* Find the note which contains 'rb' and remove it from the 'inUse' pool */
-	node = removeNode(inUsePrivateBuffers, tlrb);
-	if (NULL != node) {
-		/* Return this node to the 'available buffers' pool */
-		addNode(availablePrivateBuffers, node);
-		tlrb = NULL;
+		/* Find the note which contains 'rb' and remove it from the 'inUse' pool */
+		node = removeNode(inUsePrivateBuffers, rbn);
+		if (NULL != node) {
+			/* Return this node to the 'available buffers' pool */
+			addNode(availablePrivateBuffers, node);
+			rbn = NULL;
+		}
 	}
+	pthread_mutex_unlock(&loggerLock); /* Unlock */
 }
 
 /* Logger thread loop */
@@ -302,13 +310,15 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 	 * (unregistered thread) or unable to write in this method, fall to
 	 * next methods */
 	//TODO: still think if write from unregistered worker threads should be allowed
-	if (NULL != tlrb) {
-		writeToPrivateBufferRes = writeToPrivateBuffer(tlrb, &msgInfo);
+	if (NULL != rbn) {
+		writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn),
+		                                               &msgInfo);
 	} else {
 		/* The current thread doesn't have a private buffer - Try to register,
 		 * maybe there's a free spot */
 		if (LOG_STATUS_SUCCESS == registerThread()) {
-			writeToPrivateBufferRes = writeToPrivateBuffer(tlrb, &msgInfo);
+			writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn),
+			                                               &msgInfo);
 		} else {
 			writeToPrivateBufferRes = LOG_STATUS_FAILURE;
 		}

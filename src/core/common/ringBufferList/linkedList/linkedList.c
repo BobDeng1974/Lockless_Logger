@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : abstractList.c
+ Name        : linkedList.c
  Author      : Barak Sason Rofman
  Copyright   : TODO: update
  Description : This module provides a generic linked list
- 	 	 	   implementation and is based on 'linkedListNode' module.
+ implementation and is based on 'linkedListNode' module.
  ============================================================================
  */
 
@@ -16,91 +16,99 @@
 typedef struct LinkedList {
 	struct LinkedListNode* head;
 	struct LinkedListNode* tail;
-	pthread_mutex_t lock;
-	bool (*comparisonMethod)();
 } LinkedList;
 
-/* API method - Description located at .h file */
-LinkedList* newLinkedList(bool (*comparisonMethod)()) {
-	LinkedList* ll;
+static inline void resetList(LinkedList* ll);
 
-	if (NULL != comparisonMethod) {
-		//TODO: think if malloc failures need to be handled
-		ll = calloc(1, sizeof(LinkedList));
-		if (NULL != ll) {
-			pthread_mutex_init(&ll->lock, NULL);
-			ll->comparisonMethod = comparisonMethod;
-			return ll;
-		}
+/* API method - Description located at .h file */
+LinkedList* newLinkedList() {
+	LinkedList* ll = NULL;
+
+	//TODO: think if malloc failures need to be handled
+	ll = malloc(sizeof(LinkedList));
+	if (NULL != ll) {
+		resetList(ll);
 	}
 
-	return NULL;
+	return ll;
+}
+
+/* Reset a given list values */
+static inline void resetList(LinkedList* ll) {
+	ll->head = ll->tail = NULL;
 }
 
 /* API method - Description located at .h file */
 void addNode(LinkedList* ll, struct LinkedListNode* node) {
-	//TODO: think if malloc failures need to be handled
-
-	pthread_mutex_lock(&ll->lock); /* Lock */
-	{
-		if (NULL == ll->head) {
-			ll->head = node;
-		} else {
-			setNext(ll->tail, node);
-		}
-		ll->tail = node;
-		setNext(ll->tail, NULL);
+	if (NULL == ll->head) {
+		ll->head = node;
+	} else {
+		setNext(ll->tail, node);
 	}
-	pthread_mutex_unlock(&ll->lock); /* Unlock */
+	ll->tail = node;
 }
 
 /* API method - Description located at .h file */
 struct LinkedListNode* removeHead(LinkedList* ll) {
 	struct LinkedListNode* node;
+	struct LinkedListNode* nextNode;
 
-	pthread_mutex_lock(&ll->lock); /* Lock */
-	{
-		node = ll->head;
-		if (NULL != node) {
-			/* List contains at least 1 node */
-			ll->head = getNext(node);
-			if (NULL == ll->head) {
-				/* List is empty */
-				ll->tail = NULL;
-			}
+	node = ll->head;
+
+	if (NULL != node) {
+		/* List contains at least 1 node */
+		nextNode = getNext(node);
+		if (NULL == nextNode) {
+			/* List contains just 1 node, after removal it'll be empty */
+			ll->head = ll->tail = NULL;
+		} else {
+			/* List contains multiple nodes */
+			ll->head = nextNode;
+			setNext(node, NULL);
 		}
 	}
-	pthread_mutex_unlock(&ll->lock); /* Unlock */
 
 	return node;
 }
 
 /* API method - Description located at .h file */
-struct LinkedListNode* removeNode(LinkedList* ll, const void* data) {
+struct LinkedListNode* removeNode(LinkedList* ll,
+                                  struct LinkedListNode* nodeToRemove) {
 	struct LinkedListNode* node;
+	struct LinkedListNode* prev = NULL;
 
-	pthread_mutex_lock(&ll->lock); /* Lock */
-	{
-		struct LinkedListNode* prev = NULL;
+	node = ll->head;
 
-		node = ll->head;
-		while (NULL != node) {
-			if (true == ll->comparisonMethod(node, data)) {
-				if (NULL == prev) {
-					/* Matching node is the first node */
+	while (NULL != node) {
+		if (node == nodeToRemove) {
+			if (NULL == prev) {
+				if (NULL == getNext(node)) {
+					/* Matching node is the only node */
 					ll->head = ll->tail = NULL;
-					goto Unlock;
+					break;
+				} else {
+					/* Matching node is the first node */
+					ll->head = getNext(node);
+					setNext(node, NULL);
+					break;
+				}
+			} else {
+				if (NULL == getNext(node)) {
+					/* Matching node is the last node */
+					setNext(prev, NULL);
+					ll->tail = prev;
+					break;
 				} else {
 					/* Matching node is an arbitrary node */
-					setNext(getNext(prev), getNext(node));
-					goto Unlock;
+					setNext(prev, getNext(node));
+					setNext(node, NULL);
+					break;
 				}
 			}
-			prev = node;
-			node = getNext(node);
 		}
+		prev = node;
+		node = getNext(node);
 	}
-	Unlock: pthread_mutex_unlock(&ll->lock); /* Unlock */
 
 	return node;
 }
@@ -108,5 +116,10 @@ struct LinkedListNode* removeNode(LinkedList* ll, const void* data) {
 /* API method - Description located at .h file */
 inline struct LinkedListNode* getHead(const LinkedList* ll) {
 	return ll->head;
+}
+
+/* API method - Description located at .h file */
+inline struct LinkedListNode* getTail(const LinkedList* ll) {
+	return ll->tail;
 }
 

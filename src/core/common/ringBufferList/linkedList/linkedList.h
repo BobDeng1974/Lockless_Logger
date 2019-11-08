@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : abstractList.h
+ Name        : linkedList.h
  Author      : Barak Sason Rofman
  Copyright   : TODO: update
  Description : This module provides a generic linked list
@@ -17,10 +17,8 @@
 
 struct LinkedList;
 
-/* Allocates new list and reset it's values
- * 'comparisonMethod' - a method that returns true if 2 nodes are identical
- * or false otherwise*/
-struct LinkedList* newLinkedList(bool (*comparisonMethod)());
+/* Allocates new list and reset it's values */
+struct LinkedList* newLinkedList();
 
 /* Add a new node 'node' to a ring buffer list 'll' */
 void addNode(struct LinkedList* ll, struct LinkedListNode* node);
@@ -30,10 +28,15 @@ struct LinkedListNode* removeHead(struct LinkedList* ll);
 
 /* Remove the first occurrence of a node containing 'data' from the list 'll',
  * if not found - return NULL */
-struct LinkedListNode* removeNode(struct LinkedList* ll, const void* data);
+struct LinkedListNode* removeNode(struct LinkedList* ll,
+                                  struct LinkedListNode* nodeToRemove);
 
 /* Returns (without removing) the first node in a list (if the list is empty,
  * it'll return NULL) */
 struct LinkedListNode* getHead(const struct LinkedList* ll);
+
+/* Returns (without removing) the last node in a list (if the list is empty,
+ * it'll return NULL) */
+struct LinkedListNode* getTail(const struct LinkedList* ll);
 
 #endif /* LinkedList_H */
