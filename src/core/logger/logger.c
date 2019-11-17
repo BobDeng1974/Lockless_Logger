@@ -27,6 +27,10 @@
 #include <stdarg.h>
 #include <threads.h>
 #include <stdbool.h>
+#include <syscall.h>
+#include <pthread.h>
+#include <stdatomic.h>
+#include <sys/time.h>
 
 #include "../api/logger.h"
 #include "../common/ringBufferList/linkedList/linkedList.h"
@@ -45,7 +49,6 @@ typedef struct messageInfo {
 	char* argsBuf;
 	const char* func;
 	struct timeval tv;
-	pthread_t tid;
 } messageInfo;
 
 /* Defines maximum allowed message length.
@@ -85,15 +88,13 @@ static void directWriteToFile(messageInfo* msgInfo);
 static int writeInFormat(char* buf, const void* data, const int maxMessageLen);
 
 /* Inlining light methods */
-inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
-                                    const char* func, const int line,
-                                    const pthread_t tid, const int loggingLevel,
-                                    char* argsBuf);
+inline static void setMsgInfoValues(messageInfo* msgInfo, char* file, const char* func,
+                                    const int line, const int loggingLevel, char* argsBuf);
 inline static void discardFilenamePrefix(char** file);
 
 /* API method - Description located at .h file */
-int initLogger(const int threadsNum, const int privateBuffSize,
-               const int sharedBuffSize, const int loggingLevel) {
+int initLogger(const int threadsNum, const int privateBuffSize, const int sharedBuffSize,
+               const int loggingLevel) {
 	if (0 > threadsNum || 0 >= privateBuffSize || 0 >= sharedBuffSize
 	        || (loggingLevel < LOG_LEVEL_NONE || loggingLevel > LOG_LEVEL_TRACE)) {
 		return LOG_STATUS_FAILURE;
@@ -270,8 +271,8 @@ static void freeResources() {
 }
 
 /* API method - Description located at .h file */
-int logMessage(const int loggingLevel, char* file, const char* func,
-               const int line, const char* msg, ...) {
+int logMessage(const int loggingLevel, char* file, const char* func, const int line,
+               const char* msg, ...) {
 	bool isTerminateLoc;
 	int writeToPrivateBufferRes;
 	int loggingLevelLoc;
@@ -301,8 +302,7 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 
 	/* Prepare all logging information */
 	discardFilenamePrefix(&file);
-	setMsgInfoValues(&msgInfo, file, func, line, pthread_self(), loggingLevel,
-	                 argsBuf);
+	setMsgInfoValues(&msgInfo, file, func, line, loggingLevel, argsBuf);
 
 	/* Try each level of writing. If a level fails (buffer full), fall back to a
 	 * lower & slower level.
@@ -311,14 +311,12 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 	 * next methods */
 	//TODO: still think if write from unregistered worker threads should be allowed
 	if (NULL != rbn) {
-		writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn),
-		                                               &msgInfo);
+		writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
 	} else {
 		/* The current thread doesn't have a private buffer - Try to register,
 		 * maybe there's a free spot */
 		if (LOG_STATUS_SUCCESS == registerThread()) {
-			writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn),
-			                                               &msgInfo);
+			writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
 		} else {
 			writeToPrivateBufferRes = LOG_STATUS_FAILURE;
 		}
@@ -348,15 +346,12 @@ inline static void discardFilenamePrefix(char** file) {
 }
 
 /* Populate messageInfo struct */
-inline static void setMsgInfoValues(messageInfo* msgInfo, char* file,
-                                    const char* func, const int line,
-                                    const pthread_t tid, const int loggingLevel,
-                                    char* argsBuf) {
+inline static void setMsgInfoValues(messageInfo* msgInfo, char* file, const char* func,
+                                    const int line, const int loggingLevel, char* argsBuf) {
 	gettimeofday(&msgInfo->tv, NULL);
 	msgInfo->file = file;
 	msgInfo->func = func;
 	msgInfo->line = line;
-	msgInfo->tid = tid;
 	msgInfo->logLevel = loggingLevel;
 	msgInfo->argsBuf = argsBuf;
 }
@@ -403,7 +398,7 @@ static void directWriteToFile(messageInfo* msgInfo) {
  * 		 using this information
  * ll  - Logging level
  * lm  - Logging method (private buffer, shared buffer, direct write)
- * tid - Thread identifier
+ * lwp - Thread identifier (LWP)
  * loc - Location in the format of (file):(line):(method)
  * msg - The message provided for the current log line */
 static int writeInFormat(char* buf, const void* data, const int maxMessageLen) {
@@ -425,17 +420,12 @@ static int writeInFormat(char* buf, const void* data, const int maxMessageLen) {
 
 	msgInfo = (messageInfo*) data;
 
-	msgLen =
-	        snprintf(
-	                buf,
-	                maxMessageLen,
-	                "[mid: %x:%.5x] [ll: %c] [lm: %s] [tid: %.8x] [loc: %s:%s:%d] [msg: %s]\n",
-	                (unsigned int) msgInfo->tv.tv_sec,
-	                (unsigned int) msgInfo->tv.tv_usec,
-	                logLevelsIds[msgInfo->logLevel],
-	                logMethods[msgInfo->loggingMethod],
-	                (unsigned int) msgInfo->tid, msgInfo->file, msgInfo->func,
-	                msgInfo->line, msgInfo->argsBuf);
+	msgLen = snprintf(buf, maxMessageLen,
+	                  "[mid: %x:%.5x] [ll: %c] [lm: %s] [lwp: %ld] [loc: %s:%s:%d] [msg: %s]\n",
+	                  (unsigned int) msgInfo->tv.tv_sec, (unsigned int) msgInfo->tv.tv_usec,
+	                  logLevelsIds[msgInfo->logLevel], logMethods[msgInfo->loggingMethod],
+	                  syscall(SYS_gettid), msgInfo->file, msgInfo->func, msgInfo->line,
+	                  msgInfo->argsBuf);
 
 	return msgLen;
 }

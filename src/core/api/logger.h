@@ -23,10 +23,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <pthread.h>
-#include <stdatomic.h>
-#include <sys/time.h>
-
 enum loggerStatusCodes {
 	LOG_STATUS_FAILURE = -1, LOG_STATUS_SUCCESS
 };

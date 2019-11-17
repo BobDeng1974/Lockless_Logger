@@ -17,7 +17,7 @@ C_DEPS += \
 src/core/common/ringBufferList/linkedList/node/%.o: ../src/core/common/ringBufferList/linkedList/node/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross GCC Compiler'
-	gcc -D_POSIX_C_SOURCE -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	musl-gcc -std=c11 -D_POSIX_C_SOURCE -D_GNU_SOURCE -O0 -g3 -Wall -c -fmessage-length=0  -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

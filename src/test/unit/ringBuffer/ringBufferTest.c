@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "ringBufferTest.h"
 #include "../../unit/unitTests.h"
