@@ -97,7 +97,7 @@ static void* threadMethod(void* data) {
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-		unregisterThread();
+//		unregisterThread();
 	}
 
 	unregisterThread();

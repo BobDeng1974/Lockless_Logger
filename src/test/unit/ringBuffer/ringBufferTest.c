@@ -66,7 +66,7 @@ static int writeSeqNoOverwrite() {
 	remove(fileName);
 
 	rb = newRingBuffer(buffSize, maxMessageLen);
-	testFile = open(fileName, O_RDWR | O_CREAT);
+	testFile = open(fileName, O_RDWR | O_CREAT, S_IRWXU);
 
 	/* This write will be sequential */
 	if (RB_STATUS_SUCCESS != writeToRingBuffer(rb, msg, writeInFormat)) {
@@ -78,7 +78,7 @@ static int writeSeqNoOverwrite() {
 	drainBufferToFile(rb, testFile);
 
 	close(testFile);
-	testFile = open(fileName, O_RDWR);
+	testFile = open(fileName, O_RDWR, S_IRWXU);
 
 	byetsRead = read(testFile, tmpBuf, msgLen);
 
@@ -124,7 +124,7 @@ static int writeWrapNoOverwriteCopySeq() {
 	remove(fileName);
 
 	rb = newRingBuffer(buffSize, maxMessageLen);
-	testFile = open(fileName, O_RDWR | O_CREAT);
+	testFile = open(fileName, O_RDWR | O_CREAT, S_IRWXU);
 
 	/* This write will be sequential */
 	if (RB_STATUS_SUCCESS != writeToRingBuffer(rb, msg, writeInFormat)) {
@@ -194,7 +194,7 @@ static int writeWrapNoOverwriteCopyWrap() {
 	remove(fileName);
 
 	rb = newRingBuffer(buffSize, maxMessageLen);
-	testFile = open(fileName, O_RDWR | O_CREAT);
+	testFile = open(fileName, O_RDWR | O_CREAT, S_IRWXU);
 
 	/* This write will be sequential */
 	if (RB_STATUS_SUCCESS != writeToRingBuffer(rb, msg, writeInFormat)) {
@@ -264,7 +264,7 @@ static int wrapOverwrite() {
 	remove(fileName);
 
 	rb = newRingBuffer(buffSize, maxMessageLen);
-	testFile = open(fileName, O_RDWR | O_CREAT);
+	testFile = open(fileName, O_RDWR | O_CREAT, S_IRWXU);
 
 	/* This write will be sequential */
 	if (RB_STATUS_SUCCESS != writeToRingBuffer(rb, msg, writeInFormat)) {
@@ -333,7 +333,7 @@ static int writeAfterWrapOverwrite() {
 	remove(fileName);
 
 	rb = newRingBuffer(buffSize, maxMessageLen);
-	testFile = open(fileName, O_RDWR | O_CREAT);
+	testFile = open(fileName, O_RDWR | O_CREAT, S_IRWXU);
 
 	/* This write will be sequential */
 	if (RB_STATUS_SUCCESS != writeToRingBuffer(rb, msg, writeInFormat)) {
@@ -418,7 +418,7 @@ static int sqeOverwrite() {
 	remove(fileName);
 
 	rb = newRingBuffer(buffSize, maxMessageLen);
-	testFile = open(fileName, O_RDWR | O_CREAT);
+	testFile = open(fileName, O_RDWR | O_CREAT, S_IRWXU);
 
 	/* This write will be sequential */
 	if (RB_STATUS_SUCCESS != writeToRingBuffer(rb, msg, writeInFormat)) {
