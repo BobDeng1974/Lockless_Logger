@@ -68,7 +68,7 @@ static int compareRingBufferListNodeBuffer() {
 	int res;
 	struct LinkedList* ll = NULL;
 	struct LinkedListNode* node = NULL;
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 
 	ll = newRingBufferList();
 	rb = newRingBuffer(8, 4);
@@ -95,8 +95,8 @@ static int deepDeleteRingBufferListTest() {
 	struct LinkedList* ll = NULL;
 	struct LinkedListNode* node1 = NULL;
 	struct LinkedListNode* node2 = NULL;
-	struct ringBuffer* rb1 = NULL;
-	struct ringBuffer* rb2 = NULL;
+	struct RingBuffer* rb1 = NULL;
+	struct RingBuffer* rb2 = NULL;
 
 	ll = newRingBufferList();
 	rb1 = newRingBuffer(8, 4);
@@ -116,8 +116,8 @@ static int shallowDeleteRingBufferListTest() {
 	struct LinkedList* ll = NULL;
 	struct LinkedListNode* node1 = NULL;
 	struct LinkedListNode* node2 = NULL;
-	struct ringBuffer* rb1 = NULL;
-	struct ringBuffer* rb2 = NULL;
+	struct RingBuffer* rb1 = NULL;
+	struct RingBuffer* rb2 = NULL;
 
 	ll = newRingBufferList();
 	rb1 = newRingBuffer(8, 4);

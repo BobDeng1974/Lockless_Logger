@@ -1,23 +1,36 @@
-/*
- ============================================================================
- Name        : logger.c
- Author      : Barak Sason Rofman
- Copyright   : TODO: update
- Description : This module provides an implementation of a logger utility
- which works on 3 levels:
- Level 1 - Lockless writing:
- Lockless writing is achieved by assigning each thread a
- private ring buffer. A worker threads write to that buffer
- and the logger thread drains that buffer into a log file.
- Level 2 - Shared buffer writing:
- In case the private ring buffer is full and not yet drained,
- a worker thread will fall down to writing to a shared buffer
- (which is shared across all workers). This is done in a
- synchronized manner.
- Level 3 - In case the shared buffer is also full and not yet
- drained, a worker thread will fall to the lowest (and slowest)
- form of writing - direct file write.
- ============================================================================
+/****************************************************************************
+ * Copyright (C) [2019] [Barak Sason Rofman]								*
+ *																			*
+ * Licensed under the Apache License, Version 2.0 (the "License");			*
+ * you may not use this file except in compliance with the License.			*
+ * You may obtain a copy of the License at:									*
+ *																			*
+ * http://www.apache.org/licenses/LICENSE-2.0								*
+ *																			*
+ * Unless required by applicable law or agreed to in writing, software		*
+ * distributed under the License is distributed on an "AS IS" BASIS,		*
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.	*
+ * See the License for the specific language governing permissions and		*
+ * limitations under the License.											*
+ ****************************************************************************/
+
+/**
+ * @file logger.c
+ * @author Barak Sason Rofman
+ * @brief This module provides an implementation of a logger utility which works on 3 levels:
+ * Level 1 - Lockless writing:
+ * 			Lockless writing is achieved by assigning each thread a private ring buffer.
+ * 			A worker threads write to that buffer and the logger thread drains that buffer into
+ * 			a log file.
+ * Level 2 - Shared buffer writing:
+ * 			In case the private ring buffer is full and not yet drained, a worker thread will
+ * 			fall down to writing to a shared buffer (which is shared across all workers).
+ * 			This is done in a synchronized manner.
+ * Level 3 - In case the shared buffer is also full and not yet
+ * 			drained, a worker thread will fall to the lowest (and slowest) form of writing - direct
+ * 			file write.
+ * @license Apache License, Version 2.0
+ * @copywrite (C) [2019] [Barak Sason Rofman]
  */
 
 #include <stdio.h>
@@ -41,15 +54,22 @@ enum logSource {
 	LS_PRIVATE_BUFFER, LS_SHARED_BUFFER, LS_DIRECT_WRITE
 };
 
-typedef struct messageInfo {
+typedef struct MessageInfo {
+	/** Line number to log */
 	int line;
+	/** Log level (one of the levels at 'logLevels') */
 	int logLevel;
+	/** Logging method (private buffer, shared buffer or direct write) */
 	int loggingMethod;
+	/** Log file */
 	char* file;
+	/** Additional arguments to log message */
 	char* argsBuf;
+	/** Function name to log */
 	const char* func;
+	/** Time information */
 	struct timeval tv;
-} messageInfo;
+} MessageInfo;
 
 /* Defines maximum allowed message length.
  * This value is primarily used to prevent data overwrite in the ring buffer,
@@ -70,7 +90,7 @@ static pthread_t loggerThread;
 static struct LinkedList* privateBuffers; // A list of all private buffers in the system
 static struct LinkedList* availablePrivateBuffers; ///A list of available private buffers for threads to register to
 static struct LinkedList* inUsePrivateBuffers; // A list of private buffers currently in use by threads
-static struct ringBuffer* sharedBuffer;
+static struct RingBuffer* sharedBuffer;
 static pthread_mutex_t sharedBufferlock;
 
 thread_local struct LinkedListNode* rbn; // Ring Buffer Node
@@ -80,15 +100,15 @@ static void* runLogger();
 static void freeResources();
 static void initsharedBuffer(const int sharedBufferSize);
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize);
-static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo);
-static int writeTosharedBuffer(messageInfo* msgInfo);
+static int writeToPrivateBuffer(struct RingBuffer* rb, MessageInfo* msgInfo);
+static int writeTosharedBuffer(MessageInfo* msgInfo);
 static void drainPrivateBuffers();
 static void drainsharedBuffer();
-static void directWriteToFile(messageInfo* msgInfo);
+static void directWriteToFile(MessageInfo* msgInfo);
 static int writeInFormat(char* buf, const void* data, const int maxMessageLen);
 
 /* Inlining light methods */
-inline static void setMsgInfoValues(messageInfo* msgInfo, char* file, const char* func,
+inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file, const char* func,
                                     const int line, const int loggingLevel, char* argsBuf);
 inline static void discardFilenamePrefix(char** file);
 
@@ -125,7 +145,11 @@ inline void setLoggingLevel(const int loggingLevel) {
 	__atomic_store_n(&logLevel, loggingLevel, __ATOMIC_SEQ_CST);
 }
 
-/* Initialize private buffers parameters */
+/**
+ * Initialize private buffers parameters
+ * @param threadsNum NUmber of buffers
+ * @param privateBuffSize Size of buffers
+ */
 static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) {
 	int i;
 
@@ -134,7 +158,7 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 	inUsePrivateBuffers = newRingBufferList();
 
 	for (i = 0; i < threadsNum; ++i) {
-		struct ringBuffer* rb;
+		struct RingBuffer* rb;
 		struct LinkedListNode* node;
 
 		rb = newRingBuffer(privateBuffSize, MAX_MSG_LEN);
@@ -149,12 +173,18 @@ static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) 
 	}
 }
 
-/* Initialize shared buffer data parameters */
+/**
+ * Initialize shared buffer data parameters
+ * @param sharedBufferSize Size of buffer
+ */
 static void initsharedBuffer(const int sharedBufferSize) {
 	sharedBuffer = newRingBuffer(sharedBufferSize, MAX_MSG_LEN);
 }
 
-/* Create log file */
+/**
+ * Creates a log file
+ * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
+ */
 static int createLogFile() {
 	//TODO: implement rotating log
 	logFile = fopen("logFile.txt", "w");
@@ -206,6 +236,9 @@ void unregisterThread() {
 }
 
 /* Logger thread loop */
+/**
+ * Logger thread loop -At each iteration, go over all the buffers and drain them to the log file
+ */
 static void* runLogger() {
 	bool isTerminateLoc = false;
 
@@ -220,7 +253,9 @@ static void* runLogger() {
 	return NULL;
 }
 
-/* Drain all private buffers assigned to worker threads to the log file */
+/**
+ * Drain all private buffers assigned to worker threads to the log file
+ */
 static void drainPrivateBuffers() {
 	struct LinkedListNode* node;
 
@@ -228,7 +263,7 @@ static void drainPrivateBuffers() {
 	                                // buffers will be temporarily blocked
 
 	while (NULL != node) {
-		struct ringBuffer* rb;
+		struct RingBuffer* rb;
 
 		rb = getRingBuffer(node);
 		drainBufferToFile(rb, fileHandle);
@@ -236,7 +271,9 @@ static void drainPrivateBuffers() {
 	}
 }
 
-/* Drain the buffer which is shared by the worker threads to the log file */
+/**
+ * Drain the buffer which is shared by the worker threads to the log file
+ */
 static void drainsharedBuffer() {
 	pthread_mutex_lock(&sharedBufferlock); /* Lock */
 	{
@@ -252,7 +289,9 @@ void terminateLogger() {
 	freeResources();
 }
 
-/* Release all malloc'ed resources, destroy mutexs and close the open file */
+/**
+ * Release all malloc'ed resources, destroy mutexs and close the open file
+ */
 static void freeResources() {
 	/* Freeing 'privateBuffers' using the 'freeRingBufferList' API takes care of freeing all allocated
 	 * nodes *and ring buffers* so for 'availablePrivateBuffers' there is no need to free ring buffers
@@ -276,7 +315,7 @@ int logMessage(const int loggingLevel, char* file, const char* func, const int l
 	bool isTerminateLoc;
 	int writeToPrivateBufferRes;
 	int loggingLevelLoc;
-	messageInfo msgInfo;
+	MessageInfo msgInfo;
 	va_list arg;
 	char argsBuf[ARGS_LEN];
 
@@ -335,7 +374,10 @@ int logMessage(const int loggingLevel, char* file, const char* func, const int l
 	return LOG_STATUS_SUCCESS;
 }
 
-/* Get only the filename out of the full path */
+/**
+ * Get only the filename out of the full path
+ * @param file The full file name
+ */
 inline static void discardFilenamePrefix(char** file) {
 	char* lastSlash;
 
@@ -345,8 +387,16 @@ inline static void discardFilenamePrefix(char** file) {
 	}
 }
 
-/* Populate messageInfo struct */
-inline static void setMsgInfoValues(messageInfo* msgInfo, char* file, const char* func,
+/**
+ * Populate messageInfo struct
+ * @param msgInfo The struct to be populated
+ * @param file File name that originated the call
+ * @param func Method that originated the call
+ * @param line Line that originated the call
+ * @param loggingLevel Logging level of the message (must be one of the levels at 'logLevels')
+ * @param argsBuf Additional arguments to log message
+ */
+inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file, const char* func,
                                     const int line, const int loggingLevel, char* argsBuf) {
 	gettimeofday(&msgInfo->tv, NULL);
 	msgInfo->file = file;
@@ -356,8 +406,13 @@ inline static void setMsgInfoValues(messageInfo* msgInfo, char* file, const char
 	msgInfo->argsBuf = argsBuf;
 }
 
-/* Add a message from a worker thread to it's private buffer */
-static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo) {
+/**
+ * Add a message from a worker thread to it's private buffer
+ * @param rb The RingBuffer to write to
+ * @param msgInfo The message information
+ * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
+ */
+static int writeToPrivateBuffer(struct RingBuffer* rb, MessageInfo* msgInfo) {
 	int res;
 
 	msgInfo->loggingMethod = LS_PRIVATE_BUFFER;
@@ -366,8 +421,12 @@ static int writeToPrivateBuffer(struct ringBuffer* rb, messageInfo* msgInfo) {
 	return (RB_STATUS_SUCCESS == res) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
 
-/* Add a message from a worker thread to the shared buffer */
-static int writeTosharedBuffer(messageInfo* msgInfo) {
+/**
+ * Add a message from a worker thread to the shared buffer
+ * @param msgInfo The message information
+ * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
+ */
+static int writeTosharedBuffer(MessageInfo* msgInfo) {
 	int res;
 
 	msgInfo->loggingMethod = LS_SHARED_BUFFER;
@@ -381,8 +440,11 @@ static int writeTosharedBuffer(messageInfo* msgInfo) {
 	return (RB_STATUS_SUCCESS == res) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
 
-/* Worker thread directly writes to the log file */
-static void directWriteToFile(messageInfo* msgInfo) {
+/**
+ * Worker thread directly writes to the log file
+ * @param msgInfo The message information
+ */
+static void directWriteToFile(MessageInfo* msgInfo) {
 	int msgLen;
 	char locBuf[MAX_MSG_LEN];
 
@@ -392,7 +454,8 @@ static void directWriteToFile(messageInfo* msgInfo) {
 	fwrite(locBuf, 1, msgLen, logFile);
 }
 
-/* Log a message in a structured format:
+/**
+ * Log a message in a structured format:
  * mid - Message identifier. A time stamp in the format of
  * 		 (seconds):(microseconds). A timestamp in yyyy-mm-dd can later be parsed
  * 		 using this information
@@ -400,10 +463,15 @@ static void directWriteToFile(messageInfo* msgInfo) {
  * lm  - Logging method (private buffer, shared buffer, direct write)
  * lwp - Thread identifier (LWP)
  * loc - Location in the format of (file):(line):(method)
- * msg - The message provided for the current log line */
+ * msg - The message provided for the current log line
+ * @param buf The buffer in which to write to
+ * @param data Data to write
+ * @param maxMessageLen The maximum message length that can be written to the buffer
+ * @return
+ */
 static int writeInFormat(char* buf, const void* data, const int maxMessageLen) {
 	int msgLen;
-	messageInfo* msgInfo;
+	MessageInfo* msgInfo;
 
 	static char logLevelsIds[] = { ' ', /* NONE */
 	                               'M', /* EMERGENCY */
@@ -418,7 +486,7 @@ static int writeInFormat(char* buf, const void* data, const int maxMessageLen) {
 
 	static char* logMethods[] = { "pb", "sb", "dw" };
 
-	msgInfo = (messageInfo*) data;
+	msgInfo = (MessageInfo*) data;
 
 	msgLen = snprintf(buf, maxMessageLen,
 	                  "[mid: %x:%.5x] [ll: %c] [lm: %s] [lwp: %ld] [loc: %s:%s:%d] [msg: %s]\n",

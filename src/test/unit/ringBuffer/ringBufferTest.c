@@ -46,7 +46,7 @@ static int writeInFormat(char* buf, void* data) {
 /* Write sequentially to file, without overwrite and read data written
  * to verify */
 static int writeSeqNoOverwrite() {
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
@@ -100,7 +100,7 @@ static int writeSeqNoOverwrite() {
 /* Write sequentially and then in a wrap-around manner to file, without overwrite and
  * read data written to verify */
 static int writeWrapNoOverwriteCopySeq() {
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
@@ -174,7 +174,7 @@ static int writeWrapNoOverwriteCopySeq() {
 /* Write sequentially and then in a wrap-around manner to file, without overwrite and
  * read data written to verify */
 static int writeWrapNoOverwriteCopyWrap() {
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
@@ -244,7 +244,7 @@ static int writeWrapNoOverwriteCopyWrap() {
 /* Write to buffer sequentially and then in wrap-around manner (cause potential wrap-around
  * overwrite) and check handling, drain buffer to file and verify data */
 static int wrapOverwrite() {
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
@@ -313,7 +313,7 @@ static int wrapOverwrite() {
  * overwrite) and check handling, drain buffer to file , perform another write and
  * verify data */
 static int writeAfterWrapOverwrite() {
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
@@ -398,7 +398,7 @@ static int writeAfterWrapOverwrite() {
  * overwrite) and check handling, drain buffer to file , perform another write and then
  * another write (cause potential sequential overwrite) and verify data */
 static int sqeOverwrite() {
-	struct ringBuffer* rb = NULL;
+	struct RingBuffer* rb = NULL;
 	int buffSize;
 	int testFile;
 	char* fileName = NULL;
