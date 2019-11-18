@@ -1,7 +1,0 @@
-<map id="src/core/logger/logger.c" name="src/core/logger/logger.c">
-<area shape="rect" id="node13" href="$logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="1028,87,1129,114"/>
-<area shape="rect" id="node14" href="$linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="1084,169,1249,211"/>
-<area shape="rect" id="node16" href="$ringBuffer_8h.html" title="This module provides a lockless implementation of a ring buffer for a single produce &#45; single consume..." alt="" coords="1299,169,1464,211"/>
-<area shape="rect" id="node17" href="$ringBufferList_8h.html" title="This module provides implementation of a ring buffer list. This module is based on the submodules &#45; &#39;..." alt="" coords="1204,80,1369,121"/>
-<area shape="rect" id="node15" href="$linkedListNode_8h.html" title="This module provides implementation for node operations in a generic linked list. This module is a su..." alt="" coords="1091,259,1242,285"/>
-</map>
