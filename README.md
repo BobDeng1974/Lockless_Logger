@@ -14,3 +14,6 @@ Level 2 - Shared buffer writing:
 Level 3 - In case the shared buffer is also full and not yet
   	drained, a worker thread will fall to the lowest (and slowest) form of writing - direct
  	file write.
+
+For project documentation visit:
+https://baraksason.github.io/Lockless_Logger/
