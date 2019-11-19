@@ -57,14 +57,14 @@ long long cnt;
  * Initialize all data required by the logger.
  * Note: This method must be called before any other API is used, and it can be
  * called only once
- * @param threadsNum Maximum number of threads that will be able to register
- * @param privateBuffSize Size of private buffers
+ * @param buffersNum Number of threads that will be able to register
+ * @param buffersSize Size of private buffers
  * @param sharedBuffSize Size of shared buffer
  * @param loggingLevel Desired logging level (only messages with lower or equal logging level will
  * be logged, one of the levels at 'logLevels')
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int initLogger(const int threadsNum, const int privateBuffSize, const int sharedBuffSize,
+int initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize,
                const int loggingLevel);
 
 /**

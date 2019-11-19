@@ -17,3 +17,12 @@ Level 3 - In case the shared buffer is also full and not yet
 
 For project documentation visit:
 https://baraksason.github.io/Lockless_Logger/
+
+TODO List:
+- Add a feature that enables to modify number of buffers at runtime
+- Add a feature that enables to modify size of buffers at runtime
+- Create log file naiming mechanism
+- Create rotating log file mechanism
+- Create a parsing utility for the log files
+- Create unit tests for logger API (currently the logger component is only system tested)
+- Add more status codes and return specific code per failure (not just success / failure)

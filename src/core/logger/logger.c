@@ -99,7 +99,7 @@ static int createLogFile();
 static void* runLogger();
 static void freeResources();
 static void initsharedBuffer(const int sharedBufferSize);
-static void initPrivateBuffers(const int threadsNum, const int privateBuffSize);
+static void initPrivateBuffers(const int buffersNum, const int buffersSize);
 static int writeToPrivateBuffer(struct RingBuffer* rb, MessageInfo* msgInfo);
 static int writeTosharedBuffer(MessageInfo* msgInfo);
 static void drainPrivateBuffers();
@@ -111,18 +111,19 @@ static int writeInFormat(char* buf, const void* data, const int maxMessageLen);
 inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file, const char* func,
                                     const int line, const int loggingLevel, char* argsBuf);
 inline static void discardFilenamePrefix(char** file);
+inline static bool isLogCurrentMessage(const int loggingLevel, const char* msg);
 
 /* API method - Description located at .h file */
-int initLogger(const int threadsNum, const int privateBuffSize, const int sharedBuffSize,
+int initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize,
                const int loggingLevel) {
-	if (0 > threadsNum || 0 >= privateBuffSize || 0 >= sharedBuffSize
+	if (0 > buffersNum || 0 >= buffersSize || 0 >= sharedBuffSize
 	        || (loggingLevel < LOG_LEVEL_NONE || loggingLevel > LOG_LEVEL_TRACE)) {
 		return LOG_STATUS_FAILURE;
 	}
 
 	/* Init all logger parameters */
 	//TODO: add an option to dynamically change all of these:
-	initPrivateBuffers(threadsNum, privateBuffSize);
+	initPrivateBuffers(buffersNum, buffersSize);
 	initsharedBuffer(sharedBuffSize);
 	setLoggingLevel(loggingLevel);
 
@@ -150,18 +151,18 @@ inline void setLoggingLevel(const int loggingLevel) {
  * @param threadsNum NUmber of buffers
  * @param privateBuffSize Size of buffers
  */
-static void initPrivateBuffers(const int threadsNum, const int privateBuffSize) {
+static void initPrivateBuffers(const int buffersNum, const int buffersSize) {
 	int i;
 
 	privateBuffers = newRingBufferList();
 	availablePrivateBuffers = newRingBufferList();
 	inUsePrivateBuffers = newRingBufferList();
 
-	for (i = 0; i < threadsNum; ++i) {
+	for (i = 0; i < buffersNum; ++i) {
 		struct RingBuffer* rb;
 		struct LinkedListNode* node;
 
-		rb = newRingBuffer(privateBuffSize, MAX_MSG_LEN);
+		rb = newRingBuffer(buffersSize, MAX_MSG_LEN);
 
 		node = newLinkedListNode(rb);
 		addNode(privateBuffers, node); // This list will hold pointers to *all* allocated buffers.
@@ -312,25 +313,13 @@ static void freeResources() {
 /* API method - Description located at .h file */
 int logMessage(const int loggingLevel, char* file, const char* func, const int line,
                const char* msg, ...) {
-	bool isTerminateLoc;
-	int writeToPrivateBufferRes;
-	int loggingLevelLoc;
+	int writeUsingPrivateBuffer;
 	MessageInfo msgInfo;
 	va_list arg;
 	char argsBuf[ARGS_LEN];
 
-	/* Don't log if trying to log messages with higher level than requested
-	 * of log level was set to LOG_LEVEL_NONE */
-	__atomic_load(&logLevel, &loggingLevelLoc, __ATOMIC_SEQ_CST);
-	if (LOG_LEVEL_NONE == loggingLevelLoc || loggingLevel > loggingLevelLoc) {
-		return LOG_STATUS_FAILURE;
-	}
-
-	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
-	/* Don't log if:
-	 * 1) Logger is terminating
-	 * 2) 'msg' has an invalid value */
-	if (true == isTerminateLoc || NULL == msg) {
+	/* Check if should log current message */
+	if(false == isLogCurrentMessage(loggingLevel, msg)){
 		return LOG_STATUS_FAILURE;
 	}
 
@@ -348,20 +337,21 @@ int logMessage(const int loggingLevel, char* file, const char* func, const int l
 	 * First, try private buffer writing. If private buffer doesn't exist
 	 * (unregistered thread) or unable to write in this method, fall to
 	 * next methods */
-	//TODO: still think if write from unregistered worker threads should be allowed
 	if (NULL != rbn) {
-		writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
+		writeUsingPrivateBuffer = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
 	} else {
 		/* The current thread doesn't have a private buffer - Try to register,
 		 * maybe there's a free spot */
 		if (LOG_STATUS_SUCCESS == registerThread()) {
-			writeToPrivateBufferRes = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
+			/* Registering succeeded - use private buffer to write */
+			writeUsingPrivateBuffer = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
 		} else {
-			writeToPrivateBufferRes = LOG_STATUS_FAILURE;
+			/* Registering failed - probably no available buffers */
+			writeUsingPrivateBuffer = LOG_STATUS_FAILURE;
 		}
 	}
 
-	if (LOG_STATUS_SUCCESS != writeToPrivateBufferRes) {
+	if (LOG_STATUS_SUCCESS != writeUsingPrivateBuffer) {
 		/* Recommended not to get here - Register all threads and/or increase
 		 * private buffers size */
 		if (LOG_STATUS_SUCCESS != writeTosharedBuffer(&msgInfo)) {
@@ -372,6 +362,34 @@ int logMessage(const int loggingLevel, char* file, const char* func, const int l
 	}
 
 	return LOG_STATUS_SUCCESS;
+}
+
+/**
+ * Decide whether to proceed with logging action
+ * @param loggingLevel Logging level of the current message
+ * @param msg The contents of the message
+ * @return True if logging should proceed or false otherwise
+ */
+inline static bool isLogCurrentMessage(const int loggingLevel, const char* msg) {
+	int loggingLevelLoc;
+	bool isTerminateLoc;
+
+	/* Don't log if trying to log messages with higher level than requested
+		* of log level was set to LOG_LEVEL_NONE */
+	__atomic_load(&logLevel, &loggingLevelLoc, __ATOMIC_SEQ_CST);
+	if (LOG_LEVEL_NONE == loggingLevelLoc || loggingLevel > loggingLevelLoc) {
+		return false;
+	}
+
+	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
+	/* Don't log if:
+		* 1) Logger is terminating
+		* 2) 'msg' has an invalid value */
+	if (true == isTerminateLoc || NULL == msg) {
+		return false;
+	}
+
+	return true;
 }
 
 /**

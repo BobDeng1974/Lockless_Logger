@@ -39,7 +39,7 @@ all: Logger
 Logger: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc -pthread -no-pie -o "Logger" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -pthread -o "Logger" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

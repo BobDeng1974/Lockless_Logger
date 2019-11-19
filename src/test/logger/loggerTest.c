@@ -20,12 +20,12 @@
 #include "../../core/api/logger.h"
 #include "../unit/unitTests.h"
 
-#define ITERATIONS 10000
-#define NUM_THRDS 500
+#define ITERATIONS 100
+#define NUM_THRDS 50
 #define BUF_SIZE 78
 
-#define BUFFSIZE 1000000
-#define SHAREDBUFFSIZE 10000000
+#define BUFFSIZE 1000
+#define SHAREDBUFFSIZE 10000
 
 char chars[] = "0123456789abcdefghijklmnopqrstuvwqxy";
 char** data;
