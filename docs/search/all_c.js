@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['tail',['tail',['../structLinkedList.html#a99654acf24a157b9e222c35c78ece1c0',1,'LinkedList']]],
-  ['terminatelogger',['terminateLogger',['../logger_8h.html#a4339ec77ab029db1548580313b9dc605',1,'terminateLogger():&#160;logger.c'],['../logger_8c.html#a4339ec77ab029db1548580313b9dc605',1,'terminateLogger():&#160;logger.c']]],
-  ['tv',['tv',['../structMessageInfo.html#a36018dee948f65e8c301aefc9360f273',1,'MessageInfo']]]
+  ['setlastread',['setLastRead',['../ringBuffer_8c.html#a6a551a1d01988ba2f8df080eee97e0b3',1,'ringBuffer.c']]],
+  ['setlogginglevel',['setLoggingLevel',['../logger_8h.html#a8b26c3643213fb562e2a488bc28b3786',1,'setLoggingLevel(const int loggingLevel):&#160;logger.c'],['../logger_8c.html#a8b26c3643213fb562e2a488bc28b3786',1,'setLoggingLevel(const int loggingLevel):&#160;logger.c']]],
+  ['setmsginfovalues',['setMsgInfoValues',['../logger_8c.html#a1cd532007f79836bf7d5a3c19249c903',1,'logger.c']]],
+  ['setnext',['setNext',['../linkedListNode_8c.html#ab8e37d42bd88330295617c00cb178a10',1,'setNext(LinkedListNode *node, LinkedListNode *nextNode):&#160;linkedListNode.c'],['../linkedListNode_8h.html#a5f425fe771c6a3010d0405fcb3b57e62',1,'setNext(struct LinkedListNode *node, struct LinkedListNode *nextNode):&#160;linkedListNode.c']]],
+  ['shallowdeleteringbufferlist',['shallowDeleteRingBufferList',['../ringBufferList_8c.html#a3c05ab08c3976a7036aef6bd6e08c0b7',1,'shallowDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c'],['../ringBufferList_8h.html#a3c05ab08c3976a7036aef6bd6e08c0b7',1,'shallowDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c']]]
 ];

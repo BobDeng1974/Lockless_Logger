@@ -88,7 +88,7 @@ static FILE* logFile;
 static pthread_mutex_t loggerLock;
 static pthread_t loggerThread;
 static struct LinkedList* privateBuffers; // A list of all private buffers in the system
-static struct LinkedList* availablePrivateBuffers; ///A list of available private buffers for threads to register to
+static struct LinkedList* availablePrivateBuffers; // A list of available private buffers for threads to register to
 static struct LinkedList* inUsePrivateBuffers; // A list of private buffers currently in use by threads
 static struct RingBuffer* sharedBuffer;
 static pthread_mutex_t sharedBufferlock;
@@ -236,7 +236,6 @@ void unregisterThread() {
 	pthread_mutex_unlock(&loggerLock); /* Unlock */
 }
 
-/* Logger thread loop */
 /**
  * Logger thread loop -At each iteration, go over all the buffers and drain them to the log file
  */

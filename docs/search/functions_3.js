@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['initlogger',['initLogger',['../logger_8h.html#a2d48484a943623d3059298588b0aa032',1,'initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize, const int loggingLevel):&#160;logger.c'],['../logger_8c.html#a2d48484a943623d3059298588b0aa032',1,'initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize, const int loggingLevel):&#160;logger.c']]]
+  ['freeresources',['freeResources',['../logger_8c.html#ac9fd7d3256d9c072dda9170df52cfb85',1,'logger.c']]]
 ];
