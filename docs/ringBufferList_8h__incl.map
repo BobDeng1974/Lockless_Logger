@@ -1,5 +1,0 @@
-<map id="src/core/common/ringBufferList/ringBufferList.h" name="src/core/common/ringBufferList/ringBufferList.h">
-<area shape="rect" id="node2" href="$linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="39,95,203,121"/>
-<area shape="rect" id="node5" href="$ringBuffer_8h.html" title="This module provides a lockless implementation of a ring buffer for a single produce &#45; single consume..." alt="" coords="228,95,393,121"/>
-<area shape="rect" id="node4" href="$linkedListNode_8h.html" title="This module provides implementation for node operations in a generic linked list. This module is a su..." alt="" coords="113,169,279,196"/>
-</map>
