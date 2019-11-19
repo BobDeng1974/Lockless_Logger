@@ -1,6 +1,0 @@
-<map id="src/core/common/ringBufferList/ringBuffer/ringBuffer.h" name="src/core/common/ringBufferList/ringBuffer/ringBuffer.h">
-<area shape="rect" id="node2" href="$ringBuffer_8c.html" title="This module provides a lockless implementation of a ring buffer for a single produce &#45; single consume..." alt="" coords="5,95,208,136"/>
-<area shape="rect" id="node3" href="$ringBufferList_8h.html" title="This module provides implementation of a ring buffer list. This module is based on the submodules &#45; &#39;..." alt="" coords="283,95,485,136"/>
-<area shape="rect" id="node4" href="$ringBufferList_8c.html" title="This module provides implementation of a ring buffer list. This module is based on the submodules &#45; &#39;..." alt="" coords="160,184,363,225"/>
-<area shape="rect" id="node5" href="$logger_8c.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="419,191,592,218"/>
-</map>

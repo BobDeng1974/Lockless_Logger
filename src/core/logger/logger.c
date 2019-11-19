@@ -148,8 +148,8 @@ inline void setLoggingLevel(const int loggingLevel) {
 
 /**
  * Initialize private buffers parameters
- * @param threadsNum NUmber of buffers
- * @param privateBuffSize Size of buffers
+ * @param buffersNum NUmber of buffers
+ * @param buffersSize Size of buffers
  */
 static void initPrivateBuffers(const int buffersNum, const int buffersSize) {
 	int i;
