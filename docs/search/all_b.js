@@ -1,6 +1,13 @@
 var searchData=
 [
-  ['setlogginglevel',['setLoggingLevel',['../logger_8h.html#a8b26c3643213fb562e2a488bc28b3786',1,'setLoggingLevel(const int loggingLevel):&#160;logger.c'],['../logger_8c.html#a8b26c3643213fb562e2a488bc28b3786',1,'setLoggingLevel(const int loggingLevel):&#160;logger.c']]],
-  ['setnext',['setNext',['../linkedListNode_8c.html#ab8e37d42bd88330295617c00cb178a10',1,'setNext(LinkedListNode *node, LinkedListNode *nextNode):&#160;linkedListNode.c'],['../linkedListNode_8h.html#a5f425fe771c6a3010d0405fcb3b57e62',1,'setNext(struct LinkedListNode *node, struct LinkedListNode *nextNode):&#160;linkedListNode.c']]],
-  ['shallowdeleteringbufferlist',['shallowDeleteRingBufferList',['../ringBufferList_8c.html#a3c05ab08c3976a7036aef6bd6e08c0b7',1,'shallowDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c'],['../ringBufferList_8h.html#a3c05ab08c3976a7036aef6bd6e08c0b7',1,'shallowDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c']]]
+  ['registerthread',['registerThread',['../logger_8h.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c'],['../logger_8c.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c']]],
+  ['removehead',['removeHead',['../linkedList_8c.html#a0c6ea65430889f30a319aadc9425a543',1,'removeHead(LinkedList *ll):&#160;linkedList.c'],['../linkedList_8h.html#a10f5a1635e471560fae1df79be2f134d',1,'removeHead(struct LinkedList *ll):&#160;linkedList.c']]],
+  ['removenode',['removeNode',['../linkedList_8c.html#a5f1654bda878a9514111e21b82f1f575',1,'removeNode(LinkedList *ll, struct LinkedListNode *nodeToRemove):&#160;linkedList.c'],['../linkedList_8h.html#add37a304668673a3acf534031abd4845',1,'removeNode(struct LinkedList *ll, struct LinkedListNode *nodeToRemove):&#160;linkedList.c']]],
+  ['resetlist',['resetList',['../linkedList_8c.html#a620fd7194cfaaba4f570f44372a3643a',1,'linkedList.c']]],
+  ['ringbuffer',['RingBuffer',['../structRingBuffer.html',1,'']]],
+  ['ringbuffer_2ec',['ringBuffer.c',['../ringBuffer_8c.html',1,'']]],
+  ['ringbuffer_2eh',['ringBuffer.h',['../ringBuffer_8h.html',1,'']]],
+  ['ringbufferlist_2ec',['ringBufferList.c',['../ringBufferList_8c.html',1,'']]],
+  ['ringbufferlist_2eh',['ringBufferList.h',['../ringBufferList_8h.html',1,'']]],
+  ['runlogger',['runLogger',['../logger_8c.html#a25450beac2c28565d53e0d15440d5c1f',1,'logger.c']]]
 ];

@@ -1,11 +1,8 @@
 var searchData=
 [
-  ['registerthread',['registerThread',['../logger_8h.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c'],['../logger_8c.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c']]],
-  ['removehead',['removeHead',['../linkedList_8c.html#a0c6ea65430889f30a319aadc9425a543',1,'removeHead(LinkedList *ll):&#160;linkedList.c'],['../linkedList_8h.html#a10f5a1635e471560fae1df79be2f134d',1,'removeHead(struct LinkedList *ll):&#160;linkedList.c']]],
-  ['removenode',['removeNode',['../linkedList_8c.html#a5f1654bda878a9514111e21b82f1f575',1,'removeNode(LinkedList *ll, struct LinkedListNode *nodeToRemove):&#160;linkedList.c'],['../linkedList_8h.html#add37a304668673a3acf534031abd4845',1,'removeNode(struct LinkedList *ll, struct LinkedListNode *nodeToRemove):&#160;linkedList.c']]],
-  ['ringbuffer',['RingBuffer',['../structRingBuffer.html',1,'']]],
-  ['ringbuffer_2ec',['ringBuffer.c',['../ringBuffer_8c.html',1,'']]],
-  ['ringbuffer_2eh',['ringBuffer.h',['../ringBuffer_8h.html',1,'']]],
-  ['ringbufferlist_2ec',['ringBufferList.c',['../ringBufferList_8c.html',1,'']]],
-  ['ringbufferlist_2eh',['ringBufferList.h',['../ringBufferList_8h.html',1,'']]]
+  ['newlinkedlist',['newLinkedList',['../linkedList_8c.html#a5fed46563b591a481a708ec009296e6e',1,'newLinkedList():&#160;linkedList.c'],['../linkedList_8h.html#a045dfa90da00c0360385b291019cd331',1,'newLinkedList():&#160;linkedList.c']]],
+  ['newlinkedlistnode',['newLinkedListNode',['../linkedListNode_8c.html#a8f842a0bec4091eb3692197e616179e8',1,'newLinkedListNode(void *data):&#160;linkedListNode.c'],['../linkedListNode_8h.html#a89b1886fbef9011876267e3d24e3a390',1,'newLinkedListNode(void *data):&#160;linkedListNode.c']]],
+  ['newringbuffer',['newRingBuffer',['../ringBuffer_8c.html#afbeca76fb3137eb95d0f43316ae69704',1,'newRingBuffer(const int bufSize, const int maxMessageLen):&#160;ringBuffer.c'],['../ringBuffer_8h.html#a9971f209bacfd671a87ed655bb6b9899',1,'newRingBuffer(const int bufSize, const int maxMessageLen):&#160;ringBuffer.c']]],
+  ['newringbufferlist',['newRingBufferList',['../ringBufferList_8c.html#a83f7c523890927075af8cc8be29ca3b4',1,'newRingBufferList():&#160;ringBufferList.c'],['../ringBufferList_8h.html#a83f7c523890927075af8cc8be29ca3b4',1,'newRingBufferList():&#160;ringBufferList.c']]],
+  ['next',['next',['../structLinkedListNode.html#a4b3e9f12adc3e97514ad99be4069dc33',1,'LinkedListNode']]]
 ];

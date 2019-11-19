@@ -1,8 +1,12 @@
 var searchData=
 [
-  ['getdata',['getData',['../linkedListNode_8h.html#ab0dca5d11f3b8ae3c857c752277a02f8',1,'linkedListNode.h']]],
-  ['gethead',['getHead',['../linkedList_8h.html#a4046dd7e740d08a7ae475c104f434eff',1,'linkedList.h']]],
-  ['getnext',['getNext',['../linkedListNode_8h.html#ab5cff3e8cf2117379ad538624fcff3bf',1,'linkedListNode.h']]],
-  ['getringbuffer',['getRingBuffer',['../ringBufferList_8c.html#a9d6676492729574c0b388160ae799b8c',1,'getRingBuffer(struct LinkedListNode *node):&#160;ringBufferList.c'],['../ringBufferList_8h.html#a9d6676492729574c0b388160ae799b8c',1,'getRingBuffer(struct LinkedListNode *node):&#160;ringBufferList.c']]],
-  ['gettail',['getTail',['../linkedList_8h.html#af0e923141af576363886759edc70f5f9',1,'linkedList.h']]]
+  ['deepdeleteringbufferlist',['deepDeleteRingBufferList',['../ringBufferList_8c.html#a613e1a6c41bcfa7e56dfbff50b3e1cfd',1,'deepDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c'],['../ringBufferList_8h.html#a613e1a6c41bcfa7e56dfbff50b3e1cfd',1,'deepDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c']]],
+  ['deleteringbuffer',['deleteRingBuffer',['../ringBuffer_8c.html#aebcc420e4d302a2914de34db70ad4611',1,'deleteRingBuffer(RingBuffer *rb):&#160;ringBuffer.c'],['../ringBuffer_8h.html#a2143d00854f54adf294507fbd247f426',1,'deleteRingBuffer(struct RingBuffer *rb):&#160;ringBuffer.c']]],
+  ['directwritetofile',['directWriteToFile',['../logger_8c.html#a6a2b3b631f36a0871fd2416ee968a3f1',1,'logger.c']]],
+  ['discardfilenameprefix',['discardFilenamePrefix',['../logger_8c.html#a719ac580d17ea7111d572b9fc7b02743',1,'logger.c']]],
+  ['drainbuffertofile',['drainBufferToFile',['../ringBuffer_8c.html#af41005bc8d99f07618ce4eddcccd55ec',1,'drainBufferToFile(RingBuffer *rb, const int file):&#160;ringBuffer.c'],['../ringBuffer_8h.html#ac7e169fcf2a88ae9509bbd19f5a411f2',1,'drainBufferToFile(struct RingBuffer *rb, const int file):&#160;ringBuffer.c']]],
+  ['drainprivatebuffers',['drainPrivateBuffers',['../logger_8c.html#a016c1fba7fb5fcae0a42357db89c5daf',1,'logger.c']]],
+  ['drainseq',['drainSeq',['../ringBuffer_8c.html#ac8957d5187987f534546f919ba8c6ceb',1,'ringBuffer.c']]],
+  ['drainsharedbuffer',['drainsharedBuffer',['../logger_8c.html#aee1aa10c2a84569c49790c07bfb7de47',1,'logger.c']]],
+  ['drainwrap',['drainWrap',['../ringBuffer_8c.html#adbf68b4000ba0c235217e1566e0100d5',1,'ringBuffer.c']]]
 ];
