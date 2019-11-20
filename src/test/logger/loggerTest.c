@@ -20,12 +20,12 @@
 #include "../../core/api/logger.h"
 #include "../unit/unitTests.h"
 
-#define ITERATIONS 100
-#define NUM_THRDS 50
+#define ITERATIONS 25000
+#define NUM_THRDS 200
 #define BUF_SIZE 78
 
-#define BUFFSIZE 1000
-#define SHAREDBUFFSIZE 10000
+#define BUFFSIZE 1000000
+#define SHAREDBUFFSIZE 10000000
 
 char chars[] = "0123456789abcdefghijklmnopqrstuvwqxy";
 char** data;
@@ -42,7 +42,6 @@ int main(void) {
 
 	res = runUnitTests();
 	if (UT_STATUS_SUCCESS == res) {
-		gettimeofday(&tv1, NULL);
 
 		remove("logFile.txt");
 
@@ -52,6 +51,8 @@ int main(void) {
 		if (LOG_STATUS_SUCCESS == res) {
 			data = malloc(NUM_THRDS * sizeof(char*));
 			createRandomData(data, charsLen);
+
+			gettimeofday(&tv1, NULL);
 
 			for (i = 0; i < NUM_THRDS; ++i) {
 				pthread_create(&threads[i], NULL, threadMethod, data[i]);
@@ -69,6 +70,7 @@ int main(void) {
 			free(data);
 
 			printf("Direct writes = %llu\n", cnt);
+
 			gettimeofday(&tv2, NULL);
 			printf("Total time = %f seconds\n",
 			       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000
@@ -97,7 +99,7 @@ static void* threadMethod(void* data) {
 
 	for (int i = 0; i < ITERATIONS; ++i) {
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-//		unregisterThread();
+//		unregisterThread(); //For debug and testing only, this is not the right usage
 	}
 
 	unregisterThread();

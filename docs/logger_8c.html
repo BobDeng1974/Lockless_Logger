@@ -77,7 +77,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>This module provides an implementation of a logger utility which works on 3 levels: Level 1 - Lockless writing: Lockless writing is achieved by assigning each thread a private ring buffer. A worker threads write to that buffer and the logger thread drains that buffer into a log file. Level 2 - Shared buffer writing: In case the private ring buffer is full and not yet drained, a worker thread will fall down to writing to a shared buffer (which is shared across all workers). This is done in a synchronized manner. Level 3 - In case the shared buffer is also full and not yet drained, a worker thread will fall to the lowest (and slowest) form of writing - direct file write.  
+<p>This module provides an implementation of a logger utility.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
@@ -99,7 +99,7 @@ Include dependency graph for logger.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="logger_8c__incl.png" border="0" usemap="#src_2core_2logger_2logger_8c" alt=""/></div>
 <map name="src_2core_2logger_2logger_8c" id="src_2core_2logger_2logger_8c">
-<area shape="rect" id="node13" href="logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="1093,87,1203,114"/>
+<area shape="rect" id="node13" href="logger_8h.html" title="This module provides an implementation of a logger utility. " alt="" coords="1093,87,1203,114"/>
 <area shape="rect" id="node14" href="linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="1150,169,1333,211"/>
 <area shape="rect" id="node16" href="ringBuffer_8h.html" title="This module provides a lockless implementation of a ring buffer for a single produce &#45; single consume..." alt="" coords="1382,169,1565,211"/>
 <area shape="rect" id="node17" href="ringBufferList_8h.html" title="This module provides implementation of a ring buffer list. This module is based on the submodules &#45; &#39;..." alt="" coords="1279,80,1462,121"/>
@@ -218,8 +218,17 @@ thread_local struct <a class="el" href="structLinkedListNode.html">LinkedListNod
 <tr class="separator:a3c29de67afe655d7d14ee880bbb25bfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This module provides an implementation of a logger utility which works on 3 levels: Level 1 - Lockless writing: Lockless writing is achieved by assigning each thread a private ring buffer. A worker threads write to that buffer and the logger thread drains that buffer into a log file. Level 2 - Shared buffer writing: In case the private ring buffer is full and not yet drained, a worker thread will fall down to writing to a shared buffer (which is shared across all workers). This is done in a synchronized manner. Level 3 - In case the shared buffer is also full and not yet drained, a worker thread will fall to the lowest (and slowest) form of writing - direct file write. </p>
-<dl class="section author"><dt>Author</dt><dd>Barak Sason Rofman </dd></dl>
+<div class="textblock"><p>This module provides an implementation of a logger utility. </p>
+<dl class="section author"><dt>Author</dt><dd>Barak Sason Rofman The idea behind this utility is to reduce as much as possible the impact of logging on runtime. Part of this reduction comes at the cost of having to parse and reorganize the messages in the log files using a dedicated tool (yet to be implemented) as there is no guarantee on the order of logged messages.</dd></dl>
+<p>The logger operates in the following way: The logger provides several (number and size are user-defined) pre-allocated buffers which threads can 'register' to and receive a private buffer. In addition, a single, shared buffer is also pre-allocated (size is user-defined). The number of buffers and their size is modifiable at runtime (not yet implemented).</p>
+<p>The basic logic of the logger utility is that worker threads write messages in one of 3 ways that will be described next, and an internal logger threads constantly iterates the existing buffers and drains the data to the log file.</p>
+<p>As all allocation are allocated at the initialization stage, no special treatment it needed for "out
+of memory" cases.</p>
+<p>The following writing levels exist: Level 1 - Lockless writing: Lockless writing is achieved by assigning each thread a private ring buffer. A worker threads write to that buffer and the logger thread drains that buffer into a log file.</p>
+<p>In case the private ring buffer is full and not yet drained, or in case the worker thread has not registered for a private buffer, we fall down to the following writing methods:</p>
+<p>Level 2 - Shared buffer writing: The worker thread will write it's data into a buffer that's shared across all threads. This is done in a synchronized manner.</p>
+<p>In case the private ring buffer is full and not yet drained AND the shared ring buffer is full and not yet drained, or in case the worker thread has not registered for a private buffer, we fall down to the following writing methods:</p>
+<p>Level 3 - Direct write: This is the slowest form of writing - the worker thread directly write to the log file.</p>
 <dl class="section user"><dt>License: Apache License, Version 2.0</dt><dd></dd></dl>
 <dl class="section user"><dt>Copywrite: (C) [2019] [Barak Sason Rofman]</dt><dd></dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>

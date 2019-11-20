@@ -17,18 +17,45 @@
 /**
  * @file logger.c
  * @author Barak Sason Rofman
- * @brief This module provides an implementation of a logger utility which works on 3 levels:
+ * @brief This module provides an implementation of a logger utility.
+ *
+ * The idea behind this utility is to reduce as much as possible the impact of logging on runtime.
+ * Part of this reduction comes at the cost of having to parse and reorganize the messages in the log files
+ * using a dedicated tool (yet to be implemented) as there is no guarantee on the order of logged messages.
+ *
+ * The logger operates in the following way:
+ * The logger provides several (number and size are user-defined) pre-allocated buffers which threads
+ * can 'register' to and receive a private buffer.
+ * In addition, a single, shared buffer is also pre-allocated (size is user-defined).
+ * The number of buffers and their size is modifiable at runtime (not yet implemented).
+ *
+ * The basic logic of the logger utility is that worker threads write messages in one of 3 ways that
+ * will be described next, and an internal logger threads constantly iterates the existing buffers and
+ * drains the data to the log file.
+ *
+ * As all allocation are allocated at the initialization stage, no special treatment it needed for "out
+ * of memory" cases.
+ *
+ * The following writing levels exist:
  * Level 1 - Lockless writing:
- * 			Lockless writing is achieved by assigning each thread a private ring buffer.
- * 			A worker threads write to that buffer and the logger thread drains that buffer into
- * 			a log file.
+ * 				Lockless writing is achieved by assigning each thread a private ring buffer.
+ * 				A worker threads write to that buffer and the logger thread drains that buffer into
+ * 				a log file.
+ *
+ * 	In case the private ring buffer is full and not yet drained, or in case the worker thread has not
+ * 	registered for a private buffer, we fall down to the following writing methods:
+ *
  * Level 2 - Shared buffer writing:
- * 			In case the private ring buffer is full and not yet drained, a worker thread will
- * 			fall down to writing to a shared buffer (which is shared across all workers).
- * 			This is done in a synchronized manner.
- * Level 3 - In case the shared buffer is also full and not yet
- * 			drained, a worker thread will fall to the lowest (and slowest) form of writing - direct
- * 			file write.
+ * 				The worker thread will write it's data into a buffer that's shared across all threads.
+ * 				This is done in a synchronized manner.
+ *
+ * 	In case the private ring buffer is full and not yet drained AND the shared ring buffer is full and not
+ * 	yet drained, or in case the worker thread has not registered for a private buffer, we fall down to
+ * 	the following writing methods:
+ *
+ * Level 3 - Direct write:
+ * 				This is the slowest form of writing - the worker thread directly write to the log file.
+ *
  * @license Apache License, Version 2.0
  * @copywrite (C) [2019] [Barak Sason Rofman]
  */
@@ -108,14 +135,15 @@ static void directWriteToFile(MessageInfo* msgInfo);
 static int writeInFormat(char* buf, const void* data, const int maxMessageLen);
 
 /* Inlining light methods */
-inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file, const char* func,
-                                    const int line, const int loggingLevel, char* argsBuf);
+inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file,
+                                    const char* func, const int line,
+                                    const int loggingLevel, char* argsBuf);
 inline static void discardFilenamePrefix(char** file);
 inline static bool isLogCurrentMessage(const int loggingLevel, const char* msg);
 
 /* API method - Description located at .h file */
-int initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize,
-               const int loggingLevel) {
+int initLogger(const int buffersNum, const int buffersSize,
+               const int sharedBuffSize, const int loggingLevel) {
 	if (0 > buffersNum || 0 >= buffersSize || 0 >= sharedBuffSize
 	        || (loggingLevel < LOG_LEVEL_NONE || loggingLevel > LOG_LEVEL_TRACE)) {
 		return LOG_STATUS_FAILURE;
@@ -310,15 +338,15 @@ static void freeResources() {
 }
 
 /* API method - Description located at .h file */
-int logMessage(const int loggingLevel, char* file, const char* func, const int line,
-               const char* msg, ...) {
+int logMessage(const int loggingLevel, char* file, const char* func,
+               const int line, const char* msg, ...) {
 	int writeUsingPrivateBuffer;
 	MessageInfo msgInfo;
 	va_list arg;
 	char argsBuf[ARGS_LEN];
 
 	/* Check if should log current message */
-	if(false == isLogCurrentMessage(loggingLevel, msg)){
+	if (false == isLogCurrentMessage(loggingLevel, msg)) {
 		return LOG_STATUS_FAILURE;
 	}
 
@@ -337,13 +365,15 @@ int logMessage(const int loggingLevel, char* file, const char* func, const int l
 	 * (unregistered thread) or unable to write in this method, fall to
 	 * next methods */
 	if (NULL != rbn) {
-		writeUsingPrivateBuffer = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
+		writeUsingPrivateBuffer = writeToPrivateBuffer(getRingBuffer(rbn),
+		                                               &msgInfo);
 	} else {
 		/* The current thread doesn't have a private buffer - Try to register,
 		 * maybe there's a free spot */
 		if (LOG_STATUS_SUCCESS == registerThread()) {
 			/* Registering succeeded - use private buffer to write */
-			writeUsingPrivateBuffer = writeToPrivateBuffer(getRingBuffer(rbn), &msgInfo);
+			writeUsingPrivateBuffer = writeToPrivateBuffer(getRingBuffer(rbn),
+			                                               &msgInfo);
 		} else {
 			/* Registering failed - probably no available buffers */
 			writeUsingPrivateBuffer = LOG_STATUS_FAILURE;
@@ -374,7 +404,7 @@ inline static bool isLogCurrentMessage(const int loggingLevel, const char* msg) 
 	bool isTerminateLoc;
 
 	/* Don't log if trying to log messages with higher level than requested
-		* of log level was set to LOG_LEVEL_NONE */
+	 * of log level was set to LOG_LEVEL_NONE */
 	__atomic_load(&logLevel, &loggingLevelLoc, __ATOMIC_SEQ_CST);
 	if (LOG_LEVEL_NONE == loggingLevelLoc || loggingLevel > loggingLevelLoc) {
 		return false;
@@ -382,8 +412,8 @@ inline static bool isLogCurrentMessage(const int loggingLevel, const char* msg) 
 
 	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 	/* Don't log if:
-		* 1) Logger is terminating
-		* 2) 'msg' has an invalid value */
+	 * 1) Logger is terminating
+	 * 2) 'msg' has an invalid value */
 	if (true == isTerminateLoc || NULL == msg) {
 		return false;
 	}
@@ -413,8 +443,9 @@ inline static void discardFilenamePrefix(char** file) {
  * @param loggingLevel Logging level of the message (must be one of the levels at 'logLevels')
  * @param argsBuf Additional arguments to log message
  */
-inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file, const char* func,
-                                    const int line, const int loggingLevel, char* argsBuf) {
+inline static void setMsgInfoValues(MessageInfo* msgInfo, char* file,
+                                    const char* func, const int line,
+                                    const int loggingLevel, char* argsBuf) {
 	gettimeofday(&msgInfo->tv, NULL);
 	msgInfo->file = file;
 	msgInfo->func = func;
@@ -505,12 +536,17 @@ static int writeInFormat(char* buf, const void* data, const int maxMessageLen) {
 
 	msgInfo = (MessageInfo*) data;
 
-	msgLen = snprintf(buf, maxMessageLen,
-	                  "[mid: %x:%.5x] [ll: %c] [lm: %s] [lwp: %ld] [loc: %s:%s:%d] [msg: %s]\n",
-	                  (unsigned int) msgInfo->tv.tv_sec, (unsigned int) msgInfo->tv.tv_usec,
-	                  logLevelsIds[msgInfo->logLevel], logMethods[msgInfo->loggingMethod],
-	                  syscall(SYS_gettid), msgInfo->file, msgInfo->func, msgInfo->line,
-	                  msgInfo->argsBuf);
+	msgLen =
+	        snprintf(
+	                buf,
+	                maxMessageLen,
+	                "[mid: %x:%.5x] [ll: %c] [lm: %s] [lwp: %ld] [loc: %s:%s:%d] [msg: %s]\n",
+	                (unsigned int) msgInfo->tv.tv_sec,
+	                (unsigned int) msgInfo->tv.tv_usec,
+	                logLevelsIds[msgInfo->logLevel],
+	                logMethods[msgInfo->loggingMethod], syscall(SYS_gettid),
+	                msgInfo->file, msgInfo->func, msgInfo->line,
+	                msgInfo->argsBuf);
 
 	return msgLen;
 }
