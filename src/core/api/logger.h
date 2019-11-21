@@ -17,6 +17,7 @@
 /**
  * @file logger.h
  * @author Barak Sason Rofman
+ *
  * @brief This module provides an implementation of a logger utility.
  *
  * The idea behind this utility is to reduce as much as possible the impact of logging on runtime.

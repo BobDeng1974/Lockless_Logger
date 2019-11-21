@@ -50,3 +50,4 @@ TODO List:
 - Create a parsing utility for the log files
 - Create unit tests for logger API (currently the logger component is only system tested)
 - Add more status codes and return specific code per failure (not just success / failure)
+- Modify parameter passing mechanism to read all logger properties from a properties file
