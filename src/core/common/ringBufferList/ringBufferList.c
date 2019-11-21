@@ -72,6 +72,6 @@ void shallowDeleteRingBufferList(struct LinkedList* ll) {
 }
 
 /* API method - Description located at .h file */
-inline struct RingBuffer* getRingBuffer(struct LinkedListNode* node) {
+inline struct RingBuffer* getRingBuffer(const struct LinkedListNode* node) {
 	return (struct RingBuffer*) getData(node);
 }

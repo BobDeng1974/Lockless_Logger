@@ -40,7 +40,7 @@ struct LinkedList* newRingBufferList();
  * @param node The LinkedListNode to retrieve the pointer from
  * @return A pointer to the RingBuffer struct of the LinkedListNode
  */
-struct RingBuffer* getRingBuffer(struct LinkedListNode* node);
+struct RingBuffer* getRingBuffer(const struct LinkedListNode* node);
 
 /**
  * Frees all LinkedListNodes and RingBuffers allocated to the list

@@ -92,7 +92,7 @@ struct LinkedListNode* removeHead(LinkedList* ll) {
 }
 
 /* API method - Description located at .h file */
-struct LinkedListNode* removeNode(LinkedList* ll, struct LinkedListNode* nodeToRemove) {
+struct LinkedListNode* removeNode(LinkedList* ll, const struct LinkedListNode* nodeToRemove) {
 	struct LinkedListNode* node;
 	struct LinkedListNode* prev = NULL;
 

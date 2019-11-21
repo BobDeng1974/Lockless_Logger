@@ -51,17 +51,17 @@ static inline bool isSequentialOverwrite(const int lastRead, const int lastWrite
 static inline bool isWrapAroundOverwrite(const int lastRead, const int msgLen,
                                          const int lenToBufEnd);
 static inline void setLastRead(RingBuffer* rb, int lastWrite);
-static int writeSeq(RingBuffer* rb, void* data, const int (*formatMethod)());
-static int checkWriteWrap(RingBuffer* rb, const int maxMessageLen, void* data,
+static int writeSeq(RingBuffer* rb, const void* data, const int (*formatMethod)());
+static int checkWriteWrap(RingBuffer* rb, const int maxMessageLen, const void* data,
                           const int (*formatMethod)());
 static void initRingBuffer(struct RingBuffer* rb, int bufSize, const int maxMessageLen);
 static bool isNextWriteOverwrite(struct RingBuffer* rb, const int maxMessageLen);
-static int writeSeqOrWrap(struct RingBuffer* rb, const int maxMessageLen, void* data,
+static int writeSeqOrWrap(struct RingBuffer* rb, const int maxMessageLen, const void* data,
                           const int (*formatMethod)());
 static void drainSeq(RingBuffer* rb, const int file, int lastRead, int lastWrite);
 static void drainWrap(RingBuffer* rb, const int file, int lastRead, int lastWrite);
-static int copySeq(RingBuffer* rb, char* locBuf, int msgLen);
-static int writeWrap(RingBuffer* rb, char* locBuf, int msgLen, int lenToBufEnd);
+static int copySeq(RingBuffer* rb, char* locBuf, const int msgLen);
+static int writeWrap(const RingBuffer* rb, char* locBuf, const int msgLen, const int lenToBufEnd);
 
 /* API method - Description located at .h file */
 RingBuffer* newRingBuffer(const int bufSize, const int maxMessageLen) {
@@ -94,7 +94,7 @@ static void initRingBuffer(RingBuffer* rb, const int bufSize, const int maxMessa
 }
 
 /* API method - Description located at .h file */
-int writeToRingBuffer(RingBuffer* rb, void* data, const int (*formatMethod)()) {
+int writeToRingBuffer(RingBuffer* rb, const void* data, const int (*formatMethod)()) {
 	int maxMessageLen;
 
 	maxMessageLen = rb->maxMessageLen;
@@ -125,6 +125,8 @@ static bool isNextWriteOverwrite(RingBuffer* rb, const int maxMessageLen) {
 	/* Atomic load lastRead, as it's written by a different thread */
 	__atomic_load(&rb->lastRead, &lastRead, __ATOMIC_SEQ_CST);
 	lastWrite = rb->lastWrite;
+
+	/* Calculate free space in buffer */
 	rb->lenToBufEnd = rb->bufSize - lastWrite;
 
 	return (isSequentialOverwrite(lastRead, lastWrite, maxMessageLen)
@@ -172,7 +174,7 @@ static inline bool isWrapAroundOverwrite(const int lastRead, const int maxMessag
  * @param formatMethod Formatter method for the data
  * @return Position of the new last write
  */
-static int writeSeqOrWrap(RingBuffer* rb, const int maxMessageLen, void* data,
+static int writeSeqOrWrap(RingBuffer* rb, const int maxMessageLen, const void* data,
                           const int (*formatMethod)()) {
 	int newLastWrite;
 
@@ -191,7 +193,7 @@ static int writeSeqOrWrap(RingBuffer* rb, const int maxMessageLen, void* data,
  * @param formatMethod Formatter method for the data
  * @return Position of the new last write
  */
-static int writeSeq(RingBuffer* rb, void* data, const int (*formatMethod)()) {
+static int writeSeq(RingBuffer* rb, const void* data, const int (*formatMethod)()) {
 	int msgLen;
 	int lastWrite;
 
@@ -211,7 +213,7 @@ static int writeSeq(RingBuffer* rb, void* data, const int (*formatMethod)()) {
  * @param formatMethod Formatter method for the data
  * @return Position of the new last write
  */
-static int checkWriteWrap(RingBuffer* rb, const int maxMessageLen, void* data,
+static int checkWriteWrap(RingBuffer* rb, const int maxMessageLen, const void* data,
                           const int (*formatMethod)()) {
 	int msgLen;
 	int lenToBufEnd;
@@ -236,7 +238,7 @@ static int checkWriteWrap(RingBuffer* rb, const int maxMessageLen, void* data,
  * @param msgLen Actual length of written data
  * @return Position of the new last write
  */
-static int copySeq(RingBuffer* rb, char* locBuf, int msgLen) {
+static int copySeq(RingBuffer* rb, char* locBuf, const int msgLen) {
 	int lastWrite;
 
 	lastWrite = rb->lastWrite;
@@ -254,7 +256,7 @@ static int copySeq(RingBuffer* rb, char* locBuf, int msgLen) {
  * @param lenToBufEnd Length to the end of the buffer from the lastWrite position
  * @return Number of bytes that wrapped around
  */
-static int writeWrap(RingBuffer* rb, char* locBuf, int msgLen, int lenToBufEnd) {
+static int writeWrap(const RingBuffer* rb, char* locBuf, const int msgLen,const int lenToBufEnd) {
 	int bytesRemaining;
 	char* buf;
 

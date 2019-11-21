@@ -60,7 +60,7 @@ struct LinkedListNode* removeHead(struct LinkedList* ll);
  * @return The first occurrence of a LinkedListNode 'nodeToRemove' from the LinkedList 'll' or NULL
  * in case no match was found
  */
-struct LinkedListNode* removeNode(struct LinkedList* ll, struct LinkedListNode* nodeToRemove);
+struct LinkedListNode* removeNode(struct LinkedList* ll, const struct LinkedListNode* nodeToRemove);
 
 /**
  * Returns (without removing) the first node in a list (if the list is empty,

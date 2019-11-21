@@ -100,8 +100,8 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a9971f209bacfd671a87ed655bb6b9899"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structRingBuffer.html">RingBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ringBuffer_8h.html#a9971f209bacfd671a87ed655bb6b9899">newRingBuffer</a> (const int bufSize, const int maxMessageLen)</td></tr>
 <tr class="separator:a9971f209bacfd671a87ed655bb6b9899"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a094e56c4990fd5632f24b2a21baf048f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ringBuffer_8h.html#a094e56c4990fd5632f24b2a21baf048f">writeToRingBuffer</a> (struct <a class="el" href="structRingBuffer.html">RingBuffer</a> *rb, void *data, const int(*formatMethod)())</td></tr>
-<tr class="separator:a094e56c4990fd5632f24b2a21baf048f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90a0692e1ce506b8e498cfda89603f04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ringBuffer_8h.html#a90a0692e1ce506b8e498cfda89603f04">writeToRingBuffer</a> (struct <a class="el" href="structRingBuffer.html">RingBuffer</a> *rb, const void *data, const int(*formatMethod)())</td></tr>
+<tr class="separator:a90a0692e1ce506b8e498cfda89603f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7e169fcf2a88ae9509bbd19f5a411f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ringBuffer_8h.html#ac7e169fcf2a88ae9509bbd19f5a411f2">drainBufferToFile</a> (struct <a class="el" href="structRingBuffer.html">RingBuffer</a> *rb, const int file)</td></tr>
 <tr class="separator:ac7e169fcf2a88ae9509bbd19f5a411f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2143d00854f54adf294507fbd247f426"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ringBuffer_8h.html#a2143d00854f54adf294507fbd247f426">deleteRingBuffer</a> (struct <a class="el" href="structRingBuffer.html">RingBuffer</a> *rb)</td></tr>
@@ -216,8 +216,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a094e56c4990fd5632f24b2a21baf048f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a094e56c4990fd5632f24b2a21baf048f">&#9670;&nbsp;</a></span>writeToRingBuffer()</h2>
+<a id="a90a0692e1ce506b8e498cfda89603f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90a0692e1ce506b8e498cfda89603f04">&#9670;&nbsp;</a></span>writeToRingBuffer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,7 +231,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
+          <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>

@@ -24,8 +24,8 @@
 #define NUM_THRDS 200
 #define BUF_SIZE 78
 
-#define BUFFSIZE 1000000
-#define SHAREDBUFFSIZE 10000000
+#define BUFFSIZE 1000
+#define SHAREDBUFFSIZE 10000
 
 char chars[] = "0123456789abcdefghijklmnopqrstuvwqxy";
 char** data;

@@ -89,7 +89,7 @@ typedef struct MessageInfo {
 	int logLevel;
 	/** Logging method (private buffer, shared buffer or direct write) */
 	int loggingMethod;
-	/** Log file */
+	/** Filename to log */
 	char* file;
 	/** Additional arguments to log message */
 	char* argsBuf;
@@ -177,7 +177,7 @@ inline void setLoggingLevel(const int loggingLevel) {
 
 /**
  * Initialize private buffers parameters
- * @param buffersNum NUmber of buffers
+ * @param buffersNum Number of buffers
  * @param buffersSize Size of buffers
  */
 static void initPrivateBuffers(const int buffersNum, const int buffersSize) {

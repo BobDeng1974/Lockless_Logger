@@ -50,7 +50,7 @@ struct RingBuffer* newRingBuffer(const int bufSize, const int maxMessageLen);
  * @param formatMethod Formatter method for the data
  * @return RB_STATUS_SUCCESS on success, RB_STATUS_FAILURE on failure
  */
-int writeToRingBuffer(struct RingBuffer* rb, void* data, const int (*formatMethod)());
+int writeToRingBuffer(struct RingBuffer* rb, const void* data, const int (*formatMethod)());
 
 /**
  * Write to file 'file' from the buffer located in RingBuffer 'rb'
