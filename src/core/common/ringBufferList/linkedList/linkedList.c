@@ -26,7 +26,6 @@
 #include "linkedList.h"
 
 #include <stdlib.h>
-#include <pthread.h>
 
 typedef struct LinkedList {
 	/** The first LinkedListNode in the LinkedList */

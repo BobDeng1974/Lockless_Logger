@@ -26,8 +26,6 @@
 #ifndef LinkedList_H
 #define LinkedList_H
 
-#include <stdbool.h>
-
 #include "node/linkedListNode.h"
 
 struct LinkedList;
