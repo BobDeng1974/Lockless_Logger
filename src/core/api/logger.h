@@ -17,43 +17,18 @@
 /**
  * @file logger.h
  * @author Barak Sason Rofman
- *
- * @brief This module provides an implementation of a logger utility.
- *
- * The logger provides several (number and size are user-defined) pre-allocated buffers which
- * threads can 'register' to and receive a private buffer.
- * In addition, a single, shared buffer is also pre-allocated (size is user-defined).
- * The number of buffers and their size is modifiable at runtime (not yet implemented).
- *
- * Worker threads write messages in one of 3 ways that will be described next, and an internal
- * logger threads constantly iterates the existing buffers and drains the data to the log file.
- * As all allocations are allocated at the initialization stage, no special treatment it needed
- * for "out of memory" cases.
- *
- * The following writing levels exist:
- *
- * 		Level 1 - Lockless writing:
+ * @brief This module provides an implementation of a logger utility which works on 3 levels:
+ * Level 1 - Lockless writing:
  * 			Lockless writing is achieved by assigning each thread a private ring buffer.
  * 			A worker threads write to that buffer and the logger thread drains that buffer into
  * 			a log file.
- * 	In case the private ring buffer is full and not yet drained, or in case the worker thread
- * 	has not registered for a private buffer, we fall down to the following writing methods:
- *
- * 		Level 2 - Shared buffer writing: The worker thread will write it's data into a buffer that's
- * 			shared across all threads. This is done in a synchronized manner.
- *
- * 	In case the private ring buffer is full and not yet drained AND the shared ring buffer is full
- * 	and not yet drained, or in case the worker thread has not registered for a private buffer,
- * 	we fall down to the last writing method:
- *
- * 		Level 3 - Direct write:
- * 			This is the slowest form of writing - the worker thread directly write to the log file.
- *
- * 	The idea behind this utility is to reduce as much as possible the impact of logging on runtime.
- * 	Part of this reduction comes at the cost of having to parse and reorganize the messages in the
- * 	log files using a dedicated tool (yet to be implemented) as there is no guarantee on the order
- * 	of logged messages.
- *
+ * Level 2 - Shared buffer writing:
+ * 			In case the private ring buffer is full and not yet drained, a worker thread will
+ * 			fall down to writing to a shared buffer (which is shared across all workers).
+ * 			This is done in a synchronized manner.
+ * Level 3 - In case the shared buffer is also full and not yet
+ * 			drained, a worker thread will fall to the lowest (and slowest) form of writing - direct
+ * 			file write.
  * @license Apache License, Version 2.0
  * @copywrite (C) [2019] [Barak Sason Rofman]
  */
@@ -82,15 +57,17 @@ long long cnt;
  * Initialize all data required by the logger.
  * Note: This method must be called before any other API is used, and it can be
  * called only once
- * @param buffersNum Number of threads that will be able to register
- * @param buffersSize Size of private buffers
+ * @param threadsNumArg Maximum number of threads that will be able to register
+ * @param privateBuffSize Size of private buffers
  * @param sharedBuffSize Size of shared buffer
  * @param loggingLevel Desired logging level (only messages with lower or equal logging level will
  * be logged, one of the levels at 'logLevels')
+ * @param maxMsgLenArg Maximum message length
+ * @param maxArgsLenArg Maximum additional arguments length
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize,
-               const int loggingLevel);
+int initLogger(const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize,
+               const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg);
 
 /**
  * Register a worker thread at the logger and assign a private buffers to it
@@ -117,12 +94,12 @@ void unregisterThread();
  * @param msg Message data (must be a null-terminated string)
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int logMessage(const int loggingLevel, char* file, const char* func, const int line,
-               const char* msg, ...);
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+int logMessage(const int loggingLevel, char* file, const char* func, const int line, char* msg, ...);
 
 /** A macro that defines the usage for 'logMessage(...) API */
-#define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__,__PRETTY_FUNCTION__,  __LINE__  , msg)
-
+#define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILENAME__,__PRETTY_FUNCTION__,  __LINE__  , msg)
+//#undef __FILENAME__
 /**
  * Terminate the logger thread and release resources
  * NOTE: this API may be called only after calling 'initLogger(...) API

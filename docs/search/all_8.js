@@ -1,20 +1,12 @@
 var searchData=
 [
-  ['lockless_5flogger',['Lockless_Logger',['../index.html',1,'']]],
-  ['lastread',['lastRead',['../structRingBuffer.html#a0be25d7d5c5998716044b7776607ba99',1,'RingBuffer']]],
-  ['lastwrite',['lastWrite',['../structRingBuffer.html#ad50208826cae5397ca96b5ccd124bc42',1,'RingBuffer']]],
-  ['lentobufend',['lenToBufEnd',['../structRingBuffer.html#a3de7bf04742cbc91e99339beb31bd21b',1,'RingBuffer']]],
-  ['line',['line',['../structMessageInfo.html#a8a3bb2c18bed22162c8abb0388c64dba',1,'MessageInfo']]],
-  ['linkedlist',['LinkedList',['../structLinkedList.html',1,'']]],
-  ['linkedlist_2ec',['linkedList.c',['../linkedList_8c.html',1,'']]],
-  ['linkedlist_2eh',['linkedList.h',['../linkedList_8h.html',1,'']]],
-  ['linkedlistnode',['LinkedListNode',['../structLinkedListNode.html',1,'']]],
-  ['linkedlistnode_2ec',['linkedListNode.c',['../linkedListNode_8c.html',1,'']]],
-  ['linkedlistnode_2eh',['linkedListNode.h',['../linkedListNode_8h.html',1,'']]],
-  ['log_5fmsg',['LOG_MSG',['../logger_8h.html#a56b3ba492f8e4335459115b71086acea',1,'logger.h']]],
-  ['logger_2ec',['logger.c',['../logger_8c.html',1,'']]],
-  ['logger_2eh',['logger.h',['../logger_8h.html',1,'']]],
-  ['loggingmethod',['loggingMethod',['../structMessageInfo.html#a194073d56d64905360870b32fa53eae2',1,'MessageInfo']]],
-  ['loglevel',['logLevel',['../structMessageInfo.html#ab656941a84638d8eed7d329aed8d369d',1,'MessageInfo']]],
-  ['logmessage',['logMessage',['../logger_8h.html#a033a9a1b552c4067c8d04a9564093f35',1,'logMessage(const int loggingLevel, char *file, const char *func, const int line, const char *msg,...):&#160;logger.c'],['../logger_8c.html#a033a9a1b552c4067c8d04a9564093f35',1,'logMessage(const int loggingLevel, char *file, const char *func, const int line, const char *msg,...):&#160;logger.c']]]
+  ['maxargslen',['maxArgsLen',['../structMessageQueue.html#a5cc555d2be14053d03481bee31dd5ebf',1,'MessageQueue']]],
+  ['messagedata',['MessageData',['../structMessageData.html',1,'']]],
+  ['messagedata_2ec',['messageData.c',['../messageData_8c.html',1,'']]],
+  ['messagedata_2eh',['messageData.h',['../messageData_8h.html',1,'']]],
+  ['messagedataqueuedestroy',['messageDataQueueDestroy',['../messageQueue_8c.html#ab8af30b594896403efa68e854b0b9a33',1,'messageDataQueueDestroy(MessageQueue *mq):&#160;messageQueue.c'],['../messageQueue_8h.html#a1d8973bf89d4d764fbfe4706ef4b606b',1,'messageDataQueueDestroy(struct MessageQueue *mq):&#160;messageQueue.c']]],
+  ['messagequeue',['MessageQueue',['../structMessageQueue.html',1,'']]],
+  ['messagequeue_2ec',['messageQueue.c',['../messageQueue_8c.html',1,'']]],
+  ['messagequeue_2eh',['messageQueue.h',['../messageQueue_8h.html',1,'']]],
+  ['messagesdata',['messagesData',['../structMessageQueue.html#aa00264e9e1df04be918aea1bb7d9def3',1,'MessageQueue']]]
 ];

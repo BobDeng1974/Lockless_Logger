@@ -1,11 +1,12 @@
 var searchData=
 [
-  ['initlogger',['initLogger',['../logger_8h.html#a2d48484a943623d3059298588b0aa032',1,'initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize, const int loggingLevel):&#160;logger.c'],['../logger_8c.html#a2d48484a943623d3059298588b0aa032',1,'initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize, const int loggingLevel):&#160;logger.c']]],
-  ['initprivatebuffers',['initPrivateBuffers',['../logger_8c.html#a644fec0c0e0dff5a7ad048cc24154db9',1,'logger.c']]],
-  ['initringbuffer',['initRingBuffer',['../ringBuffer_8c.html#aca52c44c48d161970da858f50471630e',1,'ringBuffer.c']]],
-  ['initsharedbuffer',['initsharedBuffer',['../logger_8c.html#a1b7c129bd1bbe3afeda27b09d62c7864',1,'logger.c']]],
-  ['islogcurrentmessage',['isLogCurrentMessage',['../logger_8c.html#a1a431376c471193110929ae0aede0f4c',1,'logger.c']]],
-  ['isnextwriteoverwrite',['isNextWriteOverwrite',['../ringBuffer_8c.html#a2e3869ee2fe4d009fbea955ab7609170',1,'ringBuffer.c']]],
-  ['issequentialoverwrite',['isSequentialOverwrite',['../ringBuffer_8c.html#a9a55c24fbe82ddd0532642bbc3815453',1,'ringBuffer.c']]],
-  ['iswraparoundoverwrite',['isWrapAroundOverwrite',['../ringBuffer_8c.html#af7bfb3ab1e8381577eb4044e3c992a2d',1,'ringBuffer.c']]]
+  ['lockless_5flogger',['Lockless_Logger',['../index.html',1,'']]],
+  ['lastread',['lastRead',['../structMessageQueue.html#a3e87622f93ba033fcb121f995c43fd09',1,'MessageQueue']]],
+  ['lastwrite',['lastWrite',['../structMessageQueue.html#a22e42d59ce28b2a13ce7aa2e69286fc8',1,'MessageQueue']]],
+  ['line',['line',['../structMessageData.html#ace58b6118f5f8b15819bb867ab7dfb6c',1,'MessageData']]],
+  ['log_5fmsg',['LOG_MSG',['../logger_8h.html#a56b3ba492f8e4335459115b71086acea',1,'logger.h']]],
+  ['logger_2ec',['logger.c',['../logger_8c.html',1,'']]],
+  ['logger_2eh',['logger.h',['../logger_8h.html',1,'']]],
+  ['loglevel',['logLevel',['../structMessageData.html#afbd3ca3016c5daa99b7343555f628ff1',1,'MessageData']]],
+  ['logmethod',['logMethod',['../structMessageData.html#ae456d891136b3dc360d41272f3fe6f24',1,'MessageData']]]
 ];

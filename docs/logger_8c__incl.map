@@ -1,7 +1,6 @@
 <map id="src/core/logger/logger.c" name="src/core/logger/logger.c">
-<area shape="rect" id="node12" href="$logger_8h.html" title="This module provides an implementation of a logger utility. " alt="" coords="1053,87,1163,114"/>
-<area shape="rect" id="node13" href="$linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="1135,169,1318,211"/>
-<area shape="rect" id="node15" href="$ringBuffer_8h.html" title="This module provides a lockless implementation of a ring buffer for a single produce &#45; single consume..." alt="" coords="1355,169,1538,211"/>
-<area shape="rect" id="node16" href="$ringBufferList_8h.html" title="This module provides implementation of a ring buffer list. This module is based on the submodules &#45; &#39;..." alt="" coords="1239,80,1422,121"/>
-<area shape="rect" id="node14" href="$linkedListNode_8h.html" title="This module provides implementation for node operations in a generic linked list. This module is a su..." alt="" coords="1143,259,1310,285"/>
+<area shape="rect" id="node12" href="$logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="1257,80,1368,107"/>
+<area shape="rect" id="node13" href="$Queue_8h.html" title="This module provides a generic Queue implementation. " alt="" coords="1392,80,1587,107"/>
+<area shape="rect" id="node14" href="$messageQueue_8h.html" title="This module provides a MessageQueue implementation. " alt="" coords="24,80,264,107"/>
+<area shape="rect" id="node15" href="$messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="390,80,619,107"/>
 </map>

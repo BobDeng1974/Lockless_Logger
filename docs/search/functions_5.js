@@ -1,11 +1,9 @@
 var searchData=
 [
-  ['initlogger',['initLogger',['../logger_8h.html#a2d48484a943623d3059298588b0aa032',1,'initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize, const int loggingLevel):&#160;logger.c'],['../logger_8c.html#a2d48484a943623d3059298588b0aa032',1,'initLogger(const int buffersNum, const int buffersSize, const int sharedBuffSize, const int loggingLevel):&#160;logger.c']]],
-  ['initprivatebuffers',['initPrivateBuffers',['../logger_8c.html#a644fec0c0e0dff5a7ad048cc24154db9',1,'logger.c']]],
-  ['initringbuffer',['initRingBuffer',['../ringBuffer_8c.html#aca52c44c48d161970da858f50471630e',1,'ringBuffer.c']]],
-  ['initsharedbuffer',['initsharedBuffer',['../logger_8c.html#a1b7c129bd1bbe3afeda27b09d62c7864',1,'logger.c']]],
-  ['islogcurrentmessage',['isLogCurrentMessage',['../logger_8c.html#a1a431376c471193110929ae0aede0f4c',1,'logger.c']]],
-  ['isnextwriteoverwrite',['isNextWriteOverwrite',['../ringBuffer_8c.html#a2e3869ee2fe4d009fbea955ab7609170',1,'ringBuffer.c']]],
-  ['issequentialoverwrite',['isSequentialOverwrite',['../ringBuffer_8c.html#a9a55c24fbe82ddd0532642bbc3815453',1,'ringBuffer.c']]],
-  ['iswraparoundoverwrite',['isWrapAroundOverwrite',['../ringBuffer_8c.html#af7bfb3ab1e8381577eb4044e3c992a2d',1,'ringBuffer.c']]]
+  ['initlogger',['initLogger',['../logger_8h.html#a02cb4986e65790043edb9b1e78b7984d',1,'initLogger(const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg):&#160;logger.c'],['../logger_8c.html#a02cb4986e65790043edb9b1e78b7984d',1,'initLogger(const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg):&#160;logger.c']]],
+  ['initmessagequeue',['initMessageQueue',['../messageQueue_8c.html#a8970f528b6628436abfebb9a62ef451d',1,'messageQueue.c']]],
+  ['initprivatebuffers',['initPrivateBuffers',['../logger_8c.html#aaf78f16ce2695cb6db3ba194175e3a26',1,'logger.c']]],
+  ['initsharedbuffer',['initsharedBuffer',['../logger_8c.html#a6f69ab701d48a4df4d0baddff5abec59',1,'logger.c']]],
+  ['isempty',['isEmpty',['../Queue_8c.html#af1e41878cb669a97e98d24984dc5c576',1,'Queue.c']]],
+  ['isfull',['isFull',['../Queue_8c.html#af1791b054beb8d9b7fad0445d8d29c5e',1,'Queue.c']]]
 ];

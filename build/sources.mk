@@ -13,15 +13,8 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-src/core/common/ringBufferList/linkedList \
-src/core/common/ringBufferList/linkedList/node \
-src/core/common/ringBufferList/ringBuffer \
-src/core/common/ringBufferList \
+src/core/common/Queue \
 src/core/logger \
+src/core/logger/messageQueue \
 src/test/logger \
-src/test/unit/linkedList \
-src/test/unit/node \
-src/test/unit/ringBuffer \
-src/test/unit/ringBufferList \
-src/test/unit \
 

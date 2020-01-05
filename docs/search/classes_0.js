@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['linkedlist',['LinkedList',['../structLinkedList.html',1,'']]],
-  ['linkedlistnode',['LinkedListNode',['../structLinkedListNode.html',1,'']]]
+  ['messagedata',['MessageData',['../structMessageData.html',1,'']]],
+  ['messagequeue',['MessageQueue',['../structMessageQueue.html',1,'']]]
 ];

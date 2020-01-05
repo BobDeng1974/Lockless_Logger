@@ -1,12 +1,8 @@
 var searchData=
 [
-  ['deepdeleteringbufferlist',['deepDeleteRingBufferList',['../ringBufferList_8c.html#a613e1a6c41bcfa7e56dfbff50b3e1cfd',1,'deepDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c'],['../ringBufferList_8h.html#a613e1a6c41bcfa7e56dfbff50b3e1cfd',1,'deepDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c']]],
-  ['deleteringbuffer',['deleteRingBuffer',['../ringBuffer_8c.html#aebcc420e4d302a2914de34db70ad4611',1,'deleteRingBuffer(RingBuffer *rb):&#160;ringBuffer.c'],['../ringBuffer_8h.html#a2143d00854f54adf294507fbd247f426',1,'deleteRingBuffer(struct RingBuffer *rb):&#160;ringBuffer.c']]],
-  ['directwritetofile',['directWriteToFile',['../logger_8c.html#a6a2b3b631f36a0871fd2416ee968a3f1',1,'logger.c']]],
-  ['discardfilenameprefix',['discardFilenamePrefix',['../logger_8c.html#a719ac580d17ea7111d572b9fc7b02743',1,'logger.c']]],
-  ['drainbuffertofile',['drainBufferToFile',['../ringBuffer_8c.html#af41005bc8d99f07618ce4eddcccd55ec',1,'drainBufferToFile(RingBuffer *rb, const int file):&#160;ringBuffer.c'],['../ringBuffer_8h.html#ac7e169fcf2a88ae9509bbd19f5a411f2',1,'drainBufferToFile(struct RingBuffer *rb, const int file):&#160;ringBuffer.c']]],
+  ['dequeue',['dequeue',['../Queue_8h.html#a12723951209ee656c7f27af17b0ad59e',1,'Queue.h']]],
+  ['directwritetofile',['directWriteToFile',['../messageQueue_8c.html#a0202ef8af205e2e725fa253c486d9d35',1,'directWriteToFile(const int loggingLevel, char *file, const char *func, const int line, va_list *args, char *msg, FILE *logFile, const int maxMsgLen, const int maxArgsLen, const int logMethod, const int(*formatMethod)()):&#160;messageQueue.c'],['../messageQueue_8h.html#a0202ef8af205e2e725fa253c486d9d35',1,'directWriteToFile(const int loggingLevel, char *file, const char *func, const int line, va_list *args, char *msg, FILE *logFile, const int maxMsgLen, const int maxArgsLen, const int logMethod, const int(*formatMethod)()):&#160;messageQueue.c']]],
+  ['drainmessages',['drainMessages',['../messageQueue_8c.html#a82077de72a46fc18f4e549ec29bedc97',1,'drainMessages(MessageQueue *mq, FILE *logFile, const int maxMsgLen, const int(*formatMethod)()):&#160;messageQueue.c'],['../messageQueue_8h.html#a450825c4b8622aa8e8f2399b70118971',1,'drainMessages(struct MessageQueue *mq, FILE *logFile, const int maxMsgLen, const int(*formatMethod)()):&#160;messageQueue.c']]],
   ['drainprivatebuffers',['drainPrivateBuffers',['../logger_8c.html#a016c1fba7fb5fcae0a42357db89c5daf',1,'logger.c']]],
-  ['drainseq',['drainSeq',['../ringBuffer_8c.html#ac8957d5187987f534546f919ba8c6ceb',1,'ringBuffer.c']]],
-  ['drainsharedbuffer',['drainsharedBuffer',['../logger_8c.html#aee1aa10c2a84569c49790c07bfb7de47',1,'logger.c']]],
-  ['drainwrap',['drainWrap',['../ringBuffer_8c.html#adbf68b4000ba0c235217e1566e0100d5',1,'ringBuffer.c']]]
+  ['drainsharedbuffer',['drainSharedBuffer',['../logger_8c.html#a85abc23bdbb5501c19a5fcc6873d1718',1,'logger.c']]]
 ];

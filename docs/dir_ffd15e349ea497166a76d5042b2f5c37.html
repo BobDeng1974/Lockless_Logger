@@ -74,19 +74,24 @@ Directory dependency graph for logger:</div>
 <div class="dyncontent">
 <div class="center"><img src="dir_ffd15e349ea497166a76d5042b2f5c37_dep.png" border="0" usemap="#dir__ffd15e349ea497166a76d5042b2f5c37__dep" alt="src/core/logger"/></div>
 <map name="dir__ffd15e349ea497166a76d5042b2f5c37__dep" id="dir__ffd15e349ea497166a76d5042b2f5c37__dep">
-<area shape="rect" id="node1" href="dir_ffd15e349ea497166a76d5042b2f5c37.html" title="logger" alt="" coords="58,52,130,100"/>
-<area shape="rect" id="node2" href="dir_34b4cee2b5900b653deb3438fc906cf4.html" title="common" alt="" coords="5,148,84,196"/>
-<area shape="rect" id="edge1-headlabel" href="dir_000024_000019.html" title="3" alt="" coords="68,128,78,143"/>
-<area shape="rect" id="node3" href="dir_64487c75f92555db8bd74e7be47264bb.html" title="api" alt="" coords="109,148,181,196"/>
-<area shape="rect" id="edge2-headlabel" href="dir_000024_000018.html" title="1" alt="" coords="126,120,135,135"/>
-<area shape="rect" id="clust1" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html" title="core" alt="" coords="47,16,141,111"/>
+<area shape="rect" id="node2" href="dir_bd387aec58a74233949db439a5011a4a.html" title="messageQueue" alt="" coords="37,159,160,207"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000014_000015.html" title="2" alt="" coords="113,135,123,150"/>
+<area shape="rect" id="node3" href="dir_34b4cee2b5900b653deb3438fc906cf4.html" title="common" alt="" coords="193,159,271,207"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000014_000012.html" title="1" alt="" coords="192,133,201,147"/>
+<area shape="rect" id="node4" href="dir_64487c75f92555db8bd74e7be47264bb.html" title="api" alt="" coords="296,159,368,207"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000014_000011.html" title="1" alt="" coords="278,142,288,156"/>
+<area shape="rect" id="clust2" href="dir_ffd15e349ea497166a76d5042b2f5c37.html" alt="" coords="27,52,171,217"/>
+<area shape="rect" id="clust1" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html" title="core" alt="" coords="16,16,181,228"/>
 </map>
 </div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="subdirs"></a>
+Directories</h2></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="files"></a>
 Files</h2></td></tr>
 <tr class="memitem:logger_8c"><td class="memItemLeft" align="right" valign="top">file &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html">logger.c</a></td></tr>
-<tr class="memdesc:logger_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This module provides an implementation of a logger utility. <br /></td></tr>
+<tr class="memdesc:logger_8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">This module provides an implementation of a logger utility which works on 3 levels: Level 1 - Lockless writing: Lockless writing is achieved by assigning each thread a private ring buffer. A worker threads write to that buffer and the logger thread drains that buffer into a log file. Level 2 - Shared buffer writing: In case the private ring buffer is full and not yet drained, a worker thread will fall down to writing to a shared buffer (which is shared across all workers). This is done in a synchronized manner. Level 3 - In case the shared buffer is also full and not yet drained, a worker thread will fall to the lowest (and slowest) form of writing - direct file write. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

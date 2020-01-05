@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['newlinkedlist',['newLinkedList',['../linkedList_8c.html#a5fed46563b591a481a708ec009296e6e',1,'newLinkedList():&#160;linkedList.c'],['../linkedList_8h.html#a045dfa90da00c0360385b291019cd331',1,'newLinkedList():&#160;linkedList.c']]],
-  ['newlinkedlistnode',['newLinkedListNode',['../linkedListNode_8c.html#a8f842a0bec4091eb3692197e616179e8',1,'newLinkedListNode(void *data):&#160;linkedListNode.c'],['../linkedListNode_8h.html#a89b1886fbef9011876267e3d24e3a390',1,'newLinkedListNode(void *data):&#160;linkedListNode.c']]],
-  ['newringbuffer',['newRingBuffer',['../ringBuffer_8c.html#afbeca76fb3137eb95d0f43316ae69704',1,'newRingBuffer(const int bufSize, const int maxMessageLen):&#160;ringBuffer.c'],['../ringBuffer_8h.html#a9971f209bacfd671a87ed655bb6b9899',1,'newRingBuffer(const int bufSize, const int maxMessageLen):&#160;ringBuffer.c']]],
-  ['newringbufferlist',['newRingBufferList',['../ringBufferList_8c.html#a83f7c523890927075af8cc8be29ca3b4',1,'newRingBufferList():&#160;ringBufferList.c'],['../ringBufferList_8h.html#a83f7c523890927075af8cc8be29ca3b4',1,'newRingBufferList():&#160;ringBufferList.c']]]
+  ['newmessageinfo',['newMessageInfo',['../messageQueue_8c.html#a2e4c09201163d77b276961e592fa10df',1,'newMessageInfo(const int size, const int maxArgsLen):&#160;messageQueue.c'],['../messageQueue_8h.html#adedf6c75fcc06fe9595442be3b5ecde9',1,'newMessageInfo(const int size, const int maxArgsLen):&#160;messageQueue.c']]],
+  ['newqueue',['newQueue',['../Queue_8c.html#a089808fff0542df5527232587c3986d9',1,'newQueue(int capacity):&#160;Queue.c'],['../Queue_8h.html#a2d003959c387578d421c38d665e47b3a',1,'newQueue(int capacity):&#160;Queue.c']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['addnode',['addNode',['../linkedList_8c.html#ac50d5a6518e6eb393057aea93be5309a',1,'addNode(LinkedList *ll, struct LinkedListNode *node):&#160;linkedList.c'],['../linkedList_8h.html#a99ef2eef8987f2c8a35fd624d5dfc789',1,'addNode(struct LinkedList *ll, struct LinkedListNode *node):&#160;linkedList.c']]],
-  ['argsbuf',['argsBuf',['../structMessageInfo.html#af993ceb14c0cd7d6a7bc1c2f14c36bab',1,'MessageInfo']]]
+  ['_5f_5ffilename_5f_5f',['__FILENAME__',['../logger_8h.html#a5fccb4fc71e44089a1b1a77fc76c0b68',1,'logger.h']]]
 ];

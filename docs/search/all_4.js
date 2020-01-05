@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['file',['file',['../structMessageInfo.html#aac868c82730935b4046f55ee0f5ba928',1,'MessageInfo']]],
-  ['freeresources',['freeResources',['../logger_8c.html#ac9fd7d3256d9c072dda9170df52cfb85',1,'logger.c']]],
-  ['func',['func',['../structMessageInfo.html#aecba7cd881943eb6a1ebc1aaf4b9903a',1,'MessageInfo']]]
+  ['enqueue',['enqueue',['../Queue_8c.html#aebefb257bc186e8d45a2cddb1d2d421f',1,'enqueue(Queue *queue, void *element):&#160;Queue.c'],['../Queue_8h.html#a821c2b3e5822ead8b41c7d86cefa85fc',1,'enqueue(struct Queue *queue, void *element):&#160;Queue.c']]]
 ];

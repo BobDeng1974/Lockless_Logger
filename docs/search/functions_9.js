@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['setlastread',['setLastRead',['../ringBuffer_8c.html#a6a551a1d01988ba2f8df080eee97e0b3',1,'ringBuffer.c']]],
-  ['setlogginglevel',['setLoggingLevel',['../logger_8h.html#a8b26c3643213fb562e2a488bc28b3786',1,'setLoggingLevel(const int loggingLevel):&#160;logger.c'],['../logger_8c.html#a8b26c3643213fb562e2a488bc28b3786',1,'setLoggingLevel(const int loggingLevel):&#160;logger.c']]],
-  ['setmsginfovalues',['setMsgInfoValues',['../logger_8c.html#a1cd532007f79836bf7d5a3c19249c903',1,'logger.c']]],
-  ['setnext',['setNext',['../linkedListNode_8c.html#ab8e37d42bd88330295617c00cb178a10',1,'setNext(LinkedListNode *node, LinkedListNode *nextNode):&#160;linkedListNode.c'],['../linkedListNode_8h.html#a5f425fe771c6a3010d0405fcb3b57e62',1,'setNext(struct LinkedListNode *node, struct LinkedListNode *nextNode):&#160;linkedListNode.c']]],
-  ['shallowdeleteringbufferlist',['shallowDeleteRingBufferList',['../ringBufferList_8c.html#a3c05ab08c3976a7036aef6bd6e08c0b7',1,'shallowDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c'],['../ringBufferList_8h.html#a3c05ab08c3976a7036aef6bd6e08c0b7',1,'shallowDeleteRingBufferList(struct LinkedList *ll):&#160;ringBufferList.c']]]
+  ['registerthread',['registerThread',['../logger_8h.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c'],['../logger_8c.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c']]],
+  ['runlogger',['runLogger',['../logger_8c.html#a25450beac2c28565d53e0d15440d5c1f',1,'logger.c']]]
 ];

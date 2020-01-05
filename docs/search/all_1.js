@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['buf',['buf',['../structRingBuffer.html#a4f18236a3ef9d4126f1d1e156924ff0c',1,'RingBuffer']]],
-  ['bufsize',['bufSize',['../structRingBuffer.html#a0b749e6fda6dc8e4d3cf77cb40d8c8ed',1,'RingBuffer']]]
+  ['addmessage',['addMessage',['../messageQueue_8c.html#a31b233c1147b38e8000a173932a15fc9',1,'addMessage(MessageQueue *mq, const int loggingLevel, char *file, const char *func, const int line, va_list *args, const char *msg, int logMethod):&#160;messageQueue.c'],['../messageQueue_8h.html#a83c29aa2cc0488df09011d6d7b365f34',1,'addMessage(struct MessageQueue *mq, const int loggingLevel, char *file, const char *func, const int line, va_list *args, const char *msg, int logMethod):&#160;messageQueue.c']]],
+  ['argsbuf',['argsBuf',['../structMessageData.html#ae0670d5be7384c56fead9a759152e147',1,'MessageData']]]
 ];

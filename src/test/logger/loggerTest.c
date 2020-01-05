@@ -18,11 +18,13 @@
 #include <errno.h>
 
 #include "../../core/api/logger.h"
-#include "../unit/unitTests.h"
 
 #define ITERATIONS 25000
 #define NUM_THRDS 200
 #define BUF_SIZE 78
+
+#define MAX_MSG_LEN 512
+#define ARGS_BUF_SIZE 128
 
 #define BUFFSIZE 1000
 #define SHAREDBUFFSIZE 10000
@@ -40,42 +42,36 @@ int main(void) {
 	int charsLen;
 	struct timeval tv1, tv2;
 
-	res = runUnitTests();
-	if (UT_STATUS_SUCCESS == res) {
+	remove("logFile.txt");
 
-		remove("logFile.txt");
+	charsLen = strlen(chars);
 
-		charsLen = strlen(chars);
+	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE, MAX_MSG_LEN,
+	                 ARGS_BUF_SIZE);
+	if (LOG_STATUS_SUCCESS == res) {
+		data = malloc(NUM_THRDS * sizeof(*data));
+		createRandomData(data, charsLen);
 
-		res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE);
-		if (LOG_STATUS_SUCCESS == res) {
-			data = malloc(NUM_THRDS * sizeof(char*));
-			createRandomData(data, charsLen);
+		gettimeofday(&tv1, NULL);
 
-			gettimeofday(&tv1, NULL);
-
-			for (i = 0; i < NUM_THRDS; ++i) {
-				pthread_create(&threads[i], NULL, threadMethod, data[i]);
-			}
+		for (i = 0; i < NUM_THRDS; ++i) {
+			pthread_create(&threads[i], NULL, threadMethod, data[i]);
+		}
 
 //			sleep(1);
 //			setLoggingLevel(LOG_LEVEL_NONE);
 
-			for (i = 0; i < NUM_THRDS; ++i) {
-				pthread_join(threads[i], NULL);
-			}
-
-			terminateLogger();
-
-			free(data);
-
-			printf("Direct writes = %llu\n", cnt);
-
-			gettimeofday(&tv2, NULL);
-			printf("Total time = %f seconds\n",
-			       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000
-			               + (double) (tv2.tv_sec - tv1.tv_sec));
+		for (i = 0; i < NUM_THRDS; ++i) {
+			pthread_join(threads[i], NULL);
 		}
+
+		terminateLogger();
+		free(data);
+		gettimeofday(&tv2, NULL);
+
+		printf("Direct writes = %llu\n", cnt);
+		printf("Total time = %f seconds\n",
+		       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec));
 	}
 
 	return res;
@@ -93,13 +89,10 @@ static void createRandomData(char** data, int charsLen) {
 }
 
 static void* threadMethod(void* data) {
-	char* logData = data;
-
 	registerThread();
 
 	for (int i = 0; i < ITERATIONS; ++i) {
-		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", logData);
-//		unregisterThread(); //For debug and testing only, this is not the right usage
+		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", (char* )data);
 	}
 
 	unregisterThread();

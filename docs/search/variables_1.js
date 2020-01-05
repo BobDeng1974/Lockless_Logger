@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['buf',['buf',['../structRingBuffer.html#a4f18236a3ef9d4126f1d1e156924ff0c',1,'RingBuffer']]],
-  ['bufsize',['bufSize',['../structRingBuffer.html#a0b749e6fda6dc8e4d3cf77cb40d8c8ed',1,'RingBuffer']]]
+  ['file',['file',['../structMessageData.html#a203e9edaa1bb4ccbb4bd6a6e6e1b6200',1,'MessageData']]],
+  ['func',['func',['../structMessageData.html#aafc6e61e96fbfc054a9a382ffa57634f',1,'MessageData']]]
 ];

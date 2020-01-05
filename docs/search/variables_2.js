@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['data',['data',['../structLinkedListNode.html#a8762bd3731df051547b5fb5d307b1c7d',1,'LinkedListNode']]]
+  ['isinuse',['isInUse',['../structMessageQueue.html#a04ee88f5fe31d7da41b742d03b7def6a',1,'MessageQueue']]]
 ];
