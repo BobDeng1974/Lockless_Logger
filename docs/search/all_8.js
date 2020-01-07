@@ -1,12 +1,12 @@
 var searchData=
 [
-  ['maxargslen',['maxArgsLen',['../structMessageQueue.html#a5cc555d2be14053d03481bee31dd5ebf',1,'MessageQueue']]],
-  ['messagedata',['MessageData',['../structMessageData.html',1,'']]],
-  ['messagedata_2ec',['messageData.c',['../messageData_8c.html',1,'']]],
-  ['messagedata_2eh',['messageData.h',['../messageData_8h.html',1,'']]],
-  ['messagedataqueuedestroy',['messageDataQueueDestroy',['../messageQueue_8c.html#ab8af30b594896403efa68e854b0b9a33',1,'messageDataQueueDestroy(MessageQueue *mq):&#160;messageQueue.c'],['../messageQueue_8h.html#a1d8973bf89d4d764fbfe4706ef4b606b',1,'messageDataQueueDestroy(struct MessageQueue *mq):&#160;messageQueue.c']]],
-  ['messagequeue',['MessageQueue',['../structMessageQueue.html',1,'']]],
-  ['messagequeue_2ec',['messageQueue.c',['../messageQueue_8c.html',1,'']]],
-  ['messagequeue_2eh',['messageQueue.h',['../messageQueue_8h.html',1,'']]],
-  ['messagesdata',['messagesData',['../structMessageQueue.html#aa00264e9e1df04be918aea1bb7d9def3',1,'MessageQueue']]]
+  ['lockless_5flogger',['Lockless_Logger',['../index.html',1,'']]],
+  ['lastread',['lastRead',['../structMessageQueue.html#a3e87622f93ba033fcb121f995c43fd09',1,'MessageQueue']]],
+  ['lastwrite',['lastWrite',['../structMessageQueue.html#a22e42d59ce28b2a13ce7aa2e69286fc8',1,'MessageQueue']]],
+  ['line',['line',['../structMessageData.html#ace58b6118f5f8b15819bb867ab7dfb6c',1,'MessageData']]],
+  ['log_5fmsg',['LOG_MSG',['../logger_8h.html#a56b3ba492f8e4335459115b71086acea',1,'logger.h']]],
+  ['logger_2ec',['logger.c',['../logger_8c.html',1,'']]],
+  ['logger_2eh',['logger.h',['../logger_8h.html',1,'']]],
+  ['loglevel',['logLevel',['../structMessageData.html#afbd3ca3016c5daa99b7343555f628ff1',1,'MessageData']]],
+  ['logmethod',['logMethod',['../structMessageData.html#ae456d891136b3dc360d41272f3fe6f24',1,'MessageData']]]
 ];

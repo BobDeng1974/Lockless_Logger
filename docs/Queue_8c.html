@@ -110,6 +110,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initQueue</b> (<a cla
 <tr class="separator:af1e41878cb669a97e98d24984dc5c576"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1791b054beb8d9b7fad0445d8d29c5e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Queue_8c.html#af1791b054beb8d9b7fad0445d8d29c5e">isFull</a> (<a class="el" href="structQueue.html">Queue</a> *queue)</td></tr>
 <tr class="separator:af1791b054beb8d9b7fad0445d8d29c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a825b3d42ce9558a31a126fd91823434c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Queue_8c.html#a825b3d42ce9558a31a126fd91823434c">getNextPos</a> (int curPos, const int queueSize)</td></tr>
+<tr class="separator:a825b3d42ce9558a31a126fd91823434c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a089808fff0542df5527232587c3986d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structQueue.html">Queue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Queue_8c.html#a089808fff0542df5527232587c3986d9">newQueue</a> (int capacity)</td></tr>
 <tr class="separator:a089808fff0542df5527232587c3986d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebefb257bc186e8d45a2cddb1d2d421f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Queue_8c.html#aebefb257bc186e8d45a2cddb1d2d421f">enqueue</a> (<a class="el" href="structQueue.html">Queue</a> *queue, void *element)</td></tr>
@@ -159,6 +161,50 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>dequeue</b> (<a cla
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Q_STATUS_SUCCESS on success, Q_STATUS_FAILURE on failure (if queue is full) </dd></dl>
+
+</div>
+</div>
+<a id="a825b3d42ce9558a31a126fd91823434c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a825b3d42ce9558a31a126fd91823434c">&#9670;&nbsp;</a></span>getNextPos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int getNextPos </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>curPos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>queueSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the next position in a queue </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">curPos</td><td>Current position </td></tr>
+    <tr><td class="paramname">queueSize</td><td><a class="el" href="structQueue.html">Queue</a> size </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The next position in a queue </dd></dl>
 
 </div>
 </div>

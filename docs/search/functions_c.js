@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unregisterthread',['unregisterThread',['../logger_8h.html#a73ce845d8dab297b5d82febb0ae35fec',1,'unregisterThread():&#160;logger.c'],['../logger_8c.html#a73ce845d8dab297b5d82febb0ae35fec',1,'unregisterThread():&#160;logger.c']]]
+  ['terminatelogger',['terminateLogger',['../logger_8h.html#a4339ec77ab029db1548580313b9dc605',1,'terminateLogger():&#160;logger.c'],['../logger_8c.html#a4339ec77ab029db1548580313b9dc605',1,'terminateLogger():&#160;logger.c']]]
 ];

@@ -38,8 +38,8 @@ struct MessageQueue;
 /**
  * Creates a new MessageQueue object
  * @param size desired MessageQueue size
- * @param maxArgsLen Maximum length of additional arguments to log message
- * @return
+ * @param maxArgsLen Maximum length of additional arguments of the log message
+ * @return The newly allocated MessageQueue
  */
 struct MessageQueue* newMessageInfo(const int size, const int maxArgsLen);
 
@@ -55,8 +55,9 @@ struct MessageQueue* newMessageInfo(const int size, const int maxArgsLen);
  * @param logMethod Logging method (private buffer, shared buffer or direct write)
  * @return MQ_STATUS_SUCCESS on success, MQ_STATUS_FAILURE on failure
  */
-int addMessage(struct MessageQueue* mq, const int loggingLevel, char* file, const char* func,
-               const int line, va_list* args, const char* msg, int logMethod);
+int addMessage(struct MessageQueue* mq, const int loggingLevel, char* file,
+               const char* func, const int line, va_list* args, const char* msg,
+               const int logMethod, const int maxArgsLen) ;
 
 /**
  * Drains all the message from a given queue
@@ -66,7 +67,7 @@ int addMessage(struct MessageQueue* mq, const int loggingLevel, char* file, cons
  * @param formatMethod A method to format the message
  */
 void drainMessages(struct MessageQueue* mq, FILE* logFile, const int maxMsgLen,
-                   const int (*formatMethod)());
+                   const void (*formatMethod)());
 
 /**
  * Directly write to a file
@@ -80,15 +81,17 @@ void drainMessages(struct MessageQueue* mq, FILE* logFile, const int maxMsgLen,
  * @param maxMsgLen Maximum length of a message
  * @param maxArgsLen Maximum length of additional arguments to log message
  * @param logMethod Specifies the way logging is done
+ * * @param writeMethod A pointer to a method that writes a message to a file
  * @param formatMethod A method to format the message
  */
-void directWriteToFile(const int loggingLevel, char* file, const char* func, const int line,
-                       va_list* args, char* msg, FILE* logFile, const int maxMsgLen,
-                       const int maxArgsLen, const int logMethod, const int (*formatMethod)());
+void directWriteToFile(const int loggingLevel, char* file, const char* func,
+                       const int line, va_list* args, char* msg, FILE* logFile,
+                       const int maxMsgLen, const int maxArgsLen,
+                       const int logMethod, const void (*writeMethod)());
 
 /**
  * Releases all resources associated with a given  MessageQueue
- * @param mq
+ * @param mq The MessageQueue to destroy
  */
 void messageDataQueueDestroy(struct MessageQueue* mq);
 

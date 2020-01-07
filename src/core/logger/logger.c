@@ -66,6 +66,7 @@ static pthread_t loggerThread;
 static struct Queue* privateBuffersQueue;
 static struct MessageQueue** privateBuffers;
 static struct MessageQueue* sharedBuffer;
+static void (*writeMethod)();
 thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
 
 static bool isValitInitConditions(const int threadsNumArg,
@@ -73,7 +74,8 @@ static bool isValitInitConditions(const int threadsNumArg,
                                   const int sharedBuffSize,
                                   const int loggingLevel);
 static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
-                            const int maxMsgLenArg, const int loggingLevel);
+                            const int maxMsgLenArg, const int loggingLevel,
+                            void (*writeMethodArg)());
 static void initLocks();
 static void initMessageQueues(const int privateBuffSize,
                               const int sharedBuffSize, const int maxArgsLenArg);
@@ -81,25 +83,25 @@ static void startLoggerThread();
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
-static void initsharedBuffer(const int privateBuffSize, const int argsBufSize);
-static void initPrivateBuffers(const int privateBuffSize, const int argsBufSize);
+static void initsharedBuffer(const int privateBuffSize);
+static void initPrivateBuffers(const int privateBuffSize);
 static int writeTosharedBuffer(const int loggingLevel, char* file,
                                const char* func, const int line, va_list* args,
                                const char* msg);
 static inline void drainPrivateBuffers();
 static inline void drainSharedBuffer();
-static int formatMsg(char* buf, const MessageData* md);
 static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg);
 
 /* API method - Description located at .h file */
 int initLogger(const int threadsNumArg, const int privateBuffSize,
                const int sharedBuffSize, const int loggingLevel,
-               const int maxMsgLenArg, const int maxArgsLenArg) {
+               const int maxMsgLenArg, const int maxArgsLenArg,
+               void (*writeMethod)()) {
 	if (true
 	        == isValitInitConditions(threadsNumArg, privateBuffSize,
 	                                 sharedBuffSize, loggingLevel)) {
 		setStaticValues(threadsNumArg, maxArgsLenArg, maxMsgLenArg,
-		                loggingLevel);
+		                loggingLevel, writeMethod);
 		initLocks();
 		initMessageQueues(privateBuffSize, sharedBuffSize, maxArgsLenArg);
 		startLoggerThread();
@@ -138,13 +140,16 @@ static bool isValitInitConditions(const int threadsNumArg,
  * @param maxArgsLenArg Maximum message length
  * @param maxMsgLenArg Maximum message arguments length
  * @param loggingLevel Logging level (one of the levels at 'logLevels')
+ * @param writeMethodArg A pointer to a method that writes a message to a file
  */
 static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
-                            const int maxMsgLenArg, const int loggingLevel) {
+                            const int maxMsgLenArg, const int loggingLevel,
+                            void (*writeMethodArg)()) {
 	threadsNum = threadsNumArg;
 	maxMsgLen = maxMsgLenArg;
 	maxArgsLen = maxArgsLenArg;
 	setLoggingLevel(loggingLevel);
+	writeMethod = writeMethodArg;
 }
 
 /**
@@ -165,8 +170,8 @@ static void initLocks() {
 static void initMessageQueues(const int privateBuffSize,
                               const int sharedBuffSize, const int maxArgsLenArg) {
 	//TODO: add an option to dynamically change all of these:
-	initPrivateBuffers(privateBuffSize, maxArgsLenArg);
-	initsharedBuffer(sharedBuffSize, maxArgsLenArg);
+	initPrivateBuffers(privateBuffSize);
+	initsharedBuffer(sharedBuffSize);
 }
 
 /**
@@ -184,9 +189,8 @@ inline void setLoggingLevel(const int loggingLevel) {
 /**
  * Initialize private buffers parameters
  * @param privateBuffSize Number of buffers
- * @param argsBufSize Size of additional message arguments
  */
-static void initPrivateBuffers(const int privateBuffSize, const int argsBufSize) {
+static void initPrivateBuffers(const int privateBuffSize) {
 	int i;
 
 	privateBuffersQueue = newQueue(threadsNum);
@@ -196,7 +200,7 @@ static void initPrivateBuffers(const int privateBuffSize, const int argsBufSize)
 	for (i = 0; i < threadsNum; ++i) {
 		struct MessageQueue* mq;
 
-		mq = newMessageInfo(privateBuffSize, argsBufSize);
+		mq = newMessageInfo(privateBuffSize, maxArgsLen);
 		privateBuffers[i] = mq;
 		enqueue(privateBuffersQueue, mq);
 	}
@@ -205,10 +209,9 @@ static void initPrivateBuffers(const int privateBuffSize, const int argsBufSize)
 /**
  * Initialize shared buffer data parameters
  * @param sharedBufferSize Size of buffer
- * @param argsBufSize Size of additional message arguments
  */
-static void initsharedBuffer(const int sharedBuffSize, const int argsBufSize) {
-	sharedBuffer = newMessageInfo(sharedBuffSize, argsBufSize);
+static void initsharedBuffer(const int sharedBuffSize) {
+	sharedBuffer = newMessageInfo(sharedBuffSize, maxArgsLen);
 }
 
 /**
@@ -242,6 +245,7 @@ void unregisterThread() {
  */
 static void* runLogger() {
 	bool isTerminateLoc = false;
+
 	do {
 		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
@@ -276,7 +280,7 @@ static inline void drainPrivateBuffers() {
 	int i;
 
 	for (i = 0; i < threadsNum; ++i) {
-		drainMessages(privateBuffers[i], logFile, maxMsgLen, formatMsg);
+		drainMessages(privateBuffers[i], logFile, maxMsgLen, writeMethod);
 	}
 }
 
@@ -284,7 +288,7 @@ static inline void drainPrivateBuffers() {
  * Drain shared buffer to file
  */
 static inline void drainSharedBuffer() {
-	drainMessages(sharedBuffer, logFile, maxMsgLen, formatMsg);
+	drainMessages(sharedBuffer, logFile, maxMsgLen, writeMethod);
 }
 
 /* API method - Description located at .h file */
@@ -330,14 +334,15 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 		if (NULL != tlmq) {
 			writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func,
 			                                  line, &arg, msg,
-			                                  LM_PRIVATE_BUFFER);
+			                                  LM_PRIVATE_BUFFER, maxArgsLen);
 		} else {
 			/* The current thread doesn't have a private buffer - Try to register */
 			if (LOG_STATUS_SUCCESS == registerThread()) {
 				/* Managed to get a private buffer - write to it */
 				writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file,
 				                                  func, line, &arg, msg,
-				                                  LM_PRIVATE_BUFFER);
+				                                  LM_PRIVATE_BUFFER,
+				                                  maxArgsLen);
 			} else {
 				/* Can't use private buffer */
 				writeToPrivateBuffer = LOG_STATUS_FAILURE;
@@ -355,7 +360,7 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 				{
 					directWriteToFile(loggingLevel, file, func, line, &arg, msg,
 					                  logFile, maxMsgLen, maxArgsLen,
-					                  LM_DIRECT_WRITE, formatMsg);
+					                  LM_DIRECT_WRITE, writeMethod);
 					++cnt; //TODO: remove
 				}
 				pthread_mutex_unlock(&directWriteLock); /* Unlock */
@@ -413,57 +418,14 @@ static int writeTosharedBuffer(const int loggingLevel, char* file,
 	pthread_mutex_lock(&sharedBufferlock); /* Lock */
 	{
 		ret = addMessage(sharedBuffer, loggingLevel, file, func, line, args,
-		                 msg, LM_SHARED_BUFFER);
+		                 msg, LM_SHARED_BUFFER, maxArgsLen);
 	}
 	pthread_mutex_unlock(&sharedBufferlock); /* Unlock */
 
 	return ret;
 }
 
-/**
- * Formats a message
- * @param buf Buffer to save the message
- * @param md MessageData struct containing message info
- * @return Formatted message length
- */
-static int formatMsg(char* buf, const MessageData* md) {
-	static char logLevelsIds[] = { ' ', /* NONE */
-	                               'M', /* EMERGENCY */
-	                               'A', /* ALERT */
-	                               'C', /* CRITICAL */
-	                               'E', /* ERROR */
-	                               'W', /* WARNING */
-	                               'N', /* NOTICE */
-	                               'I', /* INFO */
-	                               'D', /* DEBUG */
-	                               'T', /* TRACE */};
-
-	static char* logMethods[] = { "pb", "sb", "dw" };
-
-	return snprintf(
-	        buf,
-	        maxMsgLen,
-	        "[mid: %x:%.5x] [ll: %c] [lm: %s] [lwp: %.5ld] [loc: %s:%s:%d] [msg: %s]\n",
-	        (unsigned int) md->tv.tv_sec, (unsigned int) md->tv.tv_usec,
-	        logLevelsIds[md->logLevel], logMethods[md->logMethod], md->tid,
-	        md->file, md->func, md->line, md->argsBuf);
-
-//TODO: Add an option to choose writing method (text, binary, etc')
-//	int fileNameLen = strlen(md->file);
-//	int methodNameLen = strlen(md->func);
-//	int argsBufLen = strlen(md->argsBuf);
-//
-//	fwrite(&md->tv.tv_sec, sizeof(md->tv.tv_sec), 1, logFile);
-//	fwrite(&md->tv.tv_usec, sizeof(md->tv.tv_usec), 1, logFile);
-//	fwrite(&logLevelsIds[md->logLevel], 1, 1, logFile);
-//	fwrite(logMethods[md->logMethod], 2, 1, logFile);
-//	fwrite(&md->tid, sizeof(md->tid), 1, logFile);
-//	fwrite(&fileNameLen, sizeof(fileNameLen), 1, logFile);
-//	fwrite(md->file, 1, fileNameLen, logFile);
-//	fwrite(&methodNameLen, sizeof(methodNameLen), 1, logFile);
-//	fwrite(md->func, 1, methodNameLen, logFile);
-//	fwrite(&md->line, 1, sizeof(md->line), logFile);
-//	fwrite(&argsBufLen, sizeof(argsBufLen), 1, logFile);
-//	fwrite(md->argsBuf, 1, argsBufLen, logFile);
-//	return 0;
+/* API method - Description located at .h file */
+int getMaxMsgLen() {
+	return maxMsgLen;
 }

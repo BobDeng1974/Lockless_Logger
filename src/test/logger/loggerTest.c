@@ -18,6 +18,7 @@
 #include <errno.h>
 
 #include "../../core/api/logger.h"
+#include "../../writeMethods/writeMethods.h"
 
 #define ITERATIONS 25000
 #define NUM_THRDS 200
@@ -36,19 +37,17 @@ static void createRandomData(char** data, int charsLen);
 static void* threadMethod();
 
 int main(void) {
-	pthread_t threads[NUM_THRDS];
-	int i;
-	int res;
-	int charsLen;
-	struct timeval tv1, tv2;
-
 	remove("logFile.txt");
 
-	charsLen = strlen(chars);
+	if (LOG_STATUS_SUCCESS
+	        == initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE,
+	                      MAX_MSG_LEN, ARGS_BUF_SIZE, asciiWrite)) {
+		int i;
+		int charsLen;
+		pthread_t threads[NUM_THRDS];
+		struct timeval tv1, tv2;
 
-	res = initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE, MAX_MSG_LEN,
-	                 ARGS_BUF_SIZE);
-	if (LOG_STATUS_SUCCESS == res) {
+		charsLen = strlen(chars);
 		data = malloc(NUM_THRDS * sizeof(*data));
 		createRandomData(data, charsLen);
 
@@ -71,14 +70,18 @@ int main(void) {
 
 		printf("Direct writes = %llu\n", cnt);
 		printf("Total time = %f seconds\n",
-		       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec));
+		       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000
+		               + (double) (tv2.tv_sec - tv1.tv_sec));
+
+		return 0;
 	}
 
-	return res;
+	return -1;
 }
 
 static void createRandomData(char** data, int charsLen) {
 	int i;
+
 	for (i = 0; i < NUM_THRDS; ++i) {
 		int j;
 		data[i] = malloc(BUF_SIZE);

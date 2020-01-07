@@ -41,6 +41,7 @@ typedef struct Queue {
 void initQueue(Queue* queue, int capacity);
 static inline bool isEmpty(Queue* queue);
 static inline bool isFull(Queue* queue);
+static inline int getNextPos(int curPos, const int queueSize);
 
 /* API method - Description located at .h file */
 Queue* newQueue(int capacity) {
@@ -92,7 +93,7 @@ int enqueue(Queue* queue, void* element) {
 	{
 		if (false == isFull(queue)) {
 			queue->elements[queue->tail] = element;
-			queue->tail = (queue->tail + 1) == queue->capacity ? 0 : (queue->tail + 1);
+			queue->tail = getNextPos(queue->tail, queue->capacity);
 			++queue->size;
 			res = Q_STATUS_SUCCESS;
 		} else {
@@ -113,7 +114,7 @@ void* dequeue(Queue* queue) {
 		if (false == isEmpty(queue)) {
 			element = queue->elements[queue->head];
 			queue->elements[queue->head] = NULL;
-			queue->head = (queue->head + 1) == queue->capacity ? 0 : (queue->head + 1);
+			queue->head = getNextPos(queue->head, queue->capacity);
 			--queue->size;
 		}
 	}
@@ -126,4 +127,14 @@ void* dequeue(Queue* queue) {
 void queueDestroy(Queue* queue) {
 	pthread_mutex_destroy(&queue->queueLock);
 	free(queue);
+}
+
+/**
+ * Return the next position in a queue
+ * @param curPos Current position
+ * @param queueSize Queue size
+ * @return The next position in a queue
+ */
+static inline int getNextPos(int curPos, const int queueSize) {
+	return ++curPos >= queueSize ? 0 : curPos;
 }

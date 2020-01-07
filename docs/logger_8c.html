@@ -114,8 +114,8 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:ac77246c2fc2c92a01f1340139cd029b3"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#ac77246c2fc2c92a01f1340139cd029b3">isValitInitConditions</a> (const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel)</td></tr>
 <tr class="separator:ac77246c2fc2c92a01f1340139cd029b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e1dde713d785515b577fafb718c61d2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a4e1dde713d785515b577fafb718c61d2">setStaticValues</a> (const int threadsNumArg, const int maxArgsLenArg, const int maxMsgLenArg, const int loggingLevel)</td></tr>
-<tr class="separator:a4e1dde713d785515b577fafb718c61d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5655f57c6891ee67dd6092f28e80ee58"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a5655f57c6891ee67dd6092f28e80ee58">setStaticValues</a> (const int threadsNumArg, const int maxArgsLenArg, const int maxMsgLenArg, const int loggingLevel, void(*writeMethodArg)())</td></tr>
+<tr class="separator:a5655f57c6891ee67dd6092f28e80ee58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f7e6266f1cfc42bdb3ffd0ccb4087fa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a2f7e6266f1cfc42bdb3ffd0ccb4087fa">initLocks</a> ()</td></tr>
 <tr class="separator:a2f7e6266f1cfc42bdb3ffd0ccb4087fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9082047a11eb9c04106dc016e21af5c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#ac9082047a11eb9c04106dc016e21af5c">initMessageQueues</a> (const int privateBuffSize, const int sharedBuffSize, const int maxArgsLenArg)</td></tr>
@@ -128,22 +128,20 @@ Functions</h2></td></tr>
 <tr class="separator:a25450beac2c28565d53e0d15440d5c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9fd7d3256d9c072dda9170df52cfb85"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#ac9fd7d3256d9c072dda9170df52cfb85">freeResources</a> ()</td></tr>
 <tr class="separator:ac9fd7d3256d9c072dda9170df52cfb85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f69ab701d48a4df4d0baddff5abec59"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a6f69ab701d48a4df4d0baddff5abec59">initsharedBuffer</a> (const int privateBuffSize, const int argsBufSize)</td></tr>
-<tr class="separator:a6f69ab701d48a4df4d0baddff5abec59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf78f16ce2695cb6db3ba194175e3a26"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#aaf78f16ce2695cb6db3ba194175e3a26">initPrivateBuffers</a> (const int privateBuffSize, const int argsBufSize)</td></tr>
-<tr class="separator:aaf78f16ce2695cb6db3ba194175e3a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b18d29b9006311f050a0d8edc2c4728"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a2b18d29b9006311f050a0d8edc2c4728">initsharedBuffer</a> (const int privateBuffSize)</td></tr>
+<tr class="separator:a2b18d29b9006311f050a0d8edc2c4728"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4674ed18fd3331ae6634587d392acb55"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a4674ed18fd3331ae6634587d392acb55">initPrivateBuffers</a> (const int privateBuffSize)</td></tr>
+<tr class="separator:a4674ed18fd3331ae6634587d392acb55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac406546662b9f231ecef7fe351697600"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#ac406546662b9f231ecef7fe351697600">writeTosharedBuffer</a> (const int loggingLevel, char *file, const char *func, const int line, va_list *args, const char *msg)</td></tr>
 <tr class="separator:ac406546662b9f231ecef7fe351697600"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a016c1fba7fb5fcae0a42357db89c5daf"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a016c1fba7fb5fcae0a42357db89c5daf">drainPrivateBuffers</a> ()</td></tr>
 <tr class="separator:a016c1fba7fb5fcae0a42357db89c5daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85abc23bdbb5501c19a5fcc6873d1718"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a85abc23bdbb5501c19a5fcc6873d1718">drainSharedBuffer</a> ()</td></tr>
 <tr class="separator:a85abc23bdbb5501c19a5fcc6873d1718"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a437c69ed92a03be57aa456cb58ac5466"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a437c69ed92a03be57aa456cb58ac5466">formatMsg</a> (char *buf, const <a class="el" href="structMessageData.html">MessageData</a> *md)</td></tr>
-<tr class="separator:a437c69ed92a03be57aa456cb58ac5466"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f4f946913d35e2a30bdc6ca32ec6c75"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a7f4f946913d35e2a30bdc6ca32ec6c75">isLoggingConditionsValid</a> (const int loggingLevel, char *msg)</td></tr>
 <tr class="separator:a7f4f946913d35e2a30bdc6ca32ec6c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02cb4986e65790043edb9b1e78b7984d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a02cb4986e65790043edb9b1e78b7984d">initLogger</a> (const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg)</td></tr>
-<tr class="separator:a02cb4986e65790043edb9b1e78b7984d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a1e1e73d39498c6d689b9a6e65e107c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a1a1e1e73d39498c6d689b9a6e65e107c">initLogger</a> (const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg, void(*writeMethod)())</td></tr>
+<tr class="separator:a1a1e1e73d39498c6d689b9a6e65e107c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b26c3643213fb562e2a488bc28b3786"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a8b26c3643213fb562e2a488bc28b3786">setLoggingLevel</a> (const int loggingLevel)</td></tr>
 <tr class="separator:a8b26c3643213fb562e2a488bc28b3786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24cb7a769ac91199a40ffd5d0ba0daca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a24cb7a769ac91199a40ffd5d0ba0daca">registerThread</a> ()</td></tr>
@@ -155,6 +153,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a7a59ae48e89e602072964d2bf93d726b"><td class="memItemLeft" align="right" valign="top"><a id="a7a59ae48e89e602072964d2bf93d726b"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>logMessage</b> (const int loggingLevel, char *file, const char *func, const int line, char *msg,...)</td></tr>
 <tr class="separator:a7a59ae48e89e602072964d2bf93d726b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41be9dce9c45d870615e79736a608e0b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a41be9dce9c45d870615e79736a608e0b">getMaxMsgLen</a> ()</td></tr>
+<tr class="separator:a41be9dce9c45d870615e79736a608e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -197,6 +197,9 @@ static struct <a class="el" href="structMessageQueue.html">MessageQueue</a> **&#
 <tr class="memitem:a40658d8f66b7845363790a4c0a38374c"><td class="memItemLeft" align="right" valign="top"><a id="a40658d8f66b7845363790a4c0a38374c"></a>
 static struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>sharedBuffer</b></td></tr>
 <tr class="separator:a40658d8f66b7845363790a4c0a38374c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a025d183d2d77b51750c974e801cd89e2"><td class="memItemLeft" align="right" valign="top"><a id="a025d183d2d77b51750c974e801cd89e2"></a>
+static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod</b> )()</td></tr>
+<tr class="separator:a025d183d2d77b51750c974e801cd89e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa49f524ccc94cbd7616c574de228439"><td class="memItemLeft" align="right" valign="top"><a id="aaa49f524ccc94cbd7616c574de228439"></a>
 thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>tlmq</b></td></tr>
 <tr class="separator:aaa49f524ccc94cbd7616c574de228439"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,50 +288,6 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 
 </div>
 </div>
-<a id="a437c69ed92a03be57aa456cb58ac5466"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a437c69ed92a03be57aa456cb58ac5466">&#9670;&nbsp;</a></span>formatMsg()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static int formatMsg </td>
-          <td>(</td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>buf</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structMessageData.html">MessageData</a> *&#160;</td>
-          <td class="paramname"><em>md</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Formats a message </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">buf</td><td>Buffer to save the message </td></tr>
-    <tr><td class="paramname">md</td><td><a class="el" href="structMessageData.html">MessageData</a> struct containing message info </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Formatted message length </dd></dl>
-
-</div>
-</div>
 <a id="ac9fd7d3256d9c072dda9170df52cfb85"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac9fd7d3256d9c072dda9170df52cfb85">&#9670;&nbsp;</a></span>freeResources()</h2>
 
@@ -352,6 +311,24 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 </table>
 </div><div class="memdoc">
 <p>Release all malloc'ed resources, destroy mutexs and close the open file </p>
+
+</div>
+</div>
+<a id="a41be9dce9c45d870615e79736a608e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41be9dce9c45d870615e79736a608e0b">&#9670;&nbsp;</a></span>getMaxMsgLen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int getMaxMsgLen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return the defined max message length </p><dl class="section return"><dt>Returns</dt><dd>The defined max message length </dd></dl>
 
 </div>
 </div>
@@ -381,8 +358,8 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 
 </div>
 </div>
-<a id="a02cb4986e65790043edb9b1e78b7984d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02cb4986e65790043edb9b1e78b7984d">&#9670;&nbsp;</a></span>initLogger()</h2>
+<a id="a1a1e1e73d39498c6d689b9a6e65e107c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1e1e73d39498c6d689b9a6e65e107c">&#9670;&nbsp;</a></span>initLogger()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -421,7 +398,13 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>maxArgsLenArg</em>&#160;</td>
+          <td class="paramname"><em>maxArgsLenArg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)()&#160;</td>
+          <td class="paramname"><em>writeMethodArg</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -438,6 +421,7 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
     <tr><td class="paramname">loggingLevel</td><td>Desired logging level (only messages with lower or equal logging level will be logged, one of the levels at 'logLevels') </td></tr>
     <tr><td class="paramname">maxMsgLenArg</td><td>Maximum message length </td></tr>
     <tr><td class="paramname">maxArgsLenArg</td><td>Maximum additional arguments length </td></tr>
+    <tr><td class="paramname">writeMethodArg</td><td>A pointer to a method that writes a message to a file </td></tr>
   </table>
   </dd>
 </dl>
@@ -495,8 +479,8 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 
 </div>
 </div>
-<a id="aaf78f16ce2695cb6db3ba194175e3a26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaf78f16ce2695cb6db3ba194175e3a26">&#9670;&nbsp;</a></span>initPrivateBuffers()</h2>
+<a id="a4674ed18fd3331ae6634587d392acb55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4674ed18fd3331ae6634587d392acb55">&#9670;&nbsp;</a></span>initPrivateBuffers()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -508,18 +492,8 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
           <td class="memname">static void initPrivateBuffers </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>privateBuffSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>privateBuffSize</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>argsBufSize</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -531,15 +505,14 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 <p>Initialize private buffers parameters </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">privateBuffSize</td><td>Number of buffers </td></tr>
-    <tr><td class="paramname">argsBufSize</td><td>Size of additional message arguments </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a6f69ab701d48a4df4d0baddff5abec59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f69ab701d48a4df4d0baddff5abec59">&#9670;&nbsp;</a></span>initsharedBuffer()</h2>
+<a id="a2b18d29b9006311f050a0d8edc2c4728"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b18d29b9006311f050a0d8edc2c4728">&#9670;&nbsp;</a></span>initsharedBuffer()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -551,18 +524,8 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
           <td class="memname">static void initsharedBuffer </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>sharedBuffSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>sharedBuffSize</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>argsBufSize</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -574,7 +537,6 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 <p>Initialize shared buffer data parameters </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sharedBufferSize</td><td>Size of buffer </td></tr>
-    <tr><td class="paramname">argsBufSize</td><td>Size of additional message arguments </td></tr>
   </table>
   </dd>
 </dl>
@@ -759,8 +721,8 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 
 </div>
 </div>
-<a id="a4e1dde713d785515b577fafb718c61d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e1dde713d785515b577fafb718c61d2">&#9670;&nbsp;</a></span>setStaticValues()</h2>
+<a id="a5655f57c6891ee67dd6092f28e80ee58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5655f57c6891ee67dd6092f28e80ee58">&#9670;&nbsp;</a></span>setStaticValues()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -790,7 +752,13 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>loggingLevel</em>&#160;</td>
+          <td class="paramname"><em>loggingLevel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)()&#160;</td>
+          <td class="paramname"><em>writeMethodArg</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -810,6 +778,7 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
     <tr><td class="paramname">maxArgsLenArg</td><td>Maximum message length </td></tr>
     <tr><td class="paramname">maxMsgLenArg</td><td>Maximum message arguments length </td></tr>
     <tr><td class="paramname">loggingLevel</td><td>Logging level (one of the levels at 'logLevels') </td></tr>
+    <tr><td class="paramname">writeMethodArg</td><td>A pointer to a method that writes a message to a file </td></tr>
   </table>
   </dd>
 </dl>

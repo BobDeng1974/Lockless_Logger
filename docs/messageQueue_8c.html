@@ -109,14 +109,16 @@ typedef struct <a class="el" href="structMessageQueue.html">MessageQueue</a>&#16
 Functions</h2></td></tr>
 <tr class="memitem:a8970f528b6628436abfebb9a62ef451d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a8970f528b6628436abfebb9a62ef451d">initMessageQueue</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, const int size, const int maxArgsLen)</td></tr>
 <tr class="separator:a8970f528b6628436abfebb9a62ef451d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a825b3d42ce9558a31a126fd91823434c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a825b3d42ce9558a31a126fd91823434c">getNextPos</a> (int curPos, const int queueSize)</td></tr>
+<tr class="separator:a825b3d42ce9558a31a126fd91823434c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e4c09201163d77b276961e592fa10df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a2e4c09201163d77b276961e592fa10df">newMessageInfo</a> (const int size, const int maxArgsLen)</td></tr>
 <tr class="separator:a2e4c09201163d77b276961e592fa10df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31b233c1147b38e8000a173932a15fc9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a31b233c1147b38e8000a173932a15fc9">addMessage</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, const int loggingLevel, char *file, const char *func, const int line, va_list *args, const char *msg, int logMethod)</td></tr>
-<tr class="separator:a31b233c1147b38e8000a173932a15fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82077de72a46fc18f4e549ec29bedc97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a82077de72a46fc18f4e549ec29bedc97">drainMessages</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, FILE *logFile, const int maxMsgLen, const int(*formatMethod)())</td></tr>
-<tr class="separator:a82077de72a46fc18f4e549ec29bedc97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0202ef8af205e2e725fa253c486d9d35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a0202ef8af205e2e725fa253c486d9d35">directWriteToFile</a> (const int loggingLevel, char *file, const char *func, const int line, va_list *args, char *msg, FILE *logFile, const int maxMsgLen, const int maxArgsLen, const int logMethod, const int(*formatMethod)())</td></tr>
-<tr class="separator:a0202ef8af205e2e725fa253c486d9d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22c6c3c358092187a896502f944ff42"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#af22c6c3c358092187a896502f944ff42">addMessage</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, const int loggingLevel, char *file, const char *func, const int line, va_list *args, const char *msg, const int logMethod, const int maxArgsLen)</td></tr>
+<tr class="separator:af22c6c3c358092187a896502f944ff42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a304a486eb9189e63de7640517201365b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a304a486eb9189e63de7640517201365b">drainMessages</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, FILE *logFile, const int maxMsgLen, const void(*writeMethod)())</td></tr>
+<tr class="separator:a304a486eb9189e63de7640517201365b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae918a0264a298af65bd6093f5e248d9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#ae918a0264a298af65bd6093f5e248d9f">directWriteToFile</a> (const int loggingLevel, char *file, const char *func, const int line, va_list *args, char *msg, FILE *logFile, const int maxMsgLen, const int maxArgsLen, const int logMethod, const void(*writeMethod)())</td></tr>
+<tr class="separator:ae918a0264a298af65bd6093f5e248d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8af30b594896403efa68e854b0b9a33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#ab8af30b594896403efa68e854b0b9a33">messageDataQueueDestroy</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
 <tr class="separator:ab8af30b594896403efa68e854b0b9a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -126,8 +128,8 @@ Functions</h2></td></tr>
 <dl class="section user"><dt>License: Apache License, Version 2.0</dt><dd></dd></dl>
 <dl class="section user"><dt>Copywrite: (C) [2019] [Barak Sason Rofman]</dt><dd></dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a31b233c1147b38e8000a173932a15fc9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a31b233c1147b38e8000a173932a15fc9">&#9670;&nbsp;</a></span>addMessage()</h2>
+<a id="af22c6c3c358092187a896502f944ff42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af22c6c3c358092187a896502f944ff42">&#9670;&nbsp;</a></span>addMessage()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -177,8 +179,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>logMethod</em>&#160;</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>logMethod</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>maxArgsLen</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -204,8 +212,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0202ef8af205e2e725fa253c486d9d35"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0202ef8af205e2e725fa253c486d9d35">&#9670;&nbsp;</a></span>directWriteToFile()</h2>
+<a id="ae918a0264a298af65bd6093f5e248d9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae918a0264a298af65bd6093f5e248d9f">&#9670;&nbsp;</a></span>directWriteToFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -273,8 +281,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int(*)()&#160;</td>
-          <td class="paramname"><em>formatMethod</em>&#160;</td>
+          <td class="paramtype">const void(*)()&#160;</td>
+          <td class="paramname"><em>writeMethod</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -294,7 +302,11 @@ Functions</h2></td></tr>
     <tr><td class="paramname">logFile</td><td>The file to write the messages to </td></tr>
     <tr><td class="paramname">maxMsgLen</td><td>Maximum length of a message </td></tr>
     <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments to log message </td></tr>
-    <tr><td class="paramname">logMethod</td><td>Specifies the way logging is done </td></tr>
+    <tr><td class="paramname">logMethod</td><td>Specifies the way logging is done<ul>
+<li></li>
+</ul>
+</td></tr>
+    <tr><td class="paramname">writeMethod</td><td>A pointer to a method that writes a message to a file </td></tr>
     <tr><td class="paramname">formatMethod</td><td>A method to format the message </td></tr>
   </table>
   </dd>
@@ -302,8 +314,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a82077de72a46fc18f4e549ec29bedc97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82077de72a46fc18f4e549ec29bedc97">&#9670;&nbsp;</a></span>drainMessages()</h2>
+<a id="a304a486eb9189e63de7640517201365b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a304a486eb9189e63de7640517201365b">&#9670;&nbsp;</a></span>drainMessages()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -329,7 +341,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int(*)()&#160;</td>
+          <td class="paramtype">const void(*)()&#160;</td>
           <td class="paramname"><em>formatMethod</em>&#160;</td>
         </tr>
         <tr>
@@ -348,6 +360,50 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a825b3d42ce9558a31a126fd91823434c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a825b3d42ce9558a31a126fd91823434c">&#9670;&nbsp;</a></span>getNextPos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int getNextPos </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>curPos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>queueSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the next position in a queue </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">curPos</td><td>Current position </td></tr>
+    <tr><td class="paramname">queueSize</td><td><a class="el" href="structQueue.html">Queue</a> size </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The next position in a queue </dd></dl>
 
 </div>
 </div>
@@ -418,7 +474,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Releases all resources associated with a given <a class="el" href="structMessageQueue.html">MessageQueue</a> </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mq</td><td></td></tr>
+    <tr><td class="paramname">mq</td><td>The <a class="el" href="structMessageQueue.html">MessageQueue</a> to destroy </td></tr>
   </table>
   </dd>
 </dl>
@@ -453,11 +509,11 @@ Functions</h2></td></tr>
 <p>Creates a new <a class="el" href="structMessageQueue.html">MessageQueue</a> object </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">size</td><td>desired <a class="el" href="structMessageQueue.html">MessageQueue</a> size </td></tr>
-    <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments to log message </td></tr>
+    <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments of the log message </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly allocated <a class="el" href="structMessageQueue.html">MessageQueue</a> </dd></dl>
 
 </div>
 </div>

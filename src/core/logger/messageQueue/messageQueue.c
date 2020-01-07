@@ -41,13 +41,13 @@ typedef struct MessageQueue {
 	atomic_int lastWrite;
 	/** The size of the buffer */
 	int size;
-	/** Max length of additional arguments to log message */
-	int maxArgsLen;
 	/** Pointer to the internal buffer */
 	MessageData* messagesData;
 } MessageQueue;
 
-static void initMessageQueue(MessageQueue* mq, const int size, const int maxArgsLen);
+static void initMessageQueue(MessageQueue* mq, const int size,
+                             const int maxArgsLen);
+static inline int getNextPos(int curPos, const int queueSize);
 
 /* API method - Description located at .h file */
 MessageQueue* newMessageInfo(const int size, const int maxArgsLen) {
@@ -68,11 +68,11 @@ MessageQueue* newMessageInfo(const int size, const int maxArgsLen) {
  * @param size The of the queue
  * @param maxArgsLen Maximum length of message arguments
  */
-static void initMessageQueue(MessageQueue* mq, const int size, const int maxArgsLen) {
+static void initMessageQueue(MessageQueue* mq, const int size,
+                             const int maxArgsLen) {
 	int i;
 
 	mq->size = size;
-	mq->maxArgsLen = maxArgsLen;
 
 	//TODO: think if malloc failures need to be handled
 	mq->messagesData = malloc(size * sizeof(*mq->messagesData));
@@ -90,8 +90,9 @@ static void initMessageQueue(MessageQueue* mq, const int size, const int maxArgs
 }
 
 /* API method - Description located at .h file */
-int addMessage(MessageQueue* mq, const int loggingLevel, char* file, const char* func,
-               const int line, va_list* args, const char* msg, int logMethod) {
+int addMessage(MessageQueue* mq, const int loggingLevel, char* file,
+               const char* func, const int line, va_list* args, const char* msg,
+               const int logMethod, const int maxArgsLen) {
 	int lastRead;
 	int lastWrite;
 	int nextLastWrite;
@@ -99,11 +100,11 @@ int addMessage(MessageQueue* mq, const int loggingLevel, char* file, const char*
 	/* Atomic load lastRead, as it's written by a different thread */
 	__atomic_load(&mq->lastRead, &lastRead, __ATOMIC_SEQ_CST);
 	lastWrite = mq->lastWrite;
-	nextLastWrite = (lastWrite + 1) >= mq->size ? 0 : (lastWrite + 1);
+	nextLastWrite = getNextPos(lastWrite, mq->size);
 
 	if (nextLastWrite != lastRead) {
-		setMsgValues(&mq->messagesData[lastWrite], loggingLevel, file, func, line, args, msg,
-		             logMethod, mq->maxArgsLen);
+		setMsgValues(&mq->messagesData[lastWrite], loggingLevel, file, func,
+		             line, args, msg, logMethod, maxArgsLen);
 
 		/* Atomic store lastWrite, as it's read by a different thread */
 		__atomic_store_n(&mq->lastWrite, nextLastWrite, __ATOMIC_SEQ_CST);
@@ -116,7 +117,7 @@ int addMessage(MessageQueue* mq, const int loggingLevel, char* file, const char*
 
 /* API method - Description located at .h file */
 void drainMessages(MessageQueue* mq, FILE* logFile, const int maxMsgLen,
-                   const int (*formatMethod)()) {
+                   const void (*writeMethod)()) {
 	int lastRead;
 	int lastWrite;
 	int nextLastRead;
@@ -124,23 +125,19 @@ void drainMessages(MessageQueue* mq, FILE* logFile, const int maxMsgLen,
 	/* Atomic load lastWrite, as it's read by a different thread */
 	__atomic_load(&mq->lastWrite, &lastWrite, __ATOMIC_SEQ_CST);
 	lastRead = mq->lastRead;
-	nextLastRead = (lastRead + 1) >= mq->size ? 0 : (lastRead + 1);
+	nextLastRead = getNextPos(lastRead, mq->size);
 
 	if (nextLastRead != lastWrite) {
 		int prevNextLastRead;
 		do {
 			MessageData* md;
-			int msgLen;
-			char buf[maxMsgLen];
 
 			md = &mq->messagesData[nextLastRead];
-			msgLen = formatMethod(buf, md, maxMsgLen);
-			fwrite(buf, 1, msgLen, logFile);
-
-//			formatMethod(buf, md, maxMsgLen);
+			writeMethod(md, logFile);
 
 			prevNextLastRead = nextLastRead;
-			nextLastRead = (nextLastRead + 1) >= mq->size ? 0 : (nextLastRead + 1);
+			nextLastRead =
+			        (nextLastRead + 1) >= mq->size ? 0 : (nextLastRead + 1);
 		} while (nextLastRead != lastWrite);
 
 		/* Atomic store lastRead, as it's read by a different thread */
@@ -149,21 +146,18 @@ void drainMessages(MessageQueue* mq, FILE* logFile, const int maxMsgLen,
 }
 
 /* API method - Description located at .h file */
-void directWriteToFile(const int loggingLevel, char* file, const char* func, const int line,
-                       va_list* args, char* msg, FILE* logFile, const int maxMsgLen,
-                       const int maxArgsLen, const int logMethod, const int (*formatMethod)()) {
+void directWriteToFile(const int loggingLevel, char* file, const char* func,
+                       const int line, va_list* args, char* msg, FILE* logFile,
+                       const int maxMsgLen, const int maxArgsLen,
+                       const int logMethod, const void (*writeMethod)()) {
 	MessageData md;
-	int msgLen;
 	char argsBuf[maxArgsLen];
-	char buf[maxMsgLen];
 
 	md.argsBuf = argsBuf;
-	setMsgValues(&md, loggingLevel, file, func, line, args, msg, logMethod, maxArgsLen);
+	setMsgValues(&md, loggingLevel, file, func, line, args, msg, logMethod,
+	             maxArgsLen);
 
-	msgLen = formatMethod(buf, &md, maxMsgLen);
-	fwrite(buf, 1, msgLen, logFile);
-
-//	formatMethod(buf, &md, maxMsgLen);
+	writeMethod(&md, logFile);
 }
 
 /* API method - Description located at .h file */
@@ -177,4 +171,14 @@ void messageDataQueueDestroy(MessageQueue* mq) {
 
 	free(mq->messagesData);
 	free(mq);
+}
+
+/**
+ * Return the next position in a queue
+ * @param curPos Current position
+ * @param queueSize Queue size
+ * @return The next position in a queue
+ */
+static inline int getNextPos(int curPos, const int queueSize) {
+	return ++curPos >= queueSize ? 0 : curPos;
 }

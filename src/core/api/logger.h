@@ -64,10 +64,13 @@ long long cnt;
  * be logged, one of the levels at 'logLevels')
  * @param maxMsgLenArg Maximum message length
  * @param maxArgsLenArg Maximum additional arguments length
+ * @param writeMethodArg A pointer to a method that writes a message to a file
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int initLogger(const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize,
-               const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg);
+int initLogger(const int threadsNumArg, const int privateBuffSize,
+               const int sharedBuffSize, const int loggingLevel,
+               const int maxMsgLenArg, const int maxArgsLenArg,
+               void (*writeMethodArg)());
 
 /**
  * Register a worker thread at the logger and assign a private buffers to it
@@ -95,11 +98,12 @@ void unregisterThread();
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-int logMessage(const int loggingLevel, char* file, const char* func, const int line, char* msg, ...);
+int logMessage(const int loggingLevel, char* file, const char* func,
+               const int line, char* msg, ...);
 
 /** A macro that defines the usage for 'logMessage(...) API */
 #define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILENAME__,__PRETTY_FUNCTION__,  __LINE__  , msg)
-//#undef __FILENAME__
+
 /**
  * Terminate the logger thread and release resources
  * NOTE: this API may be called only after calling 'initLogger(...) API
@@ -112,5 +116,11 @@ void terminateLogger();
  * @param loggingLevel New logging level of the message (must be one of the defined logging levels)
  */
 void setLoggingLevel(const int loggingLevel);
+
+/**
+ * Return the defined max message length
+ * @return The defined max message length
+ */
+int getMaxMsgLen();
 
 #endif /* LOGGER_H */
