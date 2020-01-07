@@ -112,6 +112,16 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ac77246c2fc2c92a01f1340139cd029b3"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#ac77246c2fc2c92a01f1340139cd029b3">isValitInitConditions</a> (const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel)</td></tr>
+<tr class="separator:ac77246c2fc2c92a01f1340139cd029b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e1dde713d785515b577fafb718c61d2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a4e1dde713d785515b577fafb718c61d2">setStaticValues</a> (const int threadsNumArg, const int maxArgsLenArg, const int maxMsgLenArg, const int loggingLevel)</td></tr>
+<tr class="separator:a4e1dde713d785515b577fafb718c61d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f7e6266f1cfc42bdb3ffd0ccb4087fa"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a2f7e6266f1cfc42bdb3ffd0ccb4087fa">initLocks</a> ()</td></tr>
+<tr class="separator:a2f7e6266f1cfc42bdb3ffd0ccb4087fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9082047a11eb9c04106dc016e21af5c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#ac9082047a11eb9c04106dc016e21af5c">initMessageQueues</a> (const int privateBuffSize, const int sharedBuffSize, const int maxArgsLenArg)</td></tr>
+<tr class="separator:ac9082047a11eb9c04106dc016e21af5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6967ef858fa9a2578bf17af4e457b037"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a6967ef858fa9a2578bf17af4e457b037">startLoggerThread</a> ()</td></tr>
+<tr class="separator:a6967ef858fa9a2578bf17af4e457b037"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaaedf789894c42fcd6d8ebad5003407d"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#aaaedf789894c42fcd6d8ebad5003407d">createLogFile</a> ()</td></tr>
 <tr class="separator:aaaedf789894c42fcd6d8ebad5003407d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25450beac2c28565d53e0d15440d5c1f"><td class="memItemLeft" align="right" valign="top">static void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a25450beac2c28565d53e0d15440d5c1f">runLogger</a> ()</td></tr>
@@ -130,6 +140,8 @@ Functions</h2></td></tr>
 <tr class="separator:a85abc23bdbb5501c19a5fcc6873d1718"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a437c69ed92a03be57aa456cb58ac5466"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a437c69ed92a03be57aa456cb58ac5466">formatMsg</a> (char *buf, const <a class="el" href="structMessageData.html">MessageData</a> *md)</td></tr>
 <tr class="separator:a437c69ed92a03be57aa456cb58ac5466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f4f946913d35e2a30bdc6ca32ec6c75"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a7f4f946913d35e2a30bdc6ca32ec6c75">isLoggingConditionsValid</a> (const int loggingLevel, char *msg)</td></tr>
+<tr class="separator:a7f4f946913d35e2a30bdc6ca32ec6c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02cb4986e65790043edb9b1e78b7984d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a02cb4986e65790043edb9b1e78b7984d">initLogger</a> (const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg)</td></tr>
 <tr class="separator:a02cb4986e65790043edb9b1e78b7984d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b26c3643213fb562e2a488bc28b3786"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a8b26c3643213fb562e2a488bc28b3786">setLoggingLevel</a> (const int loggingLevel)</td></tr>
@@ -343,6 +355,32 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 
 </div>
 </div>
+<a id="a2f7e6266f1cfc42bdb3ffd0ccb4087fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f7e6266f1cfc42bdb3ffd0ccb4087fa">&#9670;&nbsp;</a></span>initLocks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void initLocks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize static mutexes </p>
+
+</div>
+</div>
 <a id="a02cb4986e65790043edb9b1e78b7984d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a02cb4986e65790043edb9b1e78b7984d">&#9670;&nbsp;</a></span>initLogger()</h2>
 
@@ -404,6 +442,56 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure </dd></dl>
+
+</div>
+</div>
+<a id="ac9082047a11eb9c04106dc016e21af5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9082047a11eb9c04106dc016e21af5c">&#9670;&nbsp;</a></span>initMessageQueues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void initMessageQueues </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>privateBuffSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>sharedBuffSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>maxArgsLenArg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create message queues </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">privateBuffSize</td><td>Size of private buffers </td></tr>
+    <tr><td class="paramname">sharedBuffSize</td><td>Size of shared buffer </td></tr>
+    <tr><td class="paramname">maxArgsLenArg</td><td>Maximum message arguments length </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -493,6 +581,108 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
 
 </div>
 </div>
+<a id="a7f4f946913d35e2a30bdc6ca32ec6c75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f4f946913d35e2a30bdc6ca32ec6c75">&#9670;&nbsp;</a></span>isLoggingConditionsValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool isLoggingConditionsValid </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>loggingLevel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check whether or not the logging conditions of the current message are valid </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">loggingLevel</td><td>The logging level of the current message </td></tr>
+    <tr><td class="paramname">msg</td><td>The message itself </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True of conditions are valid of false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="ac77246c2fc2c92a01f1340139cd029b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac77246c2fc2c92a01f1340139cd029b3">&#9670;&nbsp;</a></span>isValitInitConditions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool isValitInitConditions </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>threadsNumArg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>privateBuffSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>sharedBuffSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>loggingLevel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">threadsNumArg</td><td>Numbers of threads (available buffers) </td></tr>
+    <tr><td class="paramname">privateBuffSize</td><td>Size of private buffers </td></tr>
+    <tr><td class="paramname">sharedBuffSize</td><td>Size of shared buffer </td></tr>
+    <tr><td class="paramname">loggingLevel</td><td>Logging level (one of the levels at 'logLevels') </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True of conditions are valid of false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a24cb7a769ac91199a40ffd5d0ba0daca"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a24cb7a769ac91199a40ffd5d0ba0daca">&#9670;&nbsp;</a></span>registerThread()</h2>
 
@@ -566,6 +756,89 @@ thread_local struct <a class="el" href="structMessageQueue.html">MessageQueue</a
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a4e1dde713d785515b577fafb718c61d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e1dde713d785515b577fafb718c61d2">&#9670;&nbsp;</a></span>setStaticValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void setStaticValues </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>threadsNumArg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>maxArgsLenArg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>maxMsgLenArg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>loggingLevel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set static parameters </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">threadsNumArg</td><td>Numbers of threads (available buffers) </td></tr>
+    <tr><td class="paramname">maxArgsLenArg</td><td>Maximum message length </td></tr>
+    <tr><td class="paramname">maxMsgLenArg</td><td>Maximum message arguments length </td></tr>
+    <tr><td class="paramname">loggingLevel</td><td>Logging level (one of the levels at 'logLevels') </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6967ef858fa9a2578bf17af4e457b037"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6967ef858fa9a2578bf17af4e457b037">&#9670;&nbsp;</a></span>startLoggerThread()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void startLoggerThread </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Starts the internal logger threads which drains buffers to file </p>
 
 </div>
 </div>

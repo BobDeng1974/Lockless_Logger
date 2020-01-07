@@ -68,6 +68,16 @@ static struct MessageQueue** privateBuffers;
 static struct MessageQueue* sharedBuffer;
 thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
 
+static bool isValitInitConditions(const int threadsNumArg,
+                                  const int privateBuffSize,
+                                  const int sharedBuffSize,
+                                  const int loggingLevel);
+static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
+                            const int maxMsgLenArg, const int loggingLevel);
+static void initLocks();
+static void initMessageQueues(const int privateBuffSize,
+                              const int sharedBuffSize, const int maxArgsLenArg);
+static void startLoggerThread();
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
@@ -79,39 +89,91 @@ static int writeTosharedBuffer(const int loggingLevel, char* file,
 static inline void drainPrivateBuffers();
 static inline void drainSharedBuffer();
 static int formatMsg(char* buf, const MessageData* md);
+static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg);
 
 /* API method - Description located at .h file */
 int initLogger(const int threadsNumArg, const int privateBuffSize,
                const int sharedBuffSize, const int loggingLevel,
                const int maxMsgLenArg, const int maxArgsLenArg) {
-	if (0 > threadsNum || 2 > privateBuffSize || 0 >= sharedBuffSize
-	        || (loggingLevel < LOG_LEVEL_NONE || loggingLevel > LOG_LEVEL_TRACE)) {
-		return LOG_STATUS_FAILURE;
+	if (true
+	        == isValitInitConditions(threadsNumArg, privateBuffSize,
+	                                 sharedBuffSize, loggingLevel)) {
+		setStaticValues(threadsNumArg, maxArgsLenArg, maxMsgLenArg,
+		                loggingLevel);
+		initLocks();
+		initMessageQueues(privateBuffSize, sharedBuffSize, maxArgsLenArg);
+		startLoggerThread();
+
+		return LOG_STATUS_SUCCESS;
 	}
 
+	return LOG_STATUS_FAILURE;
+}
+
+/**
+ *
+ * @param threadsNumArg Numbers of threads (available buffers)
+ * @param privateBuffSize Size of private buffers
+ * @param sharedBuffSize Size of shared buffer
+ * @param loggingLevel Logging level (one of the levels at 'logLevels')
+ * @return True of conditions are valid of false otherwise
+ */
+static bool isValitInitConditions(const int threadsNumArg,
+                                  const int privateBuffSize,
+                                  const int sharedBuffSize,
+                                  const int loggingLevel) {
+	if ((0 >= threadsNumArg) || (2 > privateBuffSize) || (0 >= sharedBuffSize)
+	        || (loggingLevel < LOG_LEVEL_NONE)
+	        || (loggingLevel > LOG_LEVEL_TRACE)
+	        || (LOG_STATUS_SUCCESS != createLogFile())) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Set static parameters
+ * @param threadsNumArg Numbers of threads (available buffers)
+ * @param maxArgsLenArg Maximum message length
+ * @param maxMsgLenArg Maximum message arguments length
+ * @param loggingLevel Logging level (one of the levels at 'logLevels')
+ */
+static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
+                            const int maxMsgLenArg, const int loggingLevel) {
 	threadsNum = threadsNumArg;
 	maxMsgLen = maxMsgLenArg;
 	maxArgsLen = maxArgsLenArg;
-
-	/* Init all logger parameters */
-	//TODO: add an option to dynamically change all of these:
-	initPrivateBuffers(privateBuffSize, maxArgsLenArg);
-	initsharedBuffer(sharedBuffSize, maxArgsLenArg);
 	setLoggingLevel(loggingLevel);
+}
 
-	if (LOG_STATUS_SUCCESS != createLogFile()) {
-		return LOG_STATUS_FAILURE;
-	}
-
-	/* Init mutexes */
+/**
+ * Initialize static mutexes
+ */
+static void initLocks() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
 	pthread_mutex_init(&directWriteLock, NULL);
+}
 
-	/* Run logger thread */
+/**
+ * Create message queues
+ * @param privateBuffSize Size of private buffers
+ * @param sharedBuffSize Size of shared buffer
+ * @param maxArgsLenArg Maximum message arguments length
+ */
+static void initMessageQueues(const int privateBuffSize,
+                              const int sharedBuffSize, const int maxArgsLenArg) {
+	//TODO: add an option to dynamically change all of these:
+	initPrivateBuffers(privateBuffSize, maxArgsLenArg);
+	initsharedBuffer(sharedBuffSize, maxArgsLenArg);
+}
+
+/**
+ * Starts the internal logger threads which drains buffers to file
+ */
+static void startLoggerThread() {
 	pthread_create(&loggerThread, NULL, runLogger, NULL);
-
-	return LOG_STATUS_SUCCESS;
 }
 
 /* API method - Description located at .h file */
@@ -245,6 +307,7 @@ static void freeResources() {
 
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
+	pthread_mutex_destroy(&directWriteLock);
 
 	queueDestroy(privateBuffersQueue);
 
@@ -254,16 +317,71 @@ static void freeResources() {
 /* API method - Description located at .h file */
 int logMessage(const int loggingLevel, char* file, const char* func,
                const int line, char* msg, ...) {
+	if (true == isLoggingConditionsValid(loggingLevel, msg)) {
+		int writeToPrivateBuffer;
+		va_list arg;
+
+		/* Try each level of writing. If a level fails (buffer full), fall back to a
+		 * lower & slower level.
+		 * First, try private buffer writing. If private buffer doesn't exist
+		 * (unregistered thread) or unable to write in this method, fall to
+		 * next methods */
+		va_start(arg, msg);
+		if (NULL != tlmq) {
+			writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func,
+			                                  line, &arg, msg,
+			                                  LM_PRIVATE_BUFFER);
+		} else {
+			/* The current thread doesn't have a private buffer - Try to register */
+			if (LOG_STATUS_SUCCESS == registerThread()) {
+				/* Managed to get a private buffer - write to it */
+				writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file,
+				                                  func, line, &arg, msg,
+				                                  LM_PRIVATE_BUFFER);
+			} else {
+				/* Can't use private buffer */
+				writeToPrivateBuffer = LOG_STATUS_FAILURE;
+			}
+		}
+
+		if (LOG_STATUS_SUCCESS != writeToPrivateBuffer) {
+			/* Recommended not to get here - Register all threads and/or increase
+			 * private buffers size */
+			if (MQ_STATUS_SUCCESS
+			        != writeTosharedBuffer(loggingLevel, file, func, line, &arg,
+			                               msg)) {
+				/* Recommended not to get here - Increase private and shared buffers size */
+				pthread_mutex_lock(&directWriteLock); /* Lock */
+				{
+					directWriteToFile(loggingLevel, file, func, line, &arg, msg,
+					                  logFile, maxMsgLen, maxArgsLen,
+					                  LM_DIRECT_WRITE, formatMsg);
+					++cnt; //TODO: remove
+				}
+				pthread_mutex_unlock(&directWriteLock); /* Unlock */
+			}
+		}
+		va_end(arg);
+	}
+
+	return LOG_STATUS_SUCCESS;
+}
+
+/**
+ * Check whether or not the logging conditions of the current message are valid
+ * @param loggingLevel The logging level of the current message
+ * @param msg The message itself
+ * @return True of conditions are valid of false otherwise
+ */
+static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg) {
 	bool isTerminateLoc;
-	int writeToPrivateBuffer;
 	int loggingLevelLoc;
-	va_list arg;
 
 	/* Don't log if trying to log messages with higher level than requested
 	 * of log level was set to LOG_LEVEL_NONE */
 	__atomic_load(&logLevel, &loggingLevelLoc, __ATOMIC_SEQ_CST);
 	if (LOG_LEVEL_NONE == loggingLevelLoc || loggingLevel > loggingLevelLoc) {
-		return LOG_STATUS_FAILURE;
+		return false;
 	}
 
 	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
@@ -271,51 +389,10 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 	 * 1) Logger is terminating
 	 * 2) 'msg' has an invalid value */
 	if (true == isTerminateLoc || NULL == msg) {
-		return LOG_STATUS_FAILURE;
+		return false;
 	}
 
-	/* Try each level of writing. If a level fails (buffer full), fall back to a
-	 * lower & slower level.
-	 * First, try private buffer writing. If private buffer doesn't exist
-	 * (unregistered thread) or unable to write in this method, fall to
-	 * next methods */
-	va_start(arg, msg);
-	if (NULL != tlmq) {
-		writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func, line,
-		                                  &arg, msg, LM_PRIVATE_BUFFER);
-	} else {
-		/* The current thread doesn't have a private buffer - Try to register */
-		if (LOG_STATUS_SUCCESS == registerThread()) {
-			/* Managed to get a private buffer - write to it */
-			writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func,
-			                                  line, &arg, msg,
-			                                  LM_PRIVATE_BUFFER);
-		} else {
-			/* Can't use private buffer */
-			writeToPrivateBuffer = LOG_STATUS_FAILURE;
-		}
-	}
-
-	if (LOG_STATUS_SUCCESS != writeToPrivateBuffer) {
-		/* Recommended not to get here - Register all threads and/or increase
-		 * private buffers size */
-		if (MQ_STATUS_SUCCESS
-		        != writeTosharedBuffer(loggingLevel, file, func, line, &arg,
-		                               msg)) {
-			/* Recommended not to get here - Increase private and shared buffers size */
-			pthread_mutex_lock(&directWriteLock); /* Lock */
-			{
-				directWriteToFile(loggingLevel, file, func, line, &arg, msg,
-				                  logFile, maxMsgLen, maxArgsLen,
-				                  LM_DIRECT_WRITE, formatMsg);
-				++cnt; //TODO: remove
-			}
-			pthread_mutex_unlock(&directWriteLock); /* Unlock */
-		}
-	}
-	va_end(arg);
-
-	return LOG_STATUS_SUCCESS;
+	return true;
 }
 
 /**
@@ -371,7 +448,7 @@ static int formatMsg(char* buf, const MessageData* md) {
 	        logLevelsIds[md->logLevel], logMethods[md->logMethod], md->tid,
 	        md->file, md->func, md->line, md->argsBuf);
 
-//TODO: Finish converting to binary logging
+//TODO: Add an option to choose writing method (text, binary, etc')
 //	int fileNameLen = strlen(md->file);
 //	int methodNameLen = strlen(md->func);
 //	int argsBufLen = strlen(md->argsBuf);
