@@ -62,7 +62,6 @@ static atomic_int logLevel;
 static FILE* logFile;
 static pthread_mutex_t loggerLock;
 static pthread_mutex_t sharedBufferlock;
-static pthread_mutex_t directWriteLock;
 static pthread_t loggerThread;
 static struct Queue* privateBuffersQueue; /* Threads take and return buffers from this */
 static struct MessageQueue** privateBuffers; /* Logger thread iterated over this */
@@ -159,7 +158,6 @@ static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
 static void initLocks() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
-	pthread_mutex_init(&directWriteLock, NULL);
 	initDirectWriteLock();
 }
 
@@ -316,7 +314,7 @@ static void freeResources() {
 
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
-	pthread_mutex_destroy(&directWriteLock);
+	destroyDirectWriteLock();
 
 	queueDestroy(privateBuffersQueue);
 

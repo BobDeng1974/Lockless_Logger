@@ -50,4 +50,9 @@ void binaryWrite(const MessageData* md, FILE* logFile);
  */
 void initDirectWriteLock();
 
+/**
+ * Destroys the direct write mutex
+ */
+void destroyDirectWriteLock();
+
 #endif /* WRITEMETHODS_H */

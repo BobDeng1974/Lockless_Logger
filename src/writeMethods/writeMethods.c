@@ -38,6 +38,11 @@ void initDirectWriteLock() {
 	pthread_mutex_init(&directWriteLock, NULL);
 }
 
+/* API method - Description located at .h file */
+void destroyDirectWriteLock() {
+	pthread_mutex_destroy(&directWriteLock);
+}
+
 static const char logLevelsIds[] = { ' ', /* NONE */
                                      'M', /* EMERGENCY */
                                      'A', /* ALERT */
