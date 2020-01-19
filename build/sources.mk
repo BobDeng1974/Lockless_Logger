@@ -17,4 +17,5 @@ src/core/common/Queue \
 src/core/logger \
 src/core/logger/messageQueue \
 src/test/logger \
+src/writeMethods \
 

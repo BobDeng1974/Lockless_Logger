@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include src/writeMethods/subdir.mk
 -include src/test/logger/subdir.mk
 -include src/core/logger/messageQueue/subdir.mk
 -include src/core/logger/subdir.mk
