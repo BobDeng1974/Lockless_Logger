@@ -54,6 +54,10 @@ enum logMethod {
 	LM_PRIVATE_BUFFER, LM_SHARED_BUFFER, LM_DIRECT_WRITE
 };
 
+/* Used for buffering for the IO of log file */
+#define BUFFSIZE 65536
+
+static char* logFileBuff;
 static int threadsNum;
 static int maxMsgLen;
 static int maxArgsLen;
@@ -222,8 +226,13 @@ static void initsharedBuffer(const int sharedBuffSize) {
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
 static int createLogFile() {
+	logFileBuff = malloc(BUFFSIZE);
+
 	//TODO: implement rotating log
 	logFile = fopen("logFile.txt", "w+");
+
+	/* Set a big buffer to avoid frequent flushing */
+	setvbuf(logFile , logFileBuff , _IOFBF , BUFFSIZE);
 
 	return (NULL == logFile) ? LOG_STATUS_FAILURE : LOG_STATUS_SUCCESS;
 }
@@ -319,6 +328,7 @@ static void freeResources() {
 	queueDestroy(privateBuffersQueue);
 
 	fclose(logFile);
+	free(logFileBuff);
 }
 
 /* API method - Description located at .h file */
