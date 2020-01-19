@@ -48,6 +48,7 @@
 #include "../common/Queue/Queue.h"
 #include "messageQueue/messageQueue.h"
 #include "messageQueue/messageData.h"
+#include "../../writeMethods/writeMethods.h"
 
 enum logMethod {
 	LM_PRIVATE_BUFFER, LM_SHARED_BUFFER, LM_DIRECT_WRITE
@@ -63,8 +64,8 @@ static pthread_mutex_t loggerLock;
 static pthread_mutex_t sharedBufferlock;
 static pthread_mutex_t directWriteLock;
 static pthread_t loggerThread;
-static struct Queue* privateBuffersQueue;
-static struct MessageQueue** privateBuffers;
+static struct Queue* privateBuffersQueue; /* Threads take and return buffers from this */
+static struct MessageQueue** privateBuffers; /* Logger thread iterated over this */
 static struct MessageQueue* sharedBuffer;
 static void (*writeMethod)();
 thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
@@ -159,6 +160,7 @@ static void initLocks() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
 	pthread_mutex_init(&directWriteLock, NULL);
+	initDirectWriteLock();
 }
 
 /**
@@ -202,6 +204,9 @@ static void initPrivateBuffers(const int privateBuffSize) {
 
 		mq = newMessageInfo(privateBuffSize, maxArgsLen);
 		privateBuffers[i] = mq;
+
+		/* Add a referrence of this MessageQueue to privateBuffersQueue so threads may
+		 * register and take it */
 		enqueue(privateBuffersQueue, mq);
 	}
 }
@@ -356,14 +361,10 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 			        != writeTosharedBuffer(loggingLevel, file, func, line, &arg,
 			                               msg)) {
 				/* Recommended not to get here - Increase private and shared buffers size */
-				pthread_mutex_lock(&directWriteLock); /* Lock */
-				{
-					directWriteToFile(loggingLevel, file, func, line, &arg, msg,
-					                  logFile, maxMsgLen, maxArgsLen,
-					                  LM_DIRECT_WRITE, writeMethod);
-					++cnt; //TODO: remove
-				}
-				pthread_mutex_unlock(&directWriteLock); /* Unlock */
+				directWriteToFile(loggingLevel, file, func, line, &arg, msg,
+				                  logFile, maxMsgLen, maxArgsLen,
+				                  LM_DIRECT_WRITE, writeMethod);
+				++cnt; //TODO: remove
 			}
 		}
 		va_end(arg);

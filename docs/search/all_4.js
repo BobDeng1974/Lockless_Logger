@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['enqueue',['enqueue',['../Queue_8c.html#aebefb257bc186e8d45a2cddb1d2d421f',1,'enqueue(Queue *queue, void *element):&#160;Queue.c'],['../Queue_8h.html#a821c2b3e5822ead8b41c7d86cefa85fc',1,'enqueue(struct Queue *queue, void *element):&#160;Queue.c']]]
+  ['dequeue',['dequeue',['../Queue_8h.html#a12723951209ee656c7f27af17b0ad59e',1,'Queue.h']]],
+  ['directwritetofile',['directWriteToFile',['../messageQueue_8c.html#ae918a0264a298af65bd6093f5e248d9f',1,'directWriteToFile(const int loggingLevel, char *file, const char *func, const int line, va_list *args, char *msg, FILE *logFile, const int maxMsgLen, const int maxArgsLen, const int logMethod, const void(*writeMethod)()):&#160;messageQueue.c'],['../messageQueue_8h.html#ae918a0264a298af65bd6093f5e248d9f',1,'directWriteToFile(const int loggingLevel, char *file, const char *func, const int line, va_list *args, char *msg, FILE *logFile, const int maxMsgLen, const int maxArgsLen, const int logMethod, const void(*writeMethod)()):&#160;messageQueue.c']]],
+  ['drainmessages',['drainMessages',['../messageQueue_8c.html#a304a486eb9189e63de7640517201365b',1,'drainMessages(MessageQueue *mq, FILE *logFile, const int maxMsgLen, const void(*writeMethod)()):&#160;messageQueue.c'],['../messageQueue_8h.html#a03a7c1ce8a77ff40128aa239f074e05e',1,'drainMessages(struct MessageQueue *mq, FILE *logFile, const int maxMsgLen, const void(*formatMethod)()):&#160;messageQueue.c']]],
+  ['drainprivatebuffers',['drainPrivateBuffers',['../logger_8c.html#a016c1fba7fb5fcae0a42357db89c5daf',1,'logger.c']]],
+  ['drainsharedbuffer',['drainSharedBuffer',['../logger_8c.html#a85abc23bdbb5501c19a5fcc6873d1718',1,'logger.c']]]
 ];
