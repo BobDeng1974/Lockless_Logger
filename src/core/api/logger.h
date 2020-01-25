@@ -36,6 +36,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <stdint.h>
+
 enum loggerStatusCodes {
 	LOG_STATUS_FAILURE = -1, LOG_STATUS_SUCCESS
 };
@@ -67,8 +69,8 @@ long long cnt;
  * @param writeMethodArg A pointer to a method that writes a message to a file
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int initLogger(const int threadsNumArg, const int privateBuffSize,
-               const int sharedBuffSize, const int loggingLevel,
+int initLogger(const int threadsNumArg, const uint32_t privateBuffSize,
+               const uint32_t sharedBuffSize, const int loggingLevel,
                const int maxMsgLenArg, const int maxArgsLenArg,
                void (*writeMethodArg)());
 

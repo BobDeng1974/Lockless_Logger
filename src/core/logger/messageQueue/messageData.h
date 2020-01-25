@@ -25,11 +25,8 @@
 #ifndef MESSAGEDATA_H
 #define MESSAGEDATA_H
 
-#include <stdarg.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include <unistd.h>
-#include <syscall.h>
 
 typedef struct MessageData {
 	/** Line number to log */

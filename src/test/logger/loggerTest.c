@@ -41,7 +41,7 @@ int main(void) {
 
 	if (LOG_STATUS_SUCCESS
 	        == initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE,
-	                      MAX_MSG_LEN, ARGS_BUF_SIZE, asciiWrite)) {
+	                      MAX_MSG_LEN, ARGS_BUF_SIZE, binaryWrite)) {
 		int i;
 		int charsLen;
 		pthread_t threads[NUM_THRDS];

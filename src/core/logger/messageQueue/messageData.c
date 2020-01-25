@@ -22,6 +22,9 @@
  * @copywrite (C) [2019] [Barak Sason Rofman]
  */
 
+#include <unistd.h>
+#include <syscall.h>
+
 #include "messageData.h"
 
 /**

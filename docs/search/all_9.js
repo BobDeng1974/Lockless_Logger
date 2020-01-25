@@ -1,8 +1,8 @@
 var searchData=
 [
   ['lockless_5flogger',['Lockless_Logger',['../index.html',1,'']]],
-  ['lastread',['lastRead',['../structMessageQueue.html#a3e87622f93ba033fcb121f995c43fd09',1,'MessageQueue']]],
-  ['lastwrite',['lastWrite',['../structMessageQueue.html#a22e42d59ce28b2a13ce7aa2e69286fc8',1,'MessageQueue']]],
+  ['lastread',['lastRead',['../structMessageQueue.html#a9641a8f83e569662e3a836f480d146da',1,'MessageQueue']]],
+  ['lastwrite',['lastWrite',['../structMessageQueue.html#a060607ed61d0e0877a63e8106f7e8364',1,'MessageQueue']]],
   ['line',['line',['../structMessageData.html#ace58b6118f5f8b15819bb867ab7dfb6c',1,'MessageData']]],
   ['log_5fmsg',['LOG_MSG',['../logger_8h.html#a56b3ba492f8e4335459115b71086acea',1,'logger.h']]],
   ['logger_2ec',['logger.c',['../logger_8c.html',1,'']]],

@@ -25,9 +25,7 @@
 #ifndef MESSAGE_QUEUE_H
 #define MESSAGE_QUEUE_H
 
-#include <stdio.h>
-#include <sys/time.h>
-#include <stdatomic.h>
+#include <stdint.h>
 
 enum MessageQueueStatusCodes {
 	MQ_STATUS_FAILURE = -1, MQ_STATUS_SUCCESS
@@ -41,7 +39,7 @@ struct MessageQueue;
  * @param maxArgsLen Maximum length of additional arguments of the log message
  * @return The newly allocated MessageQueue
  */
-struct MessageQueue* newMessageInfo(const int size, const int maxArgsLen);
+struct MessageQueue* newMessageInfo(const uint32_t size, const int maxArgsLen);
 
 /**
  * Adds a message from worker to queue
