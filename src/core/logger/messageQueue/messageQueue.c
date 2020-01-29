@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 
 #include "messageData.h"
 #include "messageQueue.h"
@@ -32,21 +33,21 @@ typedef struct MessageQueue {
 	/** Whether or not this ring buffer is being used by a thread */
 	bool isInUse;
 	/** The position which data was last read from */
-	uint32_t lastRead;
+	atomic_int lastRead;
 	/** The position which data was last written to */
-	uint32_t lastWrite;
+	atomic_int lastWrite;
 	/** The size of the buffer */
-	uint32_t size;
+	int size;
 	/** Pointer to the internal buffer */
 	MessageData* messagesData;
 } MessageQueue;
 
-static void initMessageQueue(MessageQueue* mq, const uint32_t size,
+static void initMessageQueue(MessageQueue* mq, const int size,
                              const int maxArgsLen);
-static inline int getNextPos(uint32_t curPos, const uint32_t queueSize);
+static inline int getNextPos(int curPos, const int queueSize);
 
 /* API method - Description located at .h file */
-MessageQueue* newMessageInfo(const uint32_t size, const int maxArgsLen) {
+MessageQueue* newMessageInfo(const int size, const int maxArgsLen) {
 	MessageQueue* mq;
 
 	//TODO: think if malloc failures need to be handled
@@ -64,7 +65,7 @@ MessageQueue* newMessageInfo(const uint32_t size, const int maxArgsLen) {
  * @param size The of the queue
  * @param maxArgsLen Maximum length of message arguments
  */
-static void initMessageQueue(MessageQueue* mq, const uint32_t size,
+static void initMessageQueue(MessageQueue* mq, const int size,
                              const int maxArgsLen) {
 	int i;
 
@@ -89,18 +90,21 @@ static void initMessageQueue(MessageQueue* mq, const uint32_t size,
 int addMessage(MessageQueue* mq, const int loggingLevel, char* file,
                const char* func, const int line, va_list* args, const char* msg,
                const int logMethod, const int maxArgsLen) {
-	uint32_t lastRead;
-	uint32_t lastWrite;
-	uint32_t nextLastWrite;
+	int lastRead;
+	int lastWrite;
+	int nextLastWrite;
 
-	lastRead = mq->lastRead;
+	/* Atomic load lastRead, as it's written by a different thread */
+	__atomic_load(&mq->lastRead, &lastRead, __ATOMIC_SEQ_CST);
 	lastWrite = mq->lastWrite;
 	nextLastWrite = getNextPos(lastWrite, mq->size);
 
 	if (nextLastWrite != lastRead) {
 		setMsgValues(&mq->messagesData[lastWrite], loggingLevel, file, func,
 		             line, args, msg, logMethod, maxArgsLen);
-		mq->lastWrite = nextLastWrite;
+
+		/* Atomic store lastWrite, as it's read by a different thread */
+		__atomic_store_n(&mq->lastWrite, nextLastWrite, __ATOMIC_SEQ_CST);
 
 		return MQ_STATUS_SUCCESS;
 	}
@@ -111,11 +115,12 @@ int addMessage(MessageQueue* mq, const int loggingLevel, char* file,
 /* API method - Description located at .h file */
 void drainMessages(MessageQueue* mq, FILE* logFile, const int maxMsgLen,
                    const void (*writeMethod)()) {
-	uint32_t lastRead;
-	uint32_t lastWrite;
-	uint32_t nextLastRead;
+	int lastRead;
+	int lastWrite;
+	int nextLastRead;
 
-	lastWrite = mq->lastWrite;
+	/* Atomic load lastWrite, as it's read by a different thread */
+	__atomic_load(&mq->lastWrite, &lastWrite, __ATOMIC_SEQ_CST);
 	lastRead = mq->lastRead;
 	nextLastRead = getNextPos(lastRead, mq->size);
 
@@ -132,7 +137,8 @@ void drainMessages(MessageQueue* mq, FILE* logFile, const int maxMsgLen,
 			        (nextLastRead + 1) >= mq->size ? 0 : (nextLastRead + 1);
 		} while (nextLastRead != lastWrite);
 
-		mq->lastRead = prevNextLastRead;
+		/* Atomic store lastRead, as it's read by a different thread */
+		__atomic_store_n(&mq->lastRead, prevNextLastRead, __ATOMIC_SEQ_CST);
 	}
 }
 
@@ -170,6 +176,6 @@ void messageDataQueueDestroy(MessageQueue* mq) {
  * @param queueSize Queue size
  * @return The next position in a queue
  */
-static inline int getNextPos(uint32_t curPos, const uint32_t queueSize) {
+static inline int getNextPos(int curPos, const int queueSize) {
 	return ++curPos >= queueSize ? 0 : curPos;
 }

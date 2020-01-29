@@ -36,8 +36,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <stdint.h>
-
 enum loggerStatusCodes {
 	LOG_STATUS_FAILURE = -1, LOG_STATUS_SUCCESS
 };
@@ -69,8 +67,8 @@ long long cnt;
  * @param writeMethodArg A pointer to a method that writes a message to a file
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int initLogger(const int threadsNumArg, const uint32_t privateBuffSize,
-               const uint32_t sharedBuffSize, const int loggingLevel,
+int initLogger(const int threadsNumArg, const int privateBuffSize,
+               const int sharedBuffSize, const int loggingLevel,
                const int maxMsgLenArg, const int maxArgsLenArg,
                void (*writeMethodArg)());
 
@@ -99,12 +97,11 @@ void unregisterThread();
  * @param msg Message data (must be a null-terminated string)
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 int logMessage(const int loggingLevel, char* file, const char* func,
                const int line, char* msg, ...);
 
 /** A macro that defines the usage for 'logMessage(...) API */
-#define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILENAME__,__PRETTY_FUNCTION__,  __LINE__  , msg)
+#define LOG_MSG(loggingLevel, msg ...) logMessage(loggingLevel, __FILE__,__PRETTY_FUNCTION__,  __LINE__  , msg)
 
 /**
  * Terminate the logger thread and release resources

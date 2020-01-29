@@ -1,15 +1,13 @@
 var searchData=
 [
-  ['initdirectwritelock',['initDirectWriteLock',['../writeMethods_8c.html#a2cb52b92540b528e1f6aebd07159f9d7',1,'initDirectWriteLock():&#160;writeMethods.c'],['../writeMethods_8h.html#a2cb52b92540b528e1f6aebd07159f9d7',1,'initDirectWriteLock():&#160;writeMethods.c']]],
-  ['initlocks',['initLocks',['../logger_8c.html#a2f7e6266f1cfc42bdb3ffd0ccb4087fa',1,'logger.c']]],
-  ['initlogger',['initLogger',['../logger_8h.html#a88538cf8f2a2b59f6daa07a87222a6b3',1,'initLogger(const int threadsNumArg, const uint32_t privateBuffSize, const uint32_t sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg, void(*writeMethodArg)()):&#160;logger.c'],['../logger_8c.html#a4cce611ee7ff49b7e1cd8534b6e7c18b',1,'initLogger(const int threadsNumArg, const uint32_t privateBuffSize, const uint32_t sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg, void(*writeMethod)()):&#160;logger.c']]],
-  ['initmessagequeue',['initMessageQueue',['../messageQueue_8c.html#a53db06bb57db13f89886b5499edab6f5',1,'messageQueue.c']]],
-  ['initmessagequeues',['initMessageQueues',['../logger_8c.html#ad2d4de2e5882251121faba1af530aa3a',1,'logger.c']]],
-  ['initprivatebuffers',['initPrivateBuffers',['../logger_8c.html#a5eea20111d60ca67ad79331d3bc11a9c',1,'logger.c']]],
-  ['initsharedbuffer',['initsharedBuffer',['../logger_8c.html#a2b8afb9a476aa47394cf180baebe1a41',1,'logger.c']]],
-  ['isempty',['isEmpty',['../Queue_8c.html#af1e41878cb669a97e98d24984dc5c576',1,'Queue.c']]],
-  ['isfull',['isFull',['../Queue_8c.html#af1791b054beb8d9b7fad0445d8d29c5e',1,'Queue.c']]],
-  ['isinuse',['isInUse',['../structMessageQueue.html#a04ee88f5fe31d7da41b742d03b7def6a',1,'MessageQueue']]],
-  ['isloggingconditionsvalid',['isLoggingConditionsValid',['../logger_8c.html#a7f4f946913d35e2a30bdc6ca32ec6c75',1,'logger.c']]],
-  ['isvalitinitconditions',['isValitInitConditions',['../logger_8c.html#ac77246c2fc2c92a01f1340139cd029b3',1,'logger.c']]]
+  ['lockless_5flogger',['Lockless_Logger',['../index.html',1,'']]],
+  ['lastread',['lastRead',['../structMessageQueue.html#a3e87622f93ba033fcb121f995c43fd09',1,'MessageQueue']]],
+  ['lastwrite',['lastWrite',['../structMessageQueue.html#a22e42d59ce28b2a13ce7aa2e69286fc8',1,'MessageQueue']]],
+  ['line',['line',['../structMessageData.html#ace58b6118f5f8b15819bb867ab7dfb6c',1,'MessageData']]],
+  ['log_5fmsg',['LOG_MSG',['../logger_8h.html#a56b3ba492f8e4335459115b71086acea',1,'logger.h']]],
+  ['logger_2ec',['logger.c',['../logger_8c.html',1,'']]],
+  ['logger_2eh',['logger.h',['../logger_8h.html',1,'']]],
+  ['loglevel',['logLevel',['../structMessageData.html#afbd3ca3016c5daa99b7343555f628ff1',1,'MessageData']]],
+  ['logmessage',['logMessage',['../logger_8h.html#a7a59ae48e89e602072964d2bf93d726b',1,'logMessage(const int loggingLevel, char *file, const char *func, const int line, char *msg,...):&#160;logger.c'],['../logger_8c.html#a7a59ae48e89e602072964d2bf93d726b',1,'logMessage(const int loggingLevel, char *file, const char *func, const int line, char *msg,...):&#160;logger.c']]],
+  ['logmethod',['logMethod',['../structMessageData.html#ae456d891136b3dc360d41272f3fe6f24',1,'MessageData']]]
 ];

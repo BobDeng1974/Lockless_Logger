@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['unregisterthread',['unregisterThread',['../logger_8h.html#a73ce845d8dab297b5d82febb0ae35fec',1,'unregisterThread():&#160;logger.c'],['../logger_8c.html#a73ce845d8dab297b5d82febb0ae35fec',1,'unregisterThread():&#160;logger.c']]]
+  ['writemethods_2ec',['writeMethods.c',['../writeMethods_8c.html',1,'']]],
+  ['writemethods_2eh',['writeMethods.h',['../writeMethods_8h.html',1,'']]],
+  ['writetosharedbuffer',['writeTosharedBuffer',['../logger_8c.html#ac406546662b9f231ecef7fe351697600',1,'logger.c']]]
 ];

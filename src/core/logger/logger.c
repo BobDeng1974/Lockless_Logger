@@ -33,12 +33,13 @@
  * @copywrite (C) [2019] [Barak Sason Rofman]
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <threads.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <stdatomic.h>
+#include <string.h>
 
 #include "../api/logger.h"
 #include "../common/Queue/Queue.h"
@@ -57,8 +58,8 @@ static char* logFileBuff;
 static int threadsNum;
 static int maxMsgLen;
 static int maxArgsLen;
-static bool isTerminate;
-static int logLevel;
+static atomic_bool isTerminate;
+static atomic_int logLevel;
 static FILE* logFile;
 static pthread_mutex_t loggerLock;
 static pthread_mutex_t sharedBufferlock;
@@ -77,24 +78,25 @@ static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
                             const int maxMsgLenArg, const int loggingLevel,
                             void (*writeMethodArg)());
 static void initLocks();
-static void initMessageQueues(const uint32_t privateBuffSize,
-                              const uint32_t sharedBuffSize, const int maxArgsLenArg);
+static void initMessageQueues(const int privateBuffSize,
+                              const int sharedBuffSize, const int maxArgsLenArg);
 static void startLoggerThread();
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
-static void initsharedBuffer(const uint32_t privateBuffSize);
-static void initPrivateBuffers(const uint32_t privateBuffSize);
+static void initsharedBuffer(const int privateBuffSize);
+static void initPrivateBuffers(const int privateBuffSize);
 static int writeTosharedBuffer(const int loggingLevel, char* file,
                                const char* func, const int line, va_list* args,
                                const char* msg);
 static inline void drainPrivateBuffers();
 static inline void drainSharedBuffer();
 static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg);
+static inline char* getFileName(char* filePath);
 
 /* API method - Description located at .h file */
-int initLogger(const int threadsNumArg, const uint32_t privateBuffSize,
-               const uint32_t sharedBuffSize, const int loggingLevel,
+int initLogger(const int threadsNumArg, const int privateBuffSize,
+               const int sharedBuffSize, const int loggingLevel,
                const int maxMsgLenArg, const int maxArgsLenArg,
                void (*writeMethod)()) {
 	if (true
@@ -167,8 +169,8 @@ static void initLocks() {
  * @param sharedBuffSize Size of shared buffer
  * @param maxArgsLenArg Maximum message arguments length
  */
-static void initMessageQueues(const uint32_t privateBuffSize,
-                              const uint32_t sharedBuffSize, const int maxArgsLenArg) {
+static void initMessageQueues(const int privateBuffSize,
+                              const int sharedBuffSize, const int maxArgsLenArg) {
 	//TODO: add an option to dynamically change all of these:
 	initPrivateBuffers(privateBuffSize);
 	initsharedBuffer(sharedBuffSize);
@@ -183,14 +185,14 @@ static void startLoggerThread() {
 
 /* API method - Description located at .h file */
 inline void setLoggingLevel(const int loggingLevel) {
-	logLevel = loggingLevel;
+	__atomic_store_n(&logLevel, loggingLevel, __ATOMIC_SEQ_CST);
 }
 
 /**
  * Initialize private buffers parameters
  * @param privateBuffSize Number of buffers
  */
-static void initPrivateBuffers(const uint32_t privateBuffSize) {
+static void initPrivateBuffers(const int privateBuffSize) {
 	int i;
 
 	privateBuffersQueue = newQueue(threadsNum);
@@ -203,7 +205,7 @@ static void initPrivateBuffers(const uint32_t privateBuffSize) {
 		mq = newMessageInfo(privateBuffSize, maxArgsLen);
 		privateBuffers[i] = mq;
 
-		/* Add a reference of this MessageQueue to privateBuffersQueue so threads may
+		/* Add a referrence of this MessageQueue to privateBuffersQueue so threads may
 		 * register and take it */
 		enqueue(privateBuffersQueue, mq);
 	}
@@ -213,7 +215,7 @@ static void initPrivateBuffers(const uint32_t privateBuffSize) {
  * Initialize shared buffer data parameters
  * @param sharedBufferSize Size of buffer
  */
-static void initsharedBuffer(const uint32_t sharedBuffSize) {
+static void initsharedBuffer(const int sharedBuffSize) {
 	sharedBuffer = newMessageInfo(sharedBuffSize, maxArgsLen);
 }
 
@@ -252,13 +254,13 @@ void unregisterThread() {
  * flush buffer and sleep for a while
  */
 static void* runLogger() {
-	bool isTerminateLoc;
+	bool isTerminateLoc = false;
 
 	do {
-		isTerminateLoc = isTerminate;
+		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
 		drainSharedBuffer();
-		fflush(logFile); /* Flush buffer at the end of the iteration to avoid data loss */
+		fflush(logFile); /* Flush buffer only at the end of the iteration */
 //		sleep(1); /* Sleep to avoid wasting CPU */ //TODO: come up with a better mechanism
 	} while (!isTerminateLoc);
 
@@ -301,7 +303,7 @@ static inline void drainSharedBuffer() {
 
 /* API method - Description located at .h file */
 void terminateLogger() {
-	isTerminate = true;
+	__atomic_store_n(&isTerminate, true, __ATOMIC_SEQ_CST);
 	pthread_join(loggerThread, NULL);
 	freeResources();
 }
@@ -339,6 +341,7 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 		 * First, try private buffer writing. If private buffer doesn't exist
 		 * (unregistered thread) or unable to write in this method, fall to
 		 * next methods */
+		file = getFileName(file);
 		va_start(arg, msg);
 		if (NULL != tlmq) {
 			writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func,
@@ -384,13 +387,21 @@ int logMessage(const int loggingLevel, char* file, const char* func,
  * @return True of conditions are valid of false otherwise
  */
 static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg) {
+	bool isTerminateLoc;
+	int loggingLevelLoc;
+
+	/* Don't log if trying to log messages with higher level than requested
+	 * of log level was set to LOG_LEVEL_NONE */
+	__atomic_load(&logLevel, &loggingLevelLoc, __ATOMIC_SEQ_CST);
+	if (LOG_LEVEL_NONE == loggingLevelLoc || loggingLevel > loggingLevelLoc) {
+		return false;
+	}
+
+	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 	/* Don't log if:
-	 * 1) Trying to log messages with higher level than set
-	 * 1) Log level was set to LOG_LEVEL_NONE
-	 * 3) Logger is terminating
-	 * 4) 'msg' is NULL */
-	if (LOG_LEVEL_NONE == logLevel || loggingLevel > logLevel
-	        || true == isTerminate || NULL == msg) {
+	 * 1) Logger is terminating
+	 * 2) 'msg' has an invalid value */
+	if (true == isTerminateLoc || NULL == msg) {
 		return false;
 	}
 
@@ -425,4 +436,14 @@ static int writeTosharedBuffer(const int loggingLevel, char* file,
 /* API method - Description located at .h file */
 int getMaxMsgLen() {
 	return maxMsgLen;
+}
+
+/**
+ * Returns a file name from a file path
+ * @param filePath The file path
+ * @return The file name from a file path
+ */
+static inline char* getFileName(char* filePath) {
+	char* c = strrchr(filePath, '/');
+	return (NULL == c) ? filePath : ++c;
 }

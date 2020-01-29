@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['messagedataqueuedestroy',['messageDataQueueDestroy',['../messageQueue_8c.html#ab8af30b594896403efa68e854b0b9a33',1,'messageDataQueueDestroy(MessageQueue *mq):&#160;messageQueue.c'],['../messageQueue_8h.html#a1d8973bf89d4d764fbfe4706ef4b606b',1,'messageDataQueueDestroy(struct MessageQueue *mq):&#160;messageQueue.c']]]
+  ['logmessage',['logMessage',['../logger_8h.html#a7a59ae48e89e602072964d2bf93d726b',1,'logMessage(const int loggingLevel, char *file, const char *func, const int line, char *msg,...):&#160;logger.c'],['../logger_8c.html#a7a59ae48e89e602072964d2bf93d726b',1,'logMessage(const int loggingLevel, char *file, const char *func, const int line, char *msg,...):&#160;logger.c']]]
 ];
