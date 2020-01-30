@@ -38,6 +38,7 @@
 #include <threads.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <semaphore.h>
 #include <stdatomic.h>
 #include <string.h>
 
@@ -51,8 +52,8 @@ enum logMethod {
 	LM_PRIVATE_BUFFER, LM_SHARED_BUFFER, LM_DIRECT_WRITE
 };
 
-/* Used for buffering for the IO of log file */
-#define BUFFSIZE 65536
+#define BUFFSIZE 65536 /* Used for buffering for the IO of log file */
+#define LOGGERTHREADNAME "LoggerThread" /* Name of the logger thread */
 
 static char* logFileBuff;
 static int threadsNum;
@@ -69,6 +70,9 @@ static struct MessageQueue** privateBuffers; /* Logger thread iterated over this
 static struct MessageQueue* sharedBuffer;
 static void (*writeMethod)();
 thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
+static sem_t loggerSem;
+static atomic_bool isNewData;
+static atomic_bool isLoggerWaiting;
 
 static bool isValitInitConditions(const int threadsNumArg,
                                   const int privateBuffSize,
@@ -155,12 +159,13 @@ static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
 }
 
 /**
- * Initialize static mutexes
+ * Initialize static mutexes and semaphore
  */
 static void initLocks() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
 	initDirectWriteLock();
+	sem_init(&loggerSem, 0, 0);
 }
 
 /**
@@ -177,10 +182,12 @@ static void initMessageQueues(const int privateBuffSize,
 }
 
 /**
- * Starts the internal logger threads which drains buffers to file
+ * Starts (and name) the internal logger threads which drains buffers
+ * to the log file
  */
 static void startLoggerThread() {
 	pthread_create(&loggerThread, NULL, runLogger, NULL);
+	pthread_setname_np(loggerThread, LOGGERTHREADNAME);
 }
 
 /* API method - Description located at .h file */
@@ -220,19 +227,22 @@ static void initsharedBuffer(const int sharedBuffSize) {
 }
 
 /**
- * Creates a log file
+ * Creates a log file and set a buffer for it
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
 static int createLogFile() {
-	logFileBuff = malloc(BUFFSIZE);
-
 	//TODO: implement rotating log
 	logFile = fopen("logFile.txt", "w+");
 
 	/* Set a big buffer to avoid frequent flushing */
-	setvbuf(logFile, logFileBuff, _IOFBF, BUFFSIZE);
+	if (NULL != logFile) {
+		//TODO: think if malloc failures need to be handled
+		logFileBuff = malloc(BUFFSIZE);
+		setvbuf(logFile, logFileBuff, _IOFBF, BUFFSIZE);
+		return LOG_STATUS_SUCCESS;
+	}
 
-	return (NULL == logFile) ? LOG_STATUS_FAILURE : LOG_STATUS_SUCCESS;
+	return LOG_STATUS_FAILURE;
 }
 
 /* API method - Description located at .h file */
@@ -255,13 +265,21 @@ void unregisterThread() {
  */
 static void* runLogger() {
 	bool isTerminateLoc = false;
+	bool isNewDataLoc = false;
 
 	do {
+		__atomic_store_n(&isNewData, false, __ATOMIC_SEQ_CST);
 		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
 		drainSharedBuffer();
 		fflush(logFile); /* Flush buffer only at the end of the iteration */
-//		sleep(1); /* Sleep to avoid wasting CPU */ //TODO: come up with a better mechanism
+
+		/* The following is done to avoid wasting CPU in case no logging is being done */
+		__atomic_load(&isNewData, &isNewDataLoc, __ATOMIC_SEQ_CST);
+		if (false == isNewDataLoc) {
+			__atomic_store_n(&isLoggerWaiting, true, __ATOMIC_SEQ_CST);
+			sem_wait(&loggerSem);
+		}
 	} while (!isTerminateLoc);
 
 	//TODO: Commented out code is for binary data check
@@ -279,7 +297,6 @@ static void* runLogger() {
 //	for (i = 0; i < 8; i++) {
 //		decVal |= ((long) buf[i]) << (i * 8);
 //	}
-
 	return NULL;
 }
 
@@ -303,6 +320,7 @@ static inline void drainSharedBuffer() {
 
 /* API method - Description located at .h file */
 void terminateLogger() {
+	sem_post(&loggerSem);
 	__atomic_store_n(&isTerminate, true, __ATOMIC_SEQ_CST);
 	pthread_join(loggerThread, NULL);
 	freeResources();
@@ -319,6 +337,7 @@ static void freeResources() {
 	}
 	free(privateBuffers);
 
+	sem_destroy(&loggerSem);
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
 	destroyDirectWriteLock();
@@ -375,6 +394,17 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 			}
 		}
 		va_end(arg);
+
+		/* Communicate with logger thread */
+		if (LOG_STATUS_SUCCESS == writeToPrivateBuffer) {
+			bool isLoggerWaitingLoc;
+			__atomic_store_n(&isNewData, true, __ATOMIC_SEQ_CST);
+			__atomic_load(&isLoggerWaiting, &isLoggerWaitingLoc,
+			__ATOMIC_SEQ_CST);
+			if (true == isLoggerWaitingLoc) {
+				sem_post(&loggerSem);
+			}
+		}
 	}
 
 	return LOG_STATUS_SUCCESS;

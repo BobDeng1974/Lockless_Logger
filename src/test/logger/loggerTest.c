@@ -20,8 +20,8 @@
 #include "../../core/api/logger.h"
 #include "../../writeMethods/writeMethods.h"
 
-#define ITERATIONS 25000
-#define NUM_THRDS 200
+#define ITERATIONS 250
+#define NUM_THRDS 20
 #define BUF_SIZE 78
 
 #define MAX_MSG_LEN 512
