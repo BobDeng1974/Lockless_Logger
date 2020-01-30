@@ -1,12 +1,18 @@
-/*
- ============================================================================
- Name        : loggerTest.c
- Author      : Barak Sason Rofman
- Version     : TODO: update
- Copyright   : TODO: update
- Description : TODO: update
- ============================================================================
- */
+/****************************************************************************
+ * Copyright (C) [2019] [Barak Sason Rofman]								*
+ *																			*
+ * Licensed under the Apache License, Version 2.0 (the "License");			*
+ * you may not use this file except in compliance with the License.			*
+ * You may obtain a copy of the License at:									*
+ *																			*
+ * http://www.apache.org/licenses/LICENSE-2.0								*
+ *																			*
+ * Unless required by applicable law or agreed to in writing, software		*
+ * distributed under the License is distributed on an "AS IS" BASIS,		*
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.	*
+ * See the License for the specific language governing permissions and		*
+ * limitations under the License.											*
+ ****************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,8 +26,8 @@
 #include "../../core/api/logger.h"
 #include "../../writeMethods/writeMethods.h"
 
-#define ITERATIONS 250
-#define NUM_THRDS 20
+#define ITERATIONS 25000
+#define NUM_THRDS 200
 #define BUF_SIZE 78
 
 #define MAX_MSG_LEN 512

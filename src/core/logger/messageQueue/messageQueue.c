@@ -23,15 +23,12 @@
  */
 
 #include <stdlib.h>
-#include <stdbool.h>
 #include <stdatomic.h>
 
 #include "messageData.h"
 #include "messageQueue.h"
 
 typedef struct MessageQueue {
-	/** Whether or not this ring buffer is being used by a thread */
-	bool isInUse;
 	/** The position which data was last read from */
 	atomic_int lastRead;
 	/** The position which data was last written to */
