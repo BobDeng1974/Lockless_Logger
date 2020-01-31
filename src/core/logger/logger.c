@@ -35,7 +35,6 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
-#include <threads.h>
 #include <stdbool.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -69,7 +68,7 @@ static struct Queue* privateBuffersQueue; /* Threads take and return buffers fro
 static struct MessageQueue** privateBuffers; /* Logger thread iterated over this */
 static struct MessageQueue* sharedBuffer;
 static void (*writeMethod)();
-thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
+__thread struct MessageQueue* tlmq; /* Thread Local Message Queue */
 static sem_t loggerLoopSem;
 static sem_t loggerWaitingSem;
 static atomic_bool isNewData;

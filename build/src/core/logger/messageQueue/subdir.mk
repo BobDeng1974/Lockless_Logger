@@ -20,7 +20,7 @@ C_DEPS += \
 src/core/logger/messageQueue/%.o: ../src/core/logger/messageQueue/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross GCC Compiler'
-	gcc -std=c11 -D_GNU_SOURCE -O3 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	gcc -std=c11 -D_POSIX_C_SOURCE -D_GNU_SOURCE -O3 -g3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
