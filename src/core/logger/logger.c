@@ -73,7 +73,6 @@ thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
 static sem_t loggerLoopSem;
 static sem_t loggerWaitingSem;
 static atomic_bool isNewData;
-static int locCnt;
 
 static bool isValitInitConditions(const int threadsNumArg,
                                   const int privateBuffSize,
@@ -274,7 +273,7 @@ static void* runLogger() {
 		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
 		drainSharedBuffer();
-		fflush(logFile); /* Flush buffer only at the end of the iteration */
+		fflush(logFile); /* Flush buffer at the end of the iteration to avoid data staying in buffer long */
 
 		/* The following is done to avoid wasting CPU in case no logging is being done
 		 * (the main concern are 1-core CPU's and the current mechanism solves the issue) */
@@ -289,8 +288,6 @@ static void* runLogger() {
 			sem_wait(&loggerLoopSem);
 		}
 	} while (!isTerminateLoc);
-
-	printf("locCnt = %d\n", locCnt);
 
 	return NULL;
 }
@@ -380,7 +377,6 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 			__atomic_store_n(&isNewData, true, __ATOMIC_SEQ_CST);
 			if (0 == sem_trywait(&loggerWaitingSem)) {
 				sem_post(&loggerLoopSem);
-				++locCnt;
 			}
 		} else {
 			/* Unable to write to private buffer
