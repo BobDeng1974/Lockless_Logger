@@ -70,9 +70,10 @@ static struct MessageQueue** privateBuffers; /* Logger thread iterated over this
 static struct MessageQueue* sharedBuffer;
 static void (*writeMethod)();
 thread_local struct MessageQueue* tlmq; /* Thread Local Message Queue */
-static sem_t loggerSem;
+static sem_t loggerLoopSem;
+static sem_t loggerWaitingSem;
 static atomic_bool isNewData;
-static atomic_bool isLoggerWaiting;
+static int locCnt;
 
 static bool isValitInitConditions(const int threadsNumArg,
                                   const int privateBuffSize,
@@ -165,7 +166,8 @@ static void initLocks() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
 	initDirectWriteLock();
-	sem_init(&loggerSem, 0, 0);
+	sem_init(&loggerLoopSem, 0, 0);
+	sem_init(&loggerWaitingSem, 0, 0);
 }
 
 /**
@@ -274,29 +276,22 @@ static void* runLogger() {
 		drainSharedBuffer();
 		fflush(logFile); /* Flush buffer only at the end of the iteration */
 
-		/* The following is done to avoid wasting CPU in case no logging is being done */
+		/* The following is done to avoid wasting CPU in case no logging is being done
+		 * (the main concern are 1-core CPU's and the current mechanism solves the issue) */
+		//TODO: At the current state, it's enough that just 1 thread will try to log data
+		// on order to prevent the logger thread from sleeping, need to think about
+		// changing it so maybe some % of the threads need to log data instead.
+		// On the other hand, in a real application, logging is performed constantly,
+		// so this may not be a concern.
 		__atomic_load(&isNewData, &isNewDataLoc, __ATOMIC_SEQ_CST);
 		if (false == isNewDataLoc) {
-			__atomic_store_n(&isLoggerWaiting, true, __ATOMIC_SEQ_CST);
-			sem_wait(&loggerSem);
+			sem_post(&loggerWaitingSem);
+			sem_wait(&loggerLoopSem);
 		}
 	} while (!isTerminateLoc);
 
-	//TODO: Commented out code is for binary data check
-//	unsigned char buf[8];
-//	long decVal;
-//	int i;
-//
-//	fclose(logFile);
-//	logFile = fopen("logFile.txt", "r+");
-//	fread(buf, 8, 1, logFile);
-//
-//	for (int i = 0; i < 8; i++)
-//		printf("%u\n", buf[i]);
-//
-//	for (i = 0; i < 8; i++) {
-//		decVal |= ((long) buf[i]) << (i * 8);
-//	}
+	printf("locCnt = %d\n", locCnt);
+
 	return NULL;
 }
 
@@ -320,7 +315,7 @@ static inline void drainSharedBuffer() {
 
 /* API method - Description located at .h file */
 void terminateLogger() {
-	sem_post(&loggerSem);
+	sem_post(&loggerLoopSem);
 	__atomic_store_n(&isTerminate, true, __ATOMIC_SEQ_CST);
 	pthread_join(loggerThread, NULL);
 	freeResources();
@@ -337,7 +332,7 @@ static void freeResources() {
 	}
 	free(privateBuffers);
 
-	sem_destroy(&loggerSem);
+	sem_destroy(&loggerLoopSem);
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
 	destroyDirectWriteLock();
@@ -380,13 +375,22 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 			}
 		}
 
-		if (LOG_STATUS_SUCCESS != writeToPrivateBuffer) {
-			/* Recommended not to get here - Register all threads and/or increase
+		if (LOG_STATUS_SUCCESS == writeToPrivateBuffer) {
+			/* Communicate with logger thread */
+			__atomic_store_n(&isNewData, true, __ATOMIC_SEQ_CST);
+			if (0 == sem_trywait(&loggerWaitingSem)) {
+				sem_post(&loggerLoopSem);
+				++locCnt;
+			}
+		} else {
+			/* Unable to write to private buffer
+			 * Recommended not to get here - Register all threads and/or increase
 			 * private buffers size */
 			if (MQ_STATUS_SUCCESS
 			        != writeTosharedBuffer(loggingLevel, file, func, line, &arg,
 			                               msg)) {
-				/* Recommended not to get here - Increase private and shared buffers size */
+				/* Unable to write to shared buffer
+				 * Recommended not to get here - Increase private and shared buffers sizes */
 				directWriteToFile(loggingLevel, file, func, line, &arg, msg,
 				                  logFile, maxMsgLen, maxArgsLen,
 				                  LM_DIRECT_WRITE, writeMethod);
@@ -394,17 +398,6 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 			}
 		}
 		va_end(arg);
-
-		/* Communicate with logger thread */
-		if (LOG_STATUS_SUCCESS == writeToPrivateBuffer) {
-			bool isLoggerWaitingLoc;
-			__atomic_store_n(&isNewData, true, __ATOMIC_SEQ_CST);
-			__atomic_load(&isLoggerWaiting, &isLoggerWaitingLoc,
-			__ATOMIC_SEQ_CST);
-			if (true == isLoggerWaitingLoc) {
-				sem_post(&loggerSem);
-			}
-		}
 	}
 
 	return LOG_STATUS_SUCCESS;
@@ -459,6 +452,11 @@ static int writeTosharedBuffer(const int loggingLevel, char* file,
 		                 msg, LM_SHARED_BUFFER, maxArgsLen);
 	}
 	pthread_mutex_unlock(&sharedBufferlock); /* Unlock */
+
+	/* Communicate with logger thread */
+	if (MQ_STATUS_SUCCESS == ret) {
+		__atomic_store_n(&isNewData, true, __ATOMIC_SEQ_CST);
+	}
 
 	return ret;
 }
