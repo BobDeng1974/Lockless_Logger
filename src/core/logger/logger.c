@@ -80,7 +80,7 @@ static bool isValitInitConditions(const int threadsNumArg,
 static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
                             const int maxMsgLenArg, const int loggingLevel,
                             void (*writeMethodArg)());
-static void initLocks();
+static void initSynchronizationElements();
 static void initMessageQueues(const int privateBuffSize,
                               const int sharedBuffSize, const int maxArgsLenArg);
 static void startLoggerThread();
@@ -107,7 +107,7 @@ int initLogger(const int threadsNumArg, const int privateBuffSize,
 	                                 sharedBuffSize, loggingLevel)) {
 		setStaticValues(threadsNumArg, maxArgsLenArg, maxMsgLenArg,
 		                loggingLevel, writeMethod);
-		initLocks();
+		initSynchronizationElements();
 		initMessageQueues(privateBuffSize, sharedBuffSize, maxArgsLenArg);
 		startLoggerThread();
 
@@ -160,7 +160,7 @@ static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
 /**
  * Initialize static mutexes and semaphore
  */
-static void initLocks() {
+static void initSynchronizationElements() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
 	initDirectWriteLock();
@@ -212,7 +212,7 @@ static void initPrivateBuffers(const int privateBuffSize) {
 		mq = newMessageInfo(privateBuffSize, maxArgsLen);
 		privateBuffers[i] = mq;
 
-		/* Add a referrence of this MessageQueue to privateBuffersQueue so threads may
+		/* Add a reference of this MessageQueue to privateBuffersQueue so threads may
 		 * register and take it */
 		enqueue(privateBuffersQueue, mq);
 	}
@@ -264,8 +264,11 @@ void unregisterThread() {
  * flush buffer and sleep for a while
  */
 static void* runLogger() {
-	bool isTerminateLoc = false;
-	bool isNewDataLoc = false;
+	bool isTerminateLoc;
+	bool isNewDataLoc;
+
+	isTerminateLoc = false;
+	isNewDataLoc = false;
 
 	do {
 		__atomic_store_n(&isNewData, false, __ATOMIC_SEQ_CST);
@@ -326,15 +329,13 @@ static void freeResources() {
 	for (i = 0; i < threadsNum; ++i) {
 		messageDataQueueDestroy(privateBuffers[i]);
 	}
-	free(privateBuffers);
 
+	free(privateBuffers);
 	sem_destroy(&loggerLoopSem);
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
 	destroyDirectWriteLock();
-
 	queueDestroy(privateBuffersQueue);
-
 	fclose(logFile);
 	free(logFileBuff);
 }

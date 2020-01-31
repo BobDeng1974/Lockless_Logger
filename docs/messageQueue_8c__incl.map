@@ -1,4 +1,4 @@
 <map id="src/core/logger/messageQueue/messageQueue.c" name="src/core/logger/messageQueue/messageQueue.c">
-<area shape="rect" id="node5" href="$messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="489,95,613,121"/>
-<area shape="rect" id="node8" href="$messageQueue_8h.html" title="This module provides a MessageQueue implementation. " alt="" coords="331,95,465,121"/>
+<area shape="rect" id="node4" href="$messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="383,95,507,121"/>
+<area shape="rect" id="node7" href="$messageQueue_8h.html" title="This module provides a MessageQueue implementation. " alt="" coords="224,95,359,121"/>
 </map>

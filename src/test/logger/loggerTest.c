@@ -33,7 +33,7 @@
 #define MAX_MSG_LEN 512
 #define ARGS_BUF_SIZE 128
 
-#define BUFFSIZE 1000
+#define BUFFSIZE 25000
 #define SHAREDBUFFSIZE 10000
 
 char chars[] = "0123456789abcdefghijklmnopqrstuvwqxy";
@@ -79,10 +79,10 @@ int main(void) {
 		       (double) (tv2.tv_usec - tv1.tv_usec) / 1000000
 		               + (double) (tv2.tv_sec - tv1.tv_sec));
 
-		return 0;
+		return LOG_STATUS_SUCCESS;
 	}
 
-	return -1;
+	return LOG_STATUS_FAILURE;
 }
 
 static void createRandomData(char** data, int charsLen) {
@@ -90,6 +90,7 @@ static void createRandomData(char** data, int charsLen) {
 
 	for (i = 0; i < NUM_THRDS; ++i) {
 		int j;
+
 		data[i] = malloc(BUF_SIZE);
 		for (j = 0; j < BUF_SIZE; ++j) {
 			data[i][j] = chars[rand() % charsLen];
