@@ -33,6 +33,8 @@
  * @copywrite (C) [2019] [Barak Sason Rofman]
  */
 
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdbool.h>

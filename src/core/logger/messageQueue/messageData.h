@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <sys/time.h>
+#include <stdarg.h>
 
 typedef struct MessageData {
 	/** Line number to log */
