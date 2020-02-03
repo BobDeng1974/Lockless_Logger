@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['tid',['tid',['../structMessageData.html#a2a4fae3b98fc34654961b424fc864518',1,'MessageData']]],
-  ['tv',['tv',['../structMessageData.html#a75fd23091c1fe66c3a76acb354cea218',1,'MessageData']]]
+  ['head',['head',['../structLinkedList.html#ac945631ee5cc1311cd62a6d1f7df9b8e',1,'LinkedList::head()'],['../structQueue.html#a881dc1651c1f7ffc920b25800fbc63bd',1,'Queue::head()']]]
 ];

@@ -37,7 +37,6 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdatomic.h>
@@ -48,6 +47,7 @@
 #include "messageQueue/messageQueue.h"
 #include "messageQueue/messageData.h"
 #include "../../writeMethods/writeMethods.h"
+#include "../common/linkedList/linkedList.h"
 
 enum logMethod {
 	LM_PRIVATE_BUFFER, LM_SHARED_BUFFER, LM_DIRECT_WRITE
@@ -60,57 +60,64 @@ static char* logFileBuff;
 static int threadsNum;
 static int maxMsgLen;
 static int maxArgsLen;
+static int privateBuffSize;
 static atomic_bool isTerminate;
+static atomic_bool isNewData;
+static atomic_bool isDynamicAllocation;
 static atomic_int logLevel;
 static FILE* logFile;
 static pthread_mutex_t loggerLock;
 static pthread_mutex_t sharedBufferlock;
+static pthread_mutex_t dynamicllyAllocaedLock;
 static pthread_t loggerThread;
 static struct Queue* privateBuffersQueue; /* Threads take and return buffers from this */
 static struct MessageQueue** privateBuffers; /* Logger thread iterated over this */
 static struct MessageQueue* sharedBuffer;
-static void (*writeMethod)();
 __thread struct MessageQueue* tlmq; /* Thread Local Message Queue */
+static struct LinkedList* dynamicllyAllocaedPrivateBuffers;
 static sem_t loggerLoopSem;
 static sem_t loggerWaitingSem;
-static atomic_bool isNewData;
+static void (*writeMethod)();
 
 static bool isValitInitConditions(const int threadsNumArg,
                                   const int privateBuffSize,
                                   const int sharedBuffSize,
                                   const int loggingLevel);
-static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
-                            const int maxMsgLenArg, const int loggingLevel,
-                            void (*writeMethodArg)());
+static void setStaticValues(int privateBuffSizeArg, const int threadsNumArg,
+                            const int maxArgsLenArg, const int maxMsgLenArg,
+                            const int loggingLevel, void (*writeMethodArg)(),
+                            const bool isDynamicAllocation);
 static void initSynchronizationElements();
-static void initMessageQueues(const int privateBuffSize,
-                              const int sharedBuffSize, const int maxArgsLenArg);
+static void initMessageQueues(const int sharedBuffSize, const int maxArgsLenArg);
 static void startLoggerThread();
 static int createLogFile();
 static void* runLogger();
 static void freeResources();
-static void initsharedBuffer(const int privateBuffSize);
+static void initsharedBuffer(const int sharedBuffSize);
 static void initPrivateBuffers(const int privateBuffSize);
 static int writeTosharedBuffer(const int loggingLevel, char* file,
                                const char* func, const int line, va_list* args,
                                const char* msg);
 static inline void drainPrivateBuffers();
 static inline void drainSharedBuffer();
-static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg);
+static inline bool isLoggingValid(const int loggingLevel, char* msg);
 static inline char* getFileName(char* filePath);
+static inline void drainDynamicllyAllocaedPrivateBuffers();
+static void destroyDynamicallyAllocatedBuffers();
 
 /* API method - Description located at .h file */
 int initLogger(const int threadsNumArg, const int privateBuffSize,
                const int sharedBuffSize, const int loggingLevel,
                const int maxMsgLenArg, const int maxArgsLenArg,
-               void (*writeMethod)()) {
+               const bool isDynamicAllocationArg, void (*writeMethod)()) {
 	if (true
 	        == isValitInitConditions(threadsNumArg, privateBuffSize,
 	                                 sharedBuffSize, loggingLevel)) {
-		setStaticValues(threadsNumArg, maxArgsLenArg, maxMsgLenArg,
-		                loggingLevel, writeMethod);
+		setStaticValues(privateBuffSize, threadsNumArg, maxArgsLenArg,
+		                maxMsgLenArg, loggingLevel, writeMethod,
+		                isDynamicAllocationArg);
 		initSynchronizationElements();
-		initMessageQueues(privateBuffSize, sharedBuffSize, maxArgsLenArg);
+		initMessageQueues(sharedBuffSize, maxArgsLenArg);
 		startLoggerThread();
 
 		return LOG_STATUS_SUCCESS;
@@ -131,7 +138,7 @@ static bool isValitInitConditions(const int threadsNumArg,
                                   const int privateBuffSize,
                                   const int sharedBuffSize,
                                   const int loggingLevel) {
-	if ((0 >= threadsNumArg) || (2 > privateBuffSize) || (0 >= sharedBuffSize)
+	if ((0 > threadsNumArg) || (2 > privateBuffSize) || (2 > sharedBuffSize)
 	        || (loggingLevel < LOG_LEVEL_NONE)
 	        || (loggingLevel > LOG_LEVEL_TRACE)
 	        || (LOG_STATUS_SUCCESS != createLogFile())) {
@@ -143,20 +150,26 @@ static bool isValitInitConditions(const int threadsNumArg,
 
 /**
  * Set static parameters
+ * @param privateBuffSizeArg Size of private buffers
  * @param threadsNumArg Numbers of threads (available buffers)
  * @param maxArgsLenArg Maximum message length
  * @param maxMsgLenArg Maximum message arguments length
  * @param loggingLevel Logging level (one of the levels at 'logLevels')
  * @param writeMethodArg A pointer to a method that writes a message to a file
+ * @param isDynamicAllocation Whether or not to enable dynamic buffers allocation
  */
-static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
-                            const int maxMsgLenArg, const int loggingLevel,
-                            void (*writeMethodArg)()) {
+static void setStaticValues(int privateBuffSizeArg, const int threadsNumArg,
+                            const int maxArgsLenArg, const int maxMsgLenArg,
+                            const int loggingLevel, void (*writeMethodArg)(),
+                            const bool isDynamicAllocation) {
+	privateBuffSize = privateBuffSizeArg;
 	threadsNum = threadsNumArg;
 	maxMsgLen = maxMsgLenArg;
 	maxArgsLen = maxArgsLenArg;
 	setLoggingLevel(loggingLevel);
 	writeMethod = writeMethodArg;
+	setDynamicAllocation(isDynamicAllocation);
+	dynamicllyAllocaedPrivateBuffers = newLinkedList();
 }
 
 /**
@@ -165,6 +178,7 @@ static void setStaticValues(const int threadsNumArg, const int maxArgsLenArg,
 static void initSynchronizationElements() {
 	pthread_mutex_init(&loggerLock, NULL);
 	pthread_mutex_init(&sharedBufferlock, NULL);
+	pthread_mutex_init(&dynamicllyAllocaedLock, NULL);
 	initDirectWriteLock();
 	sem_init(&loggerLoopSem, 0, 0);
 	sem_init(&loggerWaitingSem, 0, 0);
@@ -172,12 +186,10 @@ static void initSynchronizationElements() {
 
 /**
  * Create message queues
- * @param privateBuffSize Size of private buffers
  * @param sharedBuffSize Size of shared buffer
  * @param maxArgsLenArg Maximum message arguments length
  */
-static void initMessageQueues(const int privateBuffSize,
-                              const int sharedBuffSize, const int maxArgsLenArg) {
+static void initMessageQueues(const int sharedBuffSize, const int maxArgsLenArg) {
 	//TODO: add an option to dynamically change all of these:
 	initPrivateBuffers(privateBuffSize);
 	initsharedBuffer(sharedBuffSize);
@@ -197,6 +209,12 @@ inline void setLoggingLevel(const int loggingLevel) {
 	__atomic_store_n(&logLevel, loggingLevel, __ATOMIC_SEQ_CST);
 }
 
+/* API method - Description located at .h file */
+inline void setDynamicAllocation(const bool isDynamicAllocationArg) {
+	__atomic_store_n(&isDynamicAllocation, isDynamicAllocationArg,
+	__ATOMIC_SEQ_CST);
+}
+
 /**
  * Initialize private buffers parameters
  * @param privateBuffSize Number of buffers
@@ -211,7 +229,7 @@ static void initPrivateBuffers(const int privateBuffSize) {
 	for (i = 0; i < threadsNum; ++i) {
 		struct MessageQueue* mq;
 
-		mq = newMessageInfo(privateBuffSize, maxArgsLen);
+		mq = newMessageQueue(privateBuffSize, maxArgsLen, false);
 		privateBuffers[i] = mq;
 
 		/* Add a reference of this MessageQueue to privateBuffersQueue so threads may
@@ -222,10 +240,10 @@ static void initPrivateBuffers(const int privateBuffSize) {
 
 /**
  * Initialize shared buffer data parameters
- * @param sharedBufferSize Size of buffer
+ * @param sharedBuffSize Size of buffer
  */
 static void initsharedBuffer(const int sharedBuffSize) {
-	sharedBuffer = newMessageInfo(sharedBuffSize, maxArgsLen);
+	sharedBuffer = newMessageQueue(sharedBuffSize, maxArgsLen, false);
 }
 
 /**
@@ -251,13 +269,40 @@ static int createLogFile() {
 int registerThread() {
 	tlmq = dequeue(privateBuffersQueue);
 
+	/* No more pre-allocated buffers available. If dynamic allocation is enabled, allocate a buffer*/
+	if (NULL == tlmq) {
+		bool isDynamicAllocationLoc;
+
+		__atomic_load(&isDynamicAllocation, &isDynamicAllocationLoc,
+		__ATOMIC_SEQ_CST);
+		if (true == isDynamicAllocationLoc) {
+			struct LinkedListNode* node;
+			struct MessageQueue* mq;
+
+			mq = newMessageQueue(privateBuffSize, maxArgsLen, true);
+			node = newLinkedListNode(mq);
+
+			pthread_mutex_lock(&dynamicllyAllocaedLock); /* Lock */
+			{
+				addNode(dynamicllyAllocaedPrivateBuffers, node);
+			}
+			pthread_mutex_unlock(&dynamicllyAllocaedLock); /* Unlock */
+			tlmq = mq;
+		}
+	}
+
 	return (NULL != tlmq) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
 }
 
 /* API method - Description located at .h file */
 void unregisterThread() {
 	if (NULL != tlmq) {
-		enqueue(privateBuffersQueue, tlmq);
+		if (false == getIsDynamicallyAllocated(tlmq)) {
+			enqueue(privateBuffersQueue, tlmq);
+		} else {
+			decommisionBuffer(tlmq);
+		}
+		tlmq = NULL;
 	}
 }
 
@@ -276,6 +321,7 @@ static void* runLogger() {
 		__atomic_store_n(&isNewData, false, __ATOMIC_SEQ_CST);
 		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
 		drainPrivateBuffers();
+		drainDynamicllyAllocaedPrivateBuffers();
 		drainSharedBuffer();
 		fflush(logFile); /* Flush buffer at the end of the iteration to avoid data staying in buffer long */
 
@@ -287,7 +333,7 @@ static void* runLogger() {
 		// On the other hand, in a real application, logging is performed constantly,
 		// so this may not be a concern.
 		__atomic_load(&isNewData, &isNewDataLoc, __ATOMIC_SEQ_CST);
-		if (false == isNewDataLoc) {
+		if (false == isNewDataLoc && false == isTerminateLoc) {
 			sem_post(&loggerWaitingSem);
 			sem_wait(&loggerLoopSem);
 		}
@@ -314,10 +360,37 @@ static inline void drainSharedBuffer() {
 	drainMessages(sharedBuffer, logFile, maxMsgLen, writeMethod);
 }
 
+static inline void drainDynamicllyAllocaedPrivateBuffers() {
+	struct LinkedListNode* node = getHead(dynamicllyAllocaedPrivateBuffers);
+
+	/* Check if it's worth locking the mutex */
+	if (NULL != node) {
+		pthread_mutex_lock(&dynamicllyAllocaedLock); /* Lock */
+		{
+			while (NULL != node) {
+				struct MessageQueue* mq = getData(node);
+				struct LinkedListNode* nextNode;
+
+				drainMessages(mq, logFile, maxMsgLen, writeMethod);
+				nextNode = getNext(node);
+
+				if (true == isDecommisionedBuffer(mq)) {
+					drainMessages(mq, logFile, maxMsgLen, writeMethod);
+					free(removeNode(dynamicllyAllocaedPrivateBuffers, mq));
+					free(mq);
+				}
+
+				node = nextNode;
+			}
+		}
+	}
+	pthread_mutex_unlock(&dynamicllyAllocaedLock); /* Unlock */
+}
+
 /* API method - Description located at .h file */
 void terminateLogger() {
-	sem_post(&loggerLoopSem);
 	__atomic_store_n(&isTerminate, true, __ATOMIC_SEQ_CST);
+	sem_post(&loggerLoopSem);
 	pthread_join(loggerThread, NULL);
 	freeResources();
 }
@@ -333,7 +406,9 @@ static void freeResources() {
 	}
 
 	free(privateBuffers);
+	destroyDynamicallyAllocatedBuffers();
 	sem_destroy(&loggerLoopSem);
+	pthread_mutex_destroy(&dynamicllyAllocaedLock);
 	pthread_mutex_destroy(&sharedBufferlock);
 	pthread_mutex_destroy(&loggerLock);
 	destroyDirectWriteLock();
@@ -345,7 +420,7 @@ static void freeResources() {
 /* API method - Description located at .h file */
 int logMessage(const int loggingLevel, char* file, const char* func,
                const int line, char* msg, ...) {
-	if (true == isLoggingConditionsValid(loggingLevel, msg)) {
+	if (true == isLoggingValid(loggingLevel, msg)) {
 		int writeToPrivateBuffer;
 		va_list arg;
 
@@ -356,7 +431,7 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 		 * next methods */
 		file = getFileName(file);
 		va_start(arg, msg);
-		if (NULL != tlmq) {
+		if (NULL != tlmq && false == isDecommisionedBuffer(tlmq)) {
 			writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func,
 			                                  line, &arg, msg,
 			                                  LM_PRIVATE_BUFFER, maxArgsLen);
@@ -407,7 +482,7 @@ int logMessage(const int loggingLevel, char* file, const char* func,
  * @param msg The message itself
  * @return True of conditions are valid of false otherwise
  */
-static inline bool isLoggingConditionsValid(const int loggingLevel, char* msg) {
+static inline bool isLoggingValid(const int loggingLevel, char* msg) {
 	bool isTerminateLoc;
 	int loggingLevelLoc;
 
@@ -472,4 +547,25 @@ int getMaxMsgLen() {
 static inline char* getFileName(char* filePath) {
 	char* c = strrchr(filePath, '/');
 	return (NULL == c) ? filePath : ++c;
+}
+
+/**
+ * Release all dynamically allocated buffers
+ */
+static void destroyDynamicallyAllocatedBuffers() {
+	pthread_mutex_lock(&dynamicllyAllocaedLock); /* Lock */
+	{
+		struct LinkedListNode* node = getHead(dynamicllyAllocaedPrivateBuffers);
+
+		while (NULL != node) {
+			struct MessageQueue* mq = getData(node);
+			struct LinkedListNode* nextNode;
+
+			nextNode = getNext(node);
+			free(removeNode(dynamicllyAllocaedPrivateBuffers, mq));
+			free(mq);
+			node = nextNode;
+		}
+	}
+	pthread_mutex_unlock(&dynamicllyAllocaedLock); /* Unlock */
 }

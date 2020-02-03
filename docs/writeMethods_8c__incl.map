@@ -1,5 +1,5 @@
 <map id="src/writeMethods/writeMethods.c" name="src/writeMethods/writeMethods.c">
 <area shape="rect" id="node4" href="$writeMethods_8h.html" title="This module provides different writing methods which can be used by the application to write to a fil..." alt="" coords="209,80,331,107"/>
-<area shape="rect" id="node8" href="$logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="356,80,499,107"/>
-<area shape="rect" id="node5" href="$messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="164,155,376,196"/>
+<area shape="rect" id="node9" href="$logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="363,80,505,107"/>
+<area shape="rect" id="node5" href="$messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="160,155,372,196"/>
 </map>

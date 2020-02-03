@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lockless Logger: src/core/common/ringBufferList/linkedList/linkedList.c File Reference</title>
+<title>Lockless Logger: src/core/common/linkedList/linkedList.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,7 +61,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="dir_34b4cee2b5900b653deb3438fc906cf4.html">common</a></li><li class="navelem"><a class="el" href="dir_304e68c5b452ebb31dddd03b0372432d.html">ringBufferList</a></li><li class="navelem"><a class="el" href="dir_263f7ee6c5e9e030c5b354d389ce458b.html">linkedList</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="dir_34b4cee2b5900b653deb3438fc906cf4.html">common</a></li><li class="navelem"><a class="el" href="dir_8b9e2d92a24215b2ae9ae55dd4fa1619.html">linkedList</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -81,8 +81,8 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for linkedList.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="linkedList_8c__incl.png" border="0" usemap="#src_2core_2common_2ringBufferList_2linkedList_2linkedList_8c" alt=""/></div>
-<map name="src_2core_2common_2ringBufferList_2linkedList_2linkedList_8c" id="src_2core_2common_2ringBufferList_2linkedList_2linkedList_8c">
+<div class="center"><img src="linkedList_8c__incl.png" border="0" usemap="#src_2core_2common_2linkedList_2linkedList_8c" alt=""/></div>
+<map name="src_2core_2common_2linkedList_2linkedList_8c" id="src_2core_2common_2linkedList_2linkedList_8c">
 <area shape="rect" id="node2" href="linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="40,95,137,121"/>
 <area shape="rect" id="node3" href="linkedListNode_8h.html" title="This module provides implementation for node operations in a generic linked list. This module is a su..." alt="" coords="5,169,172,196"/>
 </map>
@@ -107,16 +107,12 @@ Functions</h2></td></tr>
 <tr class="separator:a5fed46563b591a481a708ec009296e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac50d5a6518e6eb393057aea93be5309a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linkedList_8c.html#ac50d5a6518e6eb393057aea93be5309a">addNode</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *ll, struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *node)</td></tr>
 <tr class="separator:ac50d5a6518e6eb393057aea93be5309a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c6ea65430889f30a319aadc9425a543"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linkedList_8c.html#a0c6ea65430889f30a319aadc9425a543">removeHead</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *ll)</td></tr>
-<tr class="separator:a0c6ea65430889f30a319aadc9425a543"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06642730a28f75261f44bcacb0537138"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linkedList_8c.html#a06642730a28f75261f44bcacb0537138">removeNode</a> (<a class="el" href="structLinkedList.html">LinkedList</a> *ll, const struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *nodeToRemove)</td></tr>
-<tr class="separator:a06642730a28f75261f44bcacb0537138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14be91bc0ec43e8be061d5fb78585760"><td class="memItemLeft" align="right" valign="top"><a id="a14be91bc0ec43e8be061d5fb78585760"></a>
+struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>removeNode</b> (<a class="el" href="structLinkedList.html">LinkedList</a> *ll, void *data)</td></tr>
+<tr class="separator:a14be91bc0ec43e8be061d5fb78585760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07f558cf942304a73b071428b233ac20"><td class="memItemLeft" align="right" valign="top"><a id="a07f558cf942304a73b071428b233ac20"></a>
 struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getHead</b> (const <a class="el" href="structLinkedList.html">LinkedList</a> *ll)</td></tr>
 <tr class="separator:a07f558cf942304a73b071428b233ac20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5173502d9faffdbe7850e4155a67d782"><td class="memItemLeft" align="right" valign="top"><a id="a5173502d9faffdbe7850e4155a67d782"></a>
-struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getTail</b> (const <a class="el" href="structLinkedList.html">LinkedList</a> *ll)</td></tr>
-<tr class="separator:a5173502d9faffdbe7850e4155a67d782"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This module provides a generic linked list implementation and is based on 'linkedListNode' module. </p>
@@ -174,67 +170,6 @@ struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;
       </table>
 </div><div class="memdoc">
 <p>Allocates new <a class="el" href="structLinkedList.html">LinkedList</a> and reset it's values </p><dl class="section return"><dt>Returns</dt><dd>A newly allocated <a class="el" href="structLinkedList.html">LinkedList</a> </dd></dl>
-
-</div>
-</div>
-<a id="a0c6ea65430889f30a319aadc9425a543"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c6ea65430889f30a319aadc9425a543">&#9670;&nbsp;</a></span>removeHead()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a>* removeHead </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
-          <td class="paramname"><em>ll</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Removes the first <a class="el" href="structLinkedListNode.html">LinkedListNode</a> in the <a class="el" href="structLinkedList.html">LinkedList</a> 'll' and returns it </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ll</td><td>The <a class="el" href="structLinkedList.html">LinkedList</a> of which to remove the head </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The <a class="el" href="structLinkedListNode.html">LinkedListNode</a> that was previously the head of the <a class="el" href="structLinkedList.html">LinkedList</a> 'll' </dd></dl>
-
-</div>
-</div>
-<a id="a06642730a28f75261f44bcacb0537138"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06642730a28f75261f44bcacb0537138">&#9670;&nbsp;</a></span>removeNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a>* removeNode </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
-          <td class="paramname"><em>ll</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td>
-          <td class="paramname"><em>nodeToRemove</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Removes the first occurrence of a <a class="el" href="structLinkedListNode.html">LinkedListNode</a> 'nodeToRemove' from the <a class="el" href="structLinkedList.html">LinkedList</a> 'll'. if not match is found, returns NULL </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ll</td><td>The <a class="el" href="structLinkedList.html">LinkedList</a> in which to search for <a class="el" href="structLinkedListNode.html">LinkedListNode</a> 'nodeToRemove' </td></tr>
-    <tr><td class="paramname">nodeToRemove</td><td>The <a class="el" href="structLinkedListNode.html">LinkedListNode</a> to search and remove </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The first occurrence of a <a class="el" href="structLinkedListNode.html">LinkedListNode</a> 'nodeToRemove' from the <a class="el" href="structLinkedList.html">LinkedList</a> 'll' or NULL in case no match was found </dd></dl>
 
 </div>
 </div>

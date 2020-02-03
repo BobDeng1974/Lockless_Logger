@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['file',['file',['../structMessageData.html#a203e9edaa1bb4ccbb4bd6a6e6e1b6200',1,'MessageData']]],
-  ['func',['func',['../structMessageData.html#aafc6e61e96fbfc054a9a382ffa57634f',1,'MessageData']]]
+  ['capacity',['capacity',['../structQueue.html#a003d8f2aacb10aa84f38ff89e93ccf74',1,'Queue']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['messagesdata',['messagesData',['../structMessageQueue.html#aa00264e9e1df04be918aea1bb7d9def3',1,'MessageQueue']]]
+  ['elements',['elements',['../structQueue.html#ab72a1507f012a6cac824a4d1255bab80',1,'Queue']]]
 ];

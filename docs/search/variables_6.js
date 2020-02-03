@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['tid',['tid',['../structMessageData.html#a2a4fae3b98fc34654961b424fc864518',1,'MessageData']]],
-  ['tv',['tv',['../structMessageData.html#a75fd23091c1fe66c3a76acb354cea218',1,'MessageData']]]
+  ['isdecomossioned',['isDecomossioned',['../structMessageQueue.html#a0abb88637c6ed60861e883b9a7c97b8c',1,'MessageQueue']]],
+  ['isdynamicallyallocated',['isDynamicallyAllocated',['../structMessageQueue.html#a3f67c1bd42a6b65d4e940d09cc8c16bd',1,'MessageQueue']]]
 ];

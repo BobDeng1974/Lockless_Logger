@@ -71,25 +71,110 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a003d8f2aacb10aa84f38ff89e93ccf74"><td class="memItemLeft" align="right" valign="top"><a id="a003d8f2aacb10aa84f38ff89e93ccf74"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>capacity</b></td></tr>
+<tr class="memitem:a003d8f2aacb10aa84f38ff89e93ccf74"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueue.html#a003d8f2aacb10aa84f38ff89e93ccf74">capacity</a></td></tr>
 <tr class="separator:a003d8f2aacb10aa84f38ff89e93ccf74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7d9701d244e3ba255ef8556e0562dc6"><td class="memItemLeft" align="right" valign="top"><a id="ac7d9701d244e3ba255ef8556e0562dc6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b></td></tr>
+<tr class="memitem:ac7d9701d244e3ba255ef8556e0562dc6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueue.html#ac7d9701d244e3ba255ef8556e0562dc6">size</a></td></tr>
 <tr class="separator:ac7d9701d244e3ba255ef8556e0562dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a881dc1651c1f7ffc920b25800fbc63bd"><td class="memItemLeft" align="right" valign="top"><a id="a881dc1651c1f7ffc920b25800fbc63bd"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>head</b></td></tr>
+<tr class="memitem:a881dc1651c1f7ffc920b25800fbc63bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueue.html#a881dc1651c1f7ffc920b25800fbc63bd">head</a></td></tr>
 <tr class="separator:a881dc1651c1f7ffc920b25800fbc63bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a269d614b1c1f8d1d4b08c2f661d6b63d"><td class="memItemLeft" align="right" valign="top"><a id="a269d614b1c1f8d1d4b08c2f661d6b63d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>tail</b></td></tr>
+<tr class="memitem:a269d614b1c1f8d1d4b08c2f661d6b63d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueue.html#a269d614b1c1f8d1d4b08c2f661d6b63d">tail</a></td></tr>
 <tr class="separator:a269d614b1c1f8d1d4b08c2f661d6b63d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab72a1507f012a6cac824a4d1255bab80"><td class="memItemLeft" align="right" valign="top"><a id="ab72a1507f012a6cac824a4d1255bab80"></a>
-void **&#160;</td><td class="memItemRight" valign="bottom"><b>elements</b></td></tr>
+<tr class="memitem:ab72a1507f012a6cac824a4d1255bab80"><td class="memItemLeft" align="right" valign="top">void **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueue.html#ab72a1507f012a6cac824a4d1255bab80">elements</a></td></tr>
 <tr class="separator:ab72a1507f012a6cac824a4d1255bab80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ff554ffd6e5d48b4aa266f1df4ae9e0"><td class="memItemLeft" align="right" valign="top"><a id="a6ff554ffd6e5d48b4aa266f1df4ae9e0"></a>
-pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><b>queueLock</b></td></tr>
+<tr class="memitem:a6ff554ffd6e5d48b4aa266f1df4ae9e0"><td class="memItemLeft" align="right" valign="top">pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueue.html#a6ff554ffd6e5d48b4aa266f1df4ae9e0">queueLock</a></td></tr>
 <tr class="separator:a6ff554ffd6e5d48b4aa266f1df4ae9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a003d8f2aacb10aa84f38ff89e93ccf74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a003d8f2aacb10aa84f38ff89e93ccf74">&#9670;&nbsp;</a></span>capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Queue::capacity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Maximum capacity of the queue </p>
+
+</div>
+</div>
+<a id="ab72a1507f012a6cac824a4d1255bab80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab72a1507f012a6cac824a4d1255bab80">&#9670;&nbsp;</a></span>elements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void** Queue::elements</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Array of queue elements </p>
+
+</div>
+</div>
+<a id="a881dc1651c1f7ffc920b25800fbc63bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a881dc1651c1f7ffc920b25800fbc63bd">&#9670;&nbsp;</a></span>head</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Queue::head</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Position of queue's head </p>
+
+</div>
+</div>
+<a id="a6ff554ffd6e5d48b4aa266f1df4ae9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ff554ffd6e5d48b4aa266f1df4ae9e0">&#9670;&nbsp;</a></span>queueLock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pthread_mutex_t Queue::queueLock</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="structQueue.html">Queue</a> Lock </p>
+
+</div>
+</div>
+<a id="ac7d9701d244e3ba255ef8556e0562dc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7d9701d244e3ba255ef8556e0562dc6">&#9670;&nbsp;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Queue::size</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Current size of queue </p>
+
+</div>
+</div>
+<a id="a269d614b1c1f8d1d4b08c2f661d6b63d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a269d614b1c1f8d1d4b08c2f661d6b63d">&#9670;&nbsp;</a></span>tail</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Queue::tail</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Position of queue's tail </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/core/common/Queue/<a class="el" href="Queue_8c.html">Queue.c</a></li>
 </ul>

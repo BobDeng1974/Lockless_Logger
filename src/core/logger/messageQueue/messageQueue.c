@@ -35,22 +35,28 @@ typedef struct MessageQueue {
 	atomic_int lastWrite;
 	/** The size of the buffer */
 	int size;
+	/** Whether this buffer was dynamically allocated */
+	bool isDynamicallyAllocated;
+	/** Whether this buffer should be freed*/
+	atomic_bool isDecomossioned;
 	/** Pointer to the internal buffer */
 	MessageData* messagesData;
 } MessageQueue;
 
 static void initMessageQueue(MessageQueue* mq, const int size,
-                             const int maxArgsLen);
+                             const int maxArgsLen,
+                             const bool isDynamicallyAllocated);
 static inline int getNextPos(int curPos, const int queueSize);
 
 /* API method - Description located at .h file */
-MessageQueue* newMessageInfo(const int size, const int maxArgsLen) {
+MessageQueue* newMessageQueue(const int size, const int maxArgsLen,
+                             const bool isDynamicallyAllocated) {
 	MessageQueue* mq;
 
 	//TODO: think if malloc failures need to be handled
 	mq = malloc(sizeof(*mq));
 	if (NULL != mq) {
-		initMessageQueue(mq, size, maxArgsLen);
+		initMessageQueue(mq, size, maxArgsLen, isDynamicallyAllocated);
 	}
 
 	return mq;
@@ -61,12 +67,16 @@ MessageQueue* newMessageInfo(const int size, const int maxArgsLen) {
  * @param mq MessageQueue struct to initialize
  * @param size The of the queue
  * @param maxArgsLen Maximum length of message arguments
+ * @param isDynamicallyAllocated Whether or not to enable dynamic buffers allocation
  */
 static void initMessageQueue(MessageQueue* mq, const int size,
-                             const int maxArgsLen) {
+                             const int maxArgsLen,
+                             const bool isDynamicallyAllocated) {
 	int i;
 
 	mq->size = size;
+	mq->isDynamicallyAllocated = isDynamicallyAllocated;
+	__atomic_store_n(&mq->isDecomossioned, false, __ATOMIC_SEQ_CST);
 
 	//TODO: think if malloc failures need to be handled
 	mq->messagesData = malloc(size * sizeof(*mq->messagesData));
@@ -175,4 +185,22 @@ void messageDataQueueDestroy(MessageQueue* mq) {
  */
 static inline int getNextPos(int curPos, const int queueSize) {
 	return ++curPos >= queueSize ? 0 : curPos;
+}
+
+/* API method - Description located at .h file */
+bool inline getIsDynamicallyAllocated(MessageQueue* mq) {
+	return mq->isDynamicallyAllocated;
+}
+
+/* API method - Description located at .h file */
+void inline decommisionBuffer(MessageQueue* mq) {
+	__atomic_store_n(&mq->isDecomossioned, true, __ATOMIC_SEQ_CST);
+}
+
+/* API method - Description located at .h file */
+bool inline isDecommisionedBuffer(MessageQueue* mq) {
+	bool isDecomossionedLoc;
+
+	__atomic_load(&mq->isDecomossioned, &isDecomossionedLoc, __ATOMIC_SEQ_CST);
+	return isDecomossionedLoc;
 }

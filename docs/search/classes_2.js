@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ringbuffer',['RingBuffer',['../structRingBuffer.html',1,'']]]
+  ['queue',['Queue',['../structQueue.html',1,'']]]
 ];

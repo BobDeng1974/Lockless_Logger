@@ -29,11 +29,17 @@
 #include "Queue.h"
 
 typedef struct Queue {
+	/** Maximum capacity of the queue */
 	int capacity;
+	/** Current size of queue */
 	int size;
+	/** Position of queue's head */
 	int head;
+	/** Position of queue's tail */
 	int tail;
+	/** Array of queue elements */
 	void** elements;
+	/** Queue Lock*/
 	pthread_mutex_t queueLock;
 } Queue;
 
@@ -57,7 +63,11 @@ Queue* newQueue(int capacity) {
 	return queue;
 }
 
-/* API method - Description located at .h file */
+/**
+ * Initializes the given Queue
+ * @param queue The Queue to initialize
+ * @param capacity The desired capacity
+ */
 void initQueue(Queue* queue, int capacity) {
 	queue->size = queue->head = queue->tail = 0;
 	queue->capacity = capacity;
@@ -86,46 +96,55 @@ static bool isFull(Queue* queue) {
 
 /* API method - Description located at .h file */
 int enqueue(Queue* queue, void* element) {
-	int res;
+	if (NULL != queue) {
+		int res;
 
-	pthread_mutex_lock(&queue->queueLock); /* Lock */
-	{
-		if (false == isFull(queue)) {
-			queue->elements[queue->tail] = element;
-			queue->tail = getNextPos(queue->tail, queue->capacity);
-			++queue->size;
-			res = Q_STATUS_SUCCESS;
-		} else {
-			res = Q_STATUS_FAILURE;
+		pthread_mutex_lock(&queue->queueLock); /* Lock */
+		{
+			if (false == isFull(queue)) {
+				queue->elements[queue->tail] = element;
+				queue->tail = getNextPos(queue->tail, queue->capacity);
+				++queue->size;
+				res = Q_STATUS_SUCCESS;
+			} else {
+				res = Q_STATUS_FAILURE;
+			}
 		}
-	}
-	pthread_mutex_unlock(&queue->queueLock); /* Unlock */
+		pthread_mutex_unlock(&queue->queueLock); /* Unlock */
 
-	return res;
+		return res;
+	}
+	return Q_STATUS_FAILURE;
 }
 
 /* API method - Description located at .h file */
 void* dequeue(Queue* queue) {
-	void* element = NULL;
+	if (NULL != queue) {
+		void* element = NULL;
 
-	pthread_mutex_lock(&queue->queueLock); /* Lock */
-	{
-		if (false == isEmpty(queue)) {
-			element = queue->elements[queue->head];
-			queue->elements[queue->head] = NULL;
-			queue->head = getNextPos(queue->head, queue->capacity);
-			--queue->size;
+		pthread_mutex_lock(&queue->queueLock); /* Lock */
+		{
+			if (false == isEmpty(queue)) {
+				element = queue->elements[queue->head];
+				queue->elements[queue->head] = NULL;
+				queue->head = getNextPos(queue->head, queue->capacity);
+				--queue->size;
+			}
 		}
-	}
-	pthread_mutex_unlock(&queue->queueLock); /* Unlock */
+		pthread_mutex_unlock(&queue->queueLock); /* Unlock */
 
-	return element;
+		return element;
+	}
+
+	return NULL;
 }
 
 /* API method - Description located at .h file */
 void queueDestroy(Queue* queue) {
-	pthread_mutex_destroy(&queue->queueLock);
-	free(queue);
+	if (NULL != queue) {
+		pthread_mutex_destroy(&queue->queueLock);
+		free(queue);
+	}
 }
 
 /**

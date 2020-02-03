@@ -36,6 +36,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <stdbool.h>
+
 enum loggerStatusCodes {
 	LOG_STATUS_FAILURE = -1, LOG_STATUS_SUCCESS
 };
@@ -58,19 +60,20 @@ long long cnt;
  * Note: This method must be called before any other API is used, and it can be
  * called only once
  * @param threadsNumArg Maximum number of threads that will be able to register
- * @param privateBuffSize Size of private buffers
+ * @param privateBuffSizeArg Size of private buffers
  * @param sharedBuffSize Size of shared buffer
  * @param loggingLevel Desired logging level (only messages with lower or equal logging level will
  * be logged, one of the levels at 'logLevels')
  * @param maxMsgLenArg Maximum message length
  * @param maxArgsLenArg Maximum additional arguments length
+ * @param isDynamicAllocationArg Whether or not to enable dynamic buffers allocation
  * @param writeMethodArg A pointer to a method that writes a message to a file
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int initLogger(const int threadsNumArg, const int privateBuffSize,
+int initLogger(const int threadsNumArg, const int privateBuffSizeArg,
                const int sharedBuffSize, const int loggingLevel,
                const int maxMsgLenArg, const int maxArgsLenArg,
-               void (*writeMethodArg)());
+               const bool isDynamicAllocationArg, void (*writeMethodArg)());
 
 /**
  * Register a worker thread at the logger and assign a private buffers to it
@@ -121,5 +124,11 @@ void setLoggingLevel(const int loggingLevel);
  * @return The defined max message length
  */
 int getMaxMsgLen();
+
+/**
+ * Set whether or not dynamic allocation is enabled
+ * @param isDynamicAllocationArg whether or not dynamic allocation is enabled
+ */
+void setDynamicAllocation(const bool isDynamicAllocationArg);
 
 #endif /* LOGGER_H */

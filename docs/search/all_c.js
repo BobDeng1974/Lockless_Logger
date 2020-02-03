@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['registerthread',['registerThread',['../logger_8h.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c'],['../logger_8c.html#a24cb7a769ac91199a40ffd5d0ba0daca',1,'registerThread():&#160;logger.c']]],
-  ['runlogger',['runLogger',['../logger_8c.html#a25450beac2c28565d53e0d15440d5c1f',1,'logger.c']]]
+  ['queue',['Queue',['../structQueue.html',1,'']]],
+  ['queue_2ec',['Queue.c',['../Queue_8c.html',1,'']]],
+  ['queue_2eh',['Queue.h',['../Queue_8h.html',1,'']]],
+  ['queuedestroy',['queueDestroy',['../Queue_8c.html#aa2081e9299f0d0aceb51fc8d32570a46',1,'queueDestroy(Queue *queue):&#160;Queue.c'],['../Queue_8h.html#afda90637fea675dfab17b79df54e8f51',1,'queueDestroy(struct Queue *queue):&#160;Queue.c']]],
+  ['queuelock',['queueLock',['../structQueue.html#a6ff554ffd6e5d48b4aa266f1df4ae9e0',1,'Queue']]]
 ];

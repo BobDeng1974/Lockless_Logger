@@ -76,6 +76,7 @@ $(function() {
 <p>This module provides a <a class="el" href="structMessageQueue.html">MessageQueue</a> implementation.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
+<code>#include &lt;stdbool.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for messageQueue.h:</div>
 <div class="dyncontent">
@@ -86,8 +87,8 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="messageQueue_8h__dep__incl.png" border="0" usemap="#src_2core_2logger_2messageQueue_2messageQueue_8hdep" alt=""/></div>
 <map name="src_2core_2logger_2messageQueue_2messageQueue_8hdep" id="src_2core_2logger_2messageQueue_2messageQueue_8hdep">
-<area shape="rect" id="node2" href="logger_8c.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="5,102,164,129"/>
-<area shape="rect" id="node3" href="messageQueue_8c.html" title="This module provides a MessageQueue implementation. " alt="" coords="189,95,391,136"/>
+<area shape="rect" id="node2" href="logger_8c.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="5,102,179,129"/>
+<area shape="rect" id="node3" href="messageQueue_8c.html" title="This module provides a MessageQueue implementation. " alt="" coords="203,95,426,136"/>
 </map>
 </div>
 </div>
@@ -102,8 +103,8 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adedf6c75fcc06fe9595442be3b5ecde9"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#adedf6c75fcc06fe9595442be3b5ecde9">newMessageInfo</a> (const int size, const int maxArgsLen)</td></tr>
-<tr class="separator:adedf6c75fcc06fe9595442be3b5ecde9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd55dc92bde9d5ba54c7eaef687ebd47"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#acd55dc92bde9d5ba54c7eaef687ebd47">newMessageQueue</a> (const int size, const int maxArgsLen, const bool isDynamicallyAllocated)</td></tr>
+<tr class="separator:acd55dc92bde9d5ba54c7eaef687ebd47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c3da3e3336b842cb08b132d4e44b195"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a7c3da3e3336b842cb08b132d4e44b195">addMessage</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, const int loggingLevel, char *file, const char *func, const int line, va_list *args, const char *msg, const int logMethod, const int maxArgsLen)</td></tr>
 <tr class="separator:a7c3da3e3336b842cb08b132d4e44b195"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03a7c1ce8a77ff40128aa239f074e05e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a03a7c1ce8a77ff40128aa239f074e05e">drainMessages</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, FILE *logFile, const int maxMsgLen, const void(*formatMethod)())</td></tr>
@@ -112,6 +113,12 @@ Functions</h2></td></tr>
 <tr class="separator:ae918a0264a298af65bd6093f5e248d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d8973bf89d4d764fbfe4706ef4b606b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a1d8973bf89d4d764fbfe4706ef4b606b">messageDataQueueDestroy</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
 <tr class="separator:a1d8973bf89d4d764fbfe4706ef4b606b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ff297f81303d347531292a45752da43"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a0ff297f81303d347531292a45752da43">getIsDynamicallyAllocated</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
+<tr class="separator:a0ff297f81303d347531292a45752da43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87f2099657ee531725047192ea19f063"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a87f2099657ee531725047192ea19f063">decommisionBuffer</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
+<tr class="separator:a87f2099657ee531725047192ea19f063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e523e58da56debd84f2bc60643c173"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a32e523e58da56debd84f2bc60643c173">isDecommisionedBuffer</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
+<tr class="separator:a32e523e58da56debd84f2bc60643c173"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This module provides a <a class="el" href="structMessageQueue.html">MessageQueue</a> implementation. </p>
@@ -196,10 +203,43 @@ Functions</h2></td></tr>
     <tr><td class="paramname">args</td><td>Additional arguments to log message </td></tr>
     <tr><td class="paramname">msg</td><td>The message </td></tr>
     <tr><td class="paramname">logMethod</td><td>Logging method (private buffer, shared buffer or direct write) </td></tr>
+    <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments to log message </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>MQ_STATUS_SUCCESS on success, MQ_STATUS_FAILURE on failure </dd></dl>
+
+</div>
+</div>
+<a id="a87f2099657ee531725047192ea19f063"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87f2099657ee531725047192ea19f063">&#9670;&nbsp;</a></span>decommisionBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void decommisionBuffer </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Decommission the given <a class="el" href="structMessageQueue.html">MessageQueue</a> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The <a class="el" href="structMessageQueue.html">MessageQueue</a> to decommission </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -293,12 +333,8 @@ Functions</h2></td></tr>
     <tr><td class="paramname">logFile</td><td>The file to write the messages to </td></tr>
     <tr><td class="paramname">maxMsgLen</td><td>Maximum length of a message </td></tr>
     <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments to log message </td></tr>
-    <tr><td class="paramname">logMethod</td><td>Specifies the way logging is done<ul>
-<li></li>
-</ul>
-</td></tr>
+    <tr><td class="paramname">logMethod</td><td>Specifies the way logging is done </td></tr>
     <tr><td class="paramname">writeMethod</td><td>A pointer to a method that writes a message to a file </td></tr>
-    <tr><td class="paramname">formatMethod</td><td>A method to format the message </td></tr>
   </table>
   </dd>
 </dl>
@@ -354,6 +390,72 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a0ff297f81303d347531292a45752da43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ff297f81303d347531292a45752da43">&#9670;&nbsp;</a></span>getIsDynamicallyAllocated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getIsDynamicallyAllocated </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Checks whether or not this buffer was dynamically allocated </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if this buffer was dynamically allocated or false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a32e523e58da56debd84f2bc60643c173"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e523e58da56debd84f2bc60643c173">&#9670;&nbsp;</a></span>isDecommisionedBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool isDecommisionedBuffer </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Checks whether or not this buffer has been decommissioned </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if this buffer has been decommissioned or false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a1d8973bf89d4d764fbfe4706ef4b606b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d8973bf89d4d764fbfe4706ef4b606b">&#9670;&nbsp;</a></span>messageDataQueueDestroy()</h2>
 
@@ -378,14 +480,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="adedf6c75fcc06fe9595442be3b5ecde9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adedf6c75fcc06fe9595442be3b5ecde9">&#9670;&nbsp;</a></span>newMessageInfo()</h2>
+<a id="acd55dc92bde9d5ba54c7eaef687ebd47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd55dc92bde9d5ba54c7eaef687ebd47">&#9670;&nbsp;</a></span>newMessageQueue()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="structMessageQueue.html">MessageQueue</a>* newMessageInfo </td>
+          <td class="memname">struct <a class="el" href="structMessageQueue.html">MessageQueue</a>* newMessageQueue </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>size</em>, </td>
@@ -394,7 +496,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>maxArgsLen</em>&#160;</td>
+          <td class="paramname"><em>maxArgsLen</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>isDynamicallyAllocated</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -407,6 +515,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">size</td><td>desired <a class="el" href="structMessageQueue.html">MessageQueue</a> size </td></tr>
     <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments of the log message </td></tr>
+    <tr><td class="paramname">isDynamicallyAllocated</td><td>Whether or not to enable dynamic buffers allocation </td></tr>
   </table>
   </dd>
 </dl>
