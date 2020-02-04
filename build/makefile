@@ -12,9 +12,9 @@ RM := rm -rf
 -include src/test/logger/subdir.mk
 -include src/core/logger/messageQueue/subdir.mk
 -include src/core/logger/subdir.mk
+-include src/core/common/queue/subdir.mk
 -include src/core/common/linkedList/node/subdir.mk
 -include src/core/common/linkedList/subdir.mk
--include src/core/common/Queue/subdir.mk
 -include subdir.mk
 -include objects.mk
 

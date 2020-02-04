@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['terminatelogger',['terminateLogger',['../logger_8h.html#a4339ec77ab029db1548580313b9dc605',1,'terminateLogger():&#160;logger.c'],['../logger_8c.html#a4339ec77ab029db1548580313b9dc605',1,'terminateLogger():&#160;logger.c']]]
+  ['writetosharedbuffer',['writeTosharedBuffer',['../logger_8c.html#ac406546662b9f231ecef7fe351697600',1,'logger.c']]]
 ];

@@ -43,11 +43,11 @@
 #include <string.h>
 
 #include "../api/logger.h"
-#include "../common/Queue/Queue.h"
 #include "messageQueue/messageQueue.h"
 #include "messageQueue/messageData.h"
-#include "../../writeMethods/writeMethods.h"
 #include "../common/linkedList/linkedList.h"
+#include "../common/queue/queue.h"
+#include "../../writeMethods/writeMethods.h"
 
 enum logMethod {
 	LM_PRIVATE_BUFFER, LM_SHARED_BUFFER, LM_DIRECT_WRITE

@@ -46,9 +46,8 @@ int main(void) {
 	remove("logFile.txt");
 
 	if (LOG_STATUS_SUCCESS
-	        == initLogger(10, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE,
-	        MAX_MSG_LEN,
-	                      ARGS_BUF_SIZE, true, asciiWrite)) {
+	        == initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE,
+	                      MAX_MSG_LEN, ARGS_BUF_SIZE, true, asciiWrite)) {
 		int i;
 		int charsLen;
 		pthread_t threads[NUM_THRDS];
@@ -100,12 +99,11 @@ static void createRandomData(char** data, int charsLen) {
 }
 
 static void* threadMethod(void* data) {
-
 	for (int i = 0; i < ITERATIONS; ++i) {
-		registerThread();
 		LOG_MSG(LOG_LEVEL_EMERG, "A message with arguments: %s", (char* )data);
-		unregisterThread();
 	}
+
+	unregisterThread();
 
 	return NULL;
 }

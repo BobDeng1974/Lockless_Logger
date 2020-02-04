@@ -13,9 +13,9 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-src/core/common/Queue \
 src/core/common/linkedList \
 src/core/common/linkedList/node \
+src/core/common/queue \
 src/core/logger \
 src/core/logger/messageQueue \
 src/test/logger \

@@ -22,11 +22,12 @@
  * @copywrite (C) [2019] [Barak Sason Rofman]
  */
 
+#include "queue.h"
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <pthread.h>
 
-#include "Queue.h"
 
 typedef struct Queue {
 	/** Maximum capacity of the queue */
