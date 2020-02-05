@@ -485,6 +485,7 @@ static void doChangePrivateBuffersNumber() {
 			messageDataQueueDestroy(mq);
 		} else {
 			enqueue(privateBuffersQueue, mq);
+			setIsDynamicallyAllocated(mq, true);
 		}
 	}
 

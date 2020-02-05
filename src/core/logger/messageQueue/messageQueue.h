@@ -97,6 +97,13 @@ void directWriteToFile(const int loggingLevel, char* file, const char* func,
 void messageDataQueueDestroy(struct MessageQueue* mq);
 
 /**
+ * Sets whether or not this buffer was dynamically allocated
+ * @param mq The relevant MessageQueue
+ * @param state Whether or not this buffer was dynamically allocated
+ */
+void setIsDynamicallyAllocated(struct MessageQueue* mq, bool state);
+
+/**
  * Checks whether or not this buffer was dynamically allocated
  * @param mq The relevant MessageQueue
  * @return True if this buffer was dynamically allocated or false otherwise

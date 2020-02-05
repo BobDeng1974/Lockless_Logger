@@ -119,6 +119,8 @@ Functions</h2></td></tr>
 <tr class="separator:ae918a0264a298af65bd6093f5e248d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8af30b594896403efa68e854b0b9a33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#ab8af30b594896403efa68e854b0b9a33">messageDataQueueDestroy</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
 <tr class="separator:ab8af30b594896403efa68e854b0b9a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6036aa9087bd7580ce70d2ca9f11ec41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a6036aa9087bd7580ce70d2ca9f11ec41">setIsDynamicallyAllocated</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, bool state)</td></tr>
+<tr class="separator:a6036aa9087bd7580ce70d2ca9f11ec41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaba59eb587cfdc15f8b78d097d10309b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#aaba59eb587cfdc15f8b78d097d10309b">getIsDynamicallyAllocated</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
 <tr class="separator:aaba59eb587cfdc15f8b78d097d10309b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a557c5eb4341465907d40593d9432b6ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8c.html#a557c5eb4341465907d40593d9432b6ed">decommisionBuffer</a> (<a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
@@ -835,6 +837,49 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
     <tr><td class="paramname">state</td><td>Whether a private buffer is being used or not </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6036aa9087bd7580ce70d2ca9f11ec41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6036aa9087bd7580ce70d2ca9f11ec41">&#9670;&nbsp;</a></span>setIsDynamicallyAllocated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setIsDynamicallyAllocated </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets whether or not this buffer was dynamically allocated </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+    <tr><td class="paramname">state</td><td>Whether or not this buffer was dynamically allocated </td></tr>
   </table>
   </dd>
 </dl>

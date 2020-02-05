@@ -206,6 +206,11 @@ static inline int getNextPos(int curPos, const int queueSize) {
 }
 
 /* API method - Description located at .h file */
+void inline setIsDynamicallyAllocated(MessageQueue* mq, bool state) {
+	__atomic_store_n(&mq->isDynamicallyAllocated, state, __ATOMIC_SEQ_CST);
+}
+
+/* API method - Description located at .h file */
 bool inline getIsDynamicallyAllocated(MessageQueue* mq) {
 	return mq->isDynamicallyAllocated;
 }
