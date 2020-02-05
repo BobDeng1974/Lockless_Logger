@@ -37,8 +37,12 @@ typedef struct MessageQueue {
 	int size;
 	/** Whether this buffer was dynamically allocated */
 	bool isDynamicallyAllocated;
-	/** Whether this buffer should be freed*/
+	/** Whether this buffer has been taken by a worker thread */
+	atomic_bool isTaken;
+	/** Whether this buffer should be freed */
 	atomic_bool isDecomossioned;
+	/** Whether this buffer is currently being used by a worker thread */
+	atomic_bool isBeingUsed;
 	/** Pointer to the internal buffer */
 	MessageData* messagesData;
 } MessageQueue;
@@ -47,10 +51,12 @@ static void initMessageQueue(MessageQueue* mq, const int size,
                              const int maxArgsLen,
                              const bool isDynamicallyAllocated);
 static inline int getNextPos(int curPos, const int queueSize);
+static void prepareMessageQueue(MessageQueue* mq, const int size,
+                                const int maxArgsLen);
 
 /* API method - Description located at .h file */
 MessageQueue* newMessageQueue(const int size, const int maxArgsLen,
-                             const bool isDynamicallyAllocated) {
+                              const bool isDynamicallyAllocated) {
 	MessageQueue* mq;
 
 	//TODO: think if malloc failures need to be handled
@@ -72,11 +78,23 @@ MessageQueue* newMessageQueue(const int size, const int maxArgsLen,
 static void initMessageQueue(MessageQueue* mq, const int size,
                              const int maxArgsLen,
                              const bool isDynamicallyAllocated) {
+	mq->isDynamicallyAllocated = isDynamicallyAllocated;
+	__atomic_store_n(&mq->isDecomossioned, false, __ATOMIC_SEQ_CST);
+	__atomic_store_n(&mq->isBeingUsed, false, __ATOMIC_SEQ_CST);
+	prepareMessageQueue(mq, size, maxArgsLen);
+}
+
+/**
+ * Prepare MessageQueue dynamic parameters
+ * @param mq The MessageQueue to prepare
+ * @param size The size of the MessageData internal buffer
+ * @param maxArgsLen Maximum length of message arguments
+ */
+static void prepareMessageQueue(MessageQueue* mq, const int size,
+                                const int maxArgsLen) {
 	int i;
 
 	mq->size = size;
-	mq->isDynamicallyAllocated = isDynamicallyAllocated;
-	__atomic_store_n(&mq->isDecomossioned, false, __ATOMIC_SEQ_CST);
 
 	//TODO: think if malloc failures need to be handled
 	mq->messagesData = malloc(size * sizeof(*mq->messagesData));
@@ -202,5 +220,48 @@ bool inline isDecommisionedBuffer(MessageQueue* mq) {
 	bool isDecomossionedLoc;
 
 	__atomic_load(&mq->isDecomossioned, &isDecomossionedLoc, __ATOMIC_SEQ_CST);
+
 	return isDecomossionedLoc;
+}
+
+/* API method - Description located at .h file */
+void inline setIsBeingUsed(MessageQueue* mq, bool state) {
+	__atomic_store_n(&mq->isBeingUsed, state, __ATOMIC_SEQ_CST);
+}
+
+/* API method - Description located at .h file */
+bool inline getIsPrivateBufferBeingUsed(MessageQueue* mq) {
+	bool isBeingUsed;
+
+	__atomic_load(&mq->isBeingUsed, &isBeingUsed, __ATOMIC_SEQ_CST);
+
+	return isBeingUsed;
+}
+
+/* API method - Description located at .h file */
+void changeBufferSize(MessageQueue* mq, const int newSize, const int maxArgsLen) {
+	int i;
+
+	for (i = 0; i < mq->size; ++i) {
+		MessageData* md = (&mq->messagesData[i]);
+		free(md->argsBuf);
+	}
+
+	free(mq->messagesData);
+	prepareMessageQueue(mq, newSize, maxArgsLen);
+
+}
+
+/* API method - Description located at .h file */
+void inline setIsTaken(MessageQueue* mq, bool state) {
+	__atomic_store_n(&mq->isTaken, state, __ATOMIC_SEQ_CST);
+}
+
+/* API method - Description located at .h file */
+bool inline getIsPrivateBufferTaken(MessageQueue* mq) {
+	bool isTaken;
+
+	__atomic_load(&mq->isTaken, &isTaken, __ATOMIC_SEQ_CST);
+
+	return isTaken;
 }

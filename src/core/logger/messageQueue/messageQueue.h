@@ -116,4 +116,40 @@ void decommisionBuffer(struct MessageQueue* mq);
  */
 bool isDecommisionedBuffer(struct MessageQueue* mq);
 
+/**
+ * Set whether a private buffer is being used
+ * @param mq The relevant MessageQueue
+ * @param state Whether a private buffer is being used or not
+ */
+void setIsBeingUsed(struct MessageQueue* mq, bool state);
+
+/**
+ * Get whether a private buffer is being used
+ * @param mq The relevant MessageQueue
+ * @return True if private buffer is being used or false otherwise
+ */
+bool getIsPrivateBufferBeingUsed(struct MessageQueue* mq);
+
+/**
+ * Change the size of the internal buffer in a MessageQueue
+ * @param mq The MessageQueue to change
+ * @param newSize The new size of the internal buffer
+ * @param maxArgsLen Maximum length of additional arguments to log message
+ */
+void changeBufferSize(struct MessageQueue* mq, const int newSize, const int maxArgsLen);
+
+/**
+ * Set whether a private buffer has been taken by a worker thread
+ * @param mq The relevant MessageQueue
+ * @param state True if private buffer is being used or false otherwise
+ */
+void setIsTaken(struct MessageQueue* mq, bool state);
+
+/**
+ * Get whether a private buffer has been taken by a worker thread
+ * @param mq The relevant MessageQueue
+ * @return True if private buffer has been taken or false otherwise
+ */
+bool getIsPrivateBufferTaken(struct MessageQueue* mq);
+
 #endif /* MESSAGE_QUEUE_H */

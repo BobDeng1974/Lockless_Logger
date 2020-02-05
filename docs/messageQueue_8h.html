@@ -119,6 +119,16 @@ Functions</h2></td></tr>
 <tr class="separator:a87f2099657ee531725047192ea19f063"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32e523e58da56debd84f2bc60643c173"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a32e523e58da56debd84f2bc60643c173">isDecommisionedBuffer</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
 <tr class="separator:a32e523e58da56debd84f2bc60643c173"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b2c3815736d37aa0a14e29484e92f06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a4b2c3815736d37aa0a14e29484e92f06">setIsBeingUsed</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, bool state)</td></tr>
+<tr class="separator:a4b2c3815736d37aa0a14e29484e92f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a202a74b735e91860b1405ecf5d1af2ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a202a74b735e91860b1405ecf5d1af2ef">getIsPrivateBufferBeingUsed</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
+<tr class="separator:a202a74b735e91860b1405ecf5d1af2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330bb245ef5f3403b7f95fcd71f9f9c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a330bb245ef5f3403b7f95fcd71f9f9c4">changeBufferSize</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, const int newSize, const int maxArgsLen)</td></tr>
+<tr class="separator:a330bb245ef5f3403b7f95fcd71f9f9c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f85fabef9a683b2c9236d5fcdb9946d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a4f85fabef9a683b2c9236d5fcdb9946d">setIsTaken</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq, bool state)</td></tr>
+<tr class="separator:a4f85fabef9a683b2c9236d5fcdb9946d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d96e722058bffd50b27f65f2958e81c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="messageQueue_8h.html#a8d96e722058bffd50b27f65f2958e81c">getIsPrivateBufferTaken</a> (struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *mq)</td></tr>
+<tr class="separator:a8d96e722058bffd50b27f65f2958e81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This module provides a <a class="el" href="structMessageQueue.html">MessageQueue</a> implementation. </p>
@@ -208,6 +218,48 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>MQ_STATUS_SUCCESS on success, MQ_STATUS_FAILURE on failure </dd></dl>
+
+</div>
+</div>
+<a id="a330bb245ef5f3403b7f95fcd71f9f9c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330bb245ef5f3403b7f95fcd71f9f9c4">&#9670;&nbsp;</a></span>changeBufferSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void changeBufferSize </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>newSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>maxArgsLen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Change the size of the internal buffer in a <a class="el" href="structMessageQueue.html">MessageQueue</a> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The <a class="el" href="structMessageQueue.html">MessageQueue</a> to change </td></tr>
+    <tr><td class="paramname">newSize</td><td>The new size of the internal buffer </td></tr>
+    <tr><td class="paramname">maxArgsLen</td><td>Maximum length of additional arguments to log message </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -423,6 +475,72 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a202a74b735e91860b1405ecf5d1af2ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a202a74b735e91860b1405ecf5d1af2ef">&#9670;&nbsp;</a></span>getIsPrivateBufferBeingUsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getIsPrivateBufferBeingUsed </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get whether a private buffer is being used </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if private buffer is being used or false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a8d96e722058bffd50b27f65f2958e81c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d96e722058bffd50b27f65f2958e81c">&#9670;&nbsp;</a></span>getIsPrivateBufferTaken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool getIsPrivateBufferTaken </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get whether a private buffer has been taken by a worker thread </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if private buffer has been taken or false otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a32e523e58da56debd84f2bc60643c173"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a32e523e58da56debd84f2bc60643c173">&#9670;&nbsp;</a></span>isDecommisionedBuffer()</h2>
 
@@ -520,6 +638,92 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The newly allocated <a class="el" href="structMessageQueue.html">MessageQueue</a> </dd></dl>
+
+</div>
+</div>
+<a id="a4b2c3815736d37aa0a14e29484e92f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b2c3815736d37aa0a14e29484e92f06">&#9670;&nbsp;</a></span>setIsBeingUsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setIsBeingUsed </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set whether a private buffer is being used </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+    <tr><td class="paramname">state</td><td>Whether a private buffer is being used or not </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4f85fabef9a683b2c9236d5fcdb9946d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f85fabef9a683b2c9236d5fcdb9946d">&#9670;&nbsp;</a></span>setIsTaken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void setIsTaken </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structMessageQueue.html">MessageQueue</a> *&#160;</td>
+          <td class="paramname"><em>mq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>state</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set whether a private buffer has been taken by a worker thread </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mq</td><td>The relevant <a class="el" href="structMessageQueue.html">MessageQueue</a> </td></tr>
+    <tr><td class="paramname">state</td><td>True if private buffer is being used or false otherwise </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

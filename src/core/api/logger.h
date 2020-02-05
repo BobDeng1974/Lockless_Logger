@@ -100,7 +100,7 @@ void unregisterThread();
  * @param msg Message data (must be a null-terminated string)
  * @return LOG_STATUS_SUCCESS on success, LOG_STATUS_FAILURE on failure
  */
-int logMessage(const int loggingLevel, char* file, const char* func,
+void logMessage(const int loggingLevel, char* file, const char* func,
                const int line, char* msg, ...);
 
 /** A macro that defines the usage for 'logMessage(...) API */
@@ -130,5 +130,17 @@ int getMaxMsgLen();
  * @param isDynamicAllocationArg whether or not dynamic allocation is enabled
  */
 void setDynamicAllocation(const bool isDynamicAllocationArg);
+
+/**
+ * Change the size of the internal buffers of the private buffers
+ * @param newSize The new size of the internal buffers of the private buffers
+ */
+void changePrivateBuffersSize(const int newSize);
+
+/**
+ * Change the number of private buffers
+ * @param newNumber The new number of private buffers
+ */
+void changePrivateBuffersNumber(const int newNumber);
 
 #endif /* LOGGER_H */

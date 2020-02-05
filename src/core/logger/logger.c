@@ -41,6 +41,7 @@
 #include <semaphore.h>
 #include <stdatomic.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../api/logger.h"
 #include "messageQueue/messageQueue.h"
@@ -57,13 +58,18 @@ enum logMethod {
 #define LOGGERTHREADNAME "LoggerThread" /* Name of the logger thread */
 
 static char* logFileBuff;
-static int threadsNum;
+static int privateBuffersNum;
 static int maxMsgLen;
 static int maxArgsLen;
 static int privateBuffSize;
+static int newPrivateBuffSize;
+static int newPrivateBuffersNumber;
 static atomic_bool isTerminate;
 static atomic_bool isNewData;
 static atomic_bool isDynamicAllocation;
+static atomic_bool arePrivateBuffersActive;
+static atomic_bool arePrivateBuffersChangingSize;
+static atomic_bool arePrivateBuffersChangingNumber;
 static atomic_int logLevel;
 static FILE* logFile;
 static pthread_mutex_t loggerLock;
@@ -77,6 +83,7 @@ __thread struct MessageQueue* tlmq; /* Thread Local Message Queue */
 static struct LinkedList* dynamicllyAllocaedPrivateBuffers;
 static sem_t loggerLoopSem;
 static sem_t loggerWaitingSem;
+static sem_t buffersChangingSizeSem;
 static void (*writeMethod)();
 
 static bool isValitInitConditions(const int threadsNumArg,
@@ -102,8 +109,16 @@ static inline void drainPrivateBuffers();
 static inline void drainSharedBuffer();
 static inline bool isLoggingValid(const int loggingLevel, char* msg);
 static inline char* getFileName(char* filePath);
-static inline void drainDynamicllyAllocaedPrivateBuffers();
+static void drainDynamicllyAllocaedPrivateBuffers();
 static void destroyDynamicallyAllocatedBuffers();
+static void setArePrivateBuffersActive(const bool arePrivateBuffersActiveArg);
+static inline bool arePrivateBuffersUsed();
+static void doChangePrivateBuffersSize();
+static inline void setArePrivateBuffersChangingSize(
+        const bool arePrivateBuffersChangingSizeArg);
+static void doChangePrivateBuffersNumber();
+static inline void setArePrivateBuffersChangingNumber(
+        const bool arePrivateBuffersChangingNumberArg);
 
 /* API method - Description located at .h file */
 int initLogger(const int threadsNumArg, const int privateBuffSize,
@@ -138,7 +153,7 @@ static bool isValitInitConditions(const int threadsNumArg,
                                   const int privateBuffSize,
                                   const int sharedBuffSize,
                                   const int loggingLevel) {
-	if ((0 > threadsNumArg) || (2 > privateBuffSize) || (2 > sharedBuffSize)
+	if ((threadsNumArg < 0) || (privateBuffSize < 2) || (sharedBuffSize < 2)
 	        || (loggingLevel < LOG_LEVEL_NONE)
 	        || (loggingLevel > LOG_LEVEL_TRACE)
 	        || (LOG_STATUS_SUCCESS != createLogFile())) {
@@ -163,12 +178,15 @@ static void setStaticValues(int privateBuffSizeArg, const int threadsNumArg,
                             const int loggingLevel, void (*writeMethodArg)(),
                             const bool isDynamicAllocation) {
 	privateBuffSize = privateBuffSizeArg;
-	threadsNum = threadsNumArg;
+	privateBuffersNum = threadsNumArg;
 	maxMsgLen = maxMsgLenArg;
 	maxArgsLen = maxArgsLenArg;
 	setLoggingLevel(loggingLevel);
 	writeMethod = writeMethodArg;
 	setDynamicAllocation(isDynamicAllocation);
+	setArePrivateBuffersActive(true);
+	setArePrivateBuffersChangingSize(false);
+	setArePrivateBuffersChangingNumber(false);
 	dynamicllyAllocaedPrivateBuffers = newLinkedList();
 }
 
@@ -182,6 +200,7 @@ static void initSynchronizationElements() {
 	initDirectWriteLock();
 	sem_init(&loggerLoopSem, 0, 0);
 	sem_init(&loggerWaitingSem, 0, 0);
+	sem_init(&buffersChangingSizeSem, 0, 0);
 }
 
 /**
@@ -196,7 +215,7 @@ static void initMessageQueues(const int sharedBuffSize, const int maxArgsLenArg)
 }
 
 /**
- * Starts (and name) the internal logger threads which drains buffers
+ * Starts (and names) the internal logger threads which drains buffers
  * to the log file
  */
 static void startLoggerThread() {
@@ -216,17 +235,49 @@ inline void setDynamicAllocation(const bool isDynamicAllocationArg) {
 }
 
 /**
+ * Set whether private buffers are active or not
+ * @param arePrivateBuffersActiveArg Whether private buffers are active or not
+ */
+static inline void setArePrivateBuffersActive(
+        const bool arePrivateBuffersActiveArg) {
+	__atomic_store_n(&arePrivateBuffersActive, arePrivateBuffersActiveArg,
+	__ATOMIC_SEQ_CST);
+}
+
+/**
+ * Set whether private buffers are changing size
+ * @param arePrivateBuffersChangingSizeArg Whether private buffers are changing size
+ */
+static inline void setArePrivateBuffersChangingSize(
+        const bool arePrivateBuffersChangingSizeArg) {
+	__atomic_store_n(&arePrivateBuffersChangingSize,
+	                 arePrivateBuffersChangingSizeArg,
+	                 __ATOMIC_SEQ_CST);
+}
+
+/**
+ * Set whether private buffers are changing number
+ * @param arePrivateBuffersChangingNumberArg Whether private buffers are changing number
+ */
+static inline void setArePrivateBuffersChangingNumber(
+        const bool arePrivateBuffersChangingNumberArg) {
+	__atomic_store_n(&arePrivateBuffersChangingNumber,
+	                 arePrivateBuffersChangingNumberArg,
+	                 __ATOMIC_SEQ_CST);
+}
+
+/**
  * Initialize private buffers parameters
  * @param privateBuffSize Number of buffers
  */
 static void initPrivateBuffers(const int privateBuffSize) {
 	int i;
 
-	privateBuffersQueue = newQueue(threadsNum);
+	privateBuffersQueue = newQueue(privateBuffersNum);
 	//TODO: think if malloc failures need to be handled
-	privateBuffers = malloc(threadsNum * sizeof(*privateBuffers));
+	privateBuffers = malloc(privateBuffersNum * sizeof(*privateBuffers));
 
-	for (i = 0; i < threadsNum; ++i) {
+	for (i = 0; i < privateBuffersNum; ++i) {
 		struct MessageQueue* mq;
 
 		mq = newMessageQueue(privateBuffSize, maxArgsLen, false);
@@ -289,6 +340,8 @@ int registerThread() {
 			pthread_mutex_unlock(&dynamicllyAllocaedLock); /* Unlock */
 			tlmq = mq;
 		}
+	} else {
+		setIsTaken(tlmq, true);
 	}
 
 	return (NULL != tlmq) ? LOG_STATUS_SUCCESS : LOG_STATUS_FAILURE;
@@ -302,6 +355,8 @@ void unregisterThread() {
 		} else {
 			decommisionBuffer(tlmq);
 		}
+
+		setIsTaken(tlmq, false);
 		tlmq = NULL;
 	}
 }
@@ -313,33 +368,158 @@ void unregisterThread() {
 static void* runLogger() {
 	bool isTerminateLoc;
 	bool isNewDataLoc;
+	bool isFirstLevelActiveLoc;
 
 	isTerminateLoc = false;
 	isNewDataLoc = false;
 
 	do {
-		__atomic_store_n(&isNewData, false, __ATOMIC_SEQ_CST);
-		__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
-		drainPrivateBuffers();
-		drainDynamicllyAllocaedPrivateBuffers();
-		drainSharedBuffer();
-		fflush(logFile); /* Flush buffer at the end of the iteration to avoid data staying in buffer long */
+		__atomic_load(&arePrivateBuffersActive, &isFirstLevelActiveLoc,
+		__ATOMIC_SEQ_CST);
+		if (true == arePrivateBuffersActive) {
+			__atomic_store_n(&isNewData, false, __ATOMIC_SEQ_CST);
+			__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
+			drainPrivateBuffers();
+			drainDynamicllyAllocaedPrivateBuffers();
+			drainSharedBuffer();
+			fflush(logFile); /* Flush buffer at the end of the iteration to avoid data staying in buffer long */
 
-		/* The following is done to avoid wasting CPU in case no logging is being done
-		 * (the main concern are 1-core CPU's and the current mechanism solves the issue) */
-		//TODO: At the current state, it's enough that just 1 thread will try to log data
-		// on order to prevent the logger thread from sleeping, need to think about
-		// changing it so maybe some % of the threads need to log data instead.
-		// On the other hand, in a real application, logging is performed constantly,
-		// so this may not be a concern.
-		__atomic_load(&isNewData, &isNewDataLoc, __ATOMIC_SEQ_CST);
-		if (false == isNewDataLoc && false == isTerminateLoc) {
-			sem_post(&loggerWaitingSem);
-			sem_wait(&loggerLoopSem);
+			/* The following is done to avoid wasting CPU in case no logging is being done
+			 * (the main concern are 1-core CPU's and the current mechanism solves the issue) */
+			//TODO: At the current state, it's enough that just 1 thread will try to log data
+			// on order to prevent the logger thread from sleeping, need to think about
+			// changing it so maybe some % of the threads need to log data instead.
+			// On the other hand, in a real application, logging is performed constantly,
+			// so this may not be a concern.
+			__atomic_load(&isNewData, &isNewDataLoc, __ATOMIC_SEQ_CST);
+			if (false == isNewDataLoc && false == isTerminateLoc) {
+				sem_post(&loggerWaitingSem);
+				sem_wait(&loggerLoopSem);
+			}
+		} else {
+			bool arePrivateBuffersChangingSizeLoc;
+
+			while (true == arePrivateBuffersUsed()) {
+				/* Sleeping is not the optimal solution, but as buffer-changing events should be rare,
+				 * in this case simplicity is probably preferable to efficiency */
+				sleep(1);
+			}
+
+			__atomic_load(&arePrivateBuffersChangingSize,
+			              &arePrivateBuffersChangingSizeLoc,
+			              __ATOMIC_SEQ_CST);
+
+			if (true == arePrivateBuffersChangingSizeLoc) {
+				doChangePrivateBuffersSize();
+				setArePrivateBuffersChangingSize(false);
+			} else {
+				bool arePrivateBuffersChangingNumberLoc;
+
+				__atomic_load(&arePrivateBuffersChangingNumber,
+				              &arePrivateBuffersChangingNumberLoc,
+				              __ATOMIC_SEQ_CST);
+				if (true == arePrivateBuffersChangingNumberLoc) {
+					/* Waiting for 1 second in order to allow threads to unregister (will be
+					 * performed automatically the next time they try to log a message).
+					 * The buffer of any thread that doesn't unregister and release it's buffer
+					 * will be moved to the dynamically allocated list in order not to loose
+					 * it's pointer */
+					struct timespec timeout = { .tv_nsec = 0 };
+
+					timeout.tv_sec = time(NULL) + 1;
+					sem_timedwait(&buffersChangingSizeSem, &timeout);
+					doChangePrivateBuffersNumber();
+					setArePrivateBuffersChangingNumber(false);
+				}
+			}
 		}
 	} while (!isTerminateLoc);
 
 	return NULL;
+}
+
+/**
+ * Initiates the process of changing private buffers size
+ */
+static void doChangePrivateBuffersSize() {
+	int i;
+
+	/* Changing private buffers size only affects buffers that are pre-allocated and not buffers
+	 * that were dynamically allocated.
+	 * In order to modify the size of dynamically allocated buffers, merge the layout and
+	 * then modify buffers size */
+	for (i = 0; i < privateBuffersNum; ++i) {
+		struct MessageQueue* mq = privateBuffers[i];
+
+		drainMessages(mq, logFile, maxMsgLen, writeMethod);
+		changeBufferSize(mq, newPrivateBuffSize, maxArgsLen);
+	}
+
+	privateBuffSize = newPrivateBuffSize;
+	setArePrivateBuffersActive(true);
+}
+
+/**
+ * Initiates the process of changing private buffers number
+ */
+static void doChangePrivateBuffersNumber() {
+	int i;
+
+	/* Changing private buffers number only affects buffers that are pre-allocated and not buffers
+	 * that were dynamically allocated */
+	for (i = 0; i < privateBuffersNum; ++i) {
+		struct MessageQueue* mq = privateBuffers[i];
+
+		drainMessages(mq, logFile, maxMsgLen, writeMethod);
+	}
+
+	queueDestroy(privateBuffersQueue);
+	privateBuffersQueue = newQueue(newPrivateBuffersNumber);
+
+	for (i = 0; i < privateBuffersNum; ++i) {
+		struct MessageQueue* mq;
+
+		mq = privateBuffers[i];
+
+		if (false == getIsPrivateBufferTaken(mq)) {
+			messageDataQueueDestroy(mq);
+		} else {
+			enqueue(privateBuffersQueue, mq);
+		}
+	}
+
+	free(privateBuffers);
+	privateBuffers = malloc(newPrivateBuffersNumber * sizeof(*privateBuffers));
+
+	for (i = 0; i < newPrivateBuffersNumber; ++i) {
+		struct MessageQueue* mq;
+
+		mq = newMessageQueue(privateBuffSize, maxArgsLen, false);
+		privateBuffers[i] = mq;
+
+		/* Add a reference of this MessageQueue to privateBuffersQueue so threads may
+		 * register and take it */
+		enqueue(privateBuffersQueue, mq);
+	}
+
+	privateBuffersNum = newPrivateBuffersNumber;
+	setArePrivateBuffersActive(true);
+}
+
+/**
+ * Checks if any of the private buffers is currently being used
+ * @return True if any of the private buffers is currently being used of flase otherwise
+ */
+static inline bool arePrivateBuffersUsed() {
+	int i;
+
+	for (i = 0; i < privateBuffersNum; ++i) {
+		if (true == getIsPrivateBufferBeingUsed(privateBuffers[i])) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -348,7 +528,7 @@ static void* runLogger() {
 static inline void drainPrivateBuffers() {
 	int i;
 
-	for (i = 0; i < threadsNum; ++i) {
+	for (i = 0; i < privateBuffersNum; ++i) {
 		drainMessages(privateBuffers[i], logFile, maxMsgLen, writeMethod);
 	}
 }
@@ -360,7 +540,10 @@ static inline void drainSharedBuffer() {
 	drainMessages(sharedBuffer, logFile, maxMsgLen, writeMethod);
 }
 
-static inline void drainDynamicllyAllocaedPrivateBuffers() {
+/**
+ * Drain data from the dynamically allocated buffers to the log file
+ */
+static void drainDynamicllyAllocaedPrivateBuffers() {
 	struct LinkedListNode* node = getHead(dynamicllyAllocaedPrivateBuffers);
 
 	/* Check if it's worth locking the mutex */
@@ -401,7 +584,7 @@ void terminateLogger() {
 static void freeResources() {
 	int i;
 
-	for (i = 0; i < threadsNum; ++i) {
+	for (i = 0; i < privateBuffersNum; ++i) {
 		messageDataQueueDestroy(privateBuffers[i]);
 	}
 
@@ -418,34 +601,51 @@ static void freeResources() {
 }
 
 /* API method - Description located at .h file */
-int logMessage(const int loggingLevel, char* file, const char* func,
-               const int line, char* msg, ...) {
+void logMessage(const int loggingLevel, char* file, const char* func,
+                const int line, char* msg, ...) {
 	if (true == isLoggingValid(loggingLevel, msg)) {
+		bool arePrivateBuffersActiveLoc;
 		int writeToPrivateBuffer;
 		va_list arg;
 
-		/* Try each level of writing. If a level fails (buffer full), fall back to a
-		 * lower & slower level.
-		 * First, try private buffer writing. If private buffer doesn't exist
-		 * (unregistered thread) or unable to write in this method, fall to
-		 * next methods */
+		/* Don't use private buffer if first level is disabled */
+		__atomic_load(&arePrivateBuffersActive, &arePrivateBuffersActiveLoc,
+		__ATOMIC_SEQ_CST);
+
+		writeToPrivateBuffer = LOG_STATUS_FAILURE;
 		file = getFileName(file);
 		va_start(arg, msg);
-		if (NULL != tlmq && false == isDecommisionedBuffer(tlmq)) {
-			writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file, func,
-			                                  line, &arg, msg,
-			                                  LM_PRIVATE_BUFFER, maxArgsLen);
-		} else {
-			/* The current thread doesn't have a private buffer - Try to register */
-			if (LOG_STATUS_SUCCESS == registerThread()) {
-				/* Managed to get a private buffer - write to it */
-				writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file,
-				                                  func, line, &arg, msg,
-				                                  LM_PRIVATE_BUFFER,
-				                                  maxArgsLen);
+
+		if (true == arePrivateBuffersActiveLoc) {
+			/* Try each level of writing. If a level fails (buffer full), fall back to a
+			 * lower & slower level.
+			 * First, try private buffer writing. If private buffer doesn't exist
+			 * (unregistered thread) or unable to write in this method, fall to
+			 * next methods */
+			if (NULL != tlmq) {
+				setIsBeingUsed(tlmq, true);
+			}
+
+			if (NULL != tlmq) {
+				if (false == isDecommisionedBuffer(tlmq)) {
+					writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file,
+					                                  func, line, &arg, msg,
+					                                  LM_PRIVATE_BUFFER,
+					                                  maxArgsLen);
+				}
+				setIsBeingUsed(tlmq, false);
 			} else {
-				/* Can't use private buffer */
-				writeToPrivateBuffer = LOG_STATUS_FAILURE;
+				/* The current thread doesn't have a private buffer - Try to register */
+				if (LOG_STATUS_SUCCESS == registerThread()) {
+					setIsBeingUsed(tlmq, true);
+
+					/* Managed to get a private buffer - write to it */
+					writeToPrivateBuffer = addMessage(tlmq, loggingLevel, file,
+					                                  func, line, &arg, msg,
+					                                  LM_PRIVATE_BUFFER,
+					                                  maxArgsLen);
+					setIsBeingUsed(tlmq, false);
+				}
 			}
 		}
 
@@ -456,6 +656,8 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 				sem_post(&loggerLoopSem);
 			}
 		} else {
+			bool arePrivateBuffersChangingNumberLoc;
+
 			/* Unable to write to private buffer
 			 * Recommended not to get here - Register all threads and/or increase
 			 * private buffers size */
@@ -469,11 +671,17 @@ int logMessage(const int loggingLevel, char* file, const char* func,
 				                  LM_DIRECT_WRITE, writeMethod);
 				++cnt; //TODO: remove
 			}
+
+			__atomic_load(&arePrivateBuffersChangingNumber,
+			              &arePrivateBuffersChangingNumberLoc,
+			              __ATOMIC_SEQ_CST);
+
+			if (true == arePrivateBuffersChangingNumberLoc) {
+				unregisterThread();
+			}
 		}
 		va_end(arg);
 	}
-
-	return LOG_STATUS_SUCCESS;
 }
 
 /**
@@ -494,9 +702,7 @@ static inline bool isLoggingValid(const int loggingLevel, char* msg) {
 	}
 
 	__atomic_load(&isTerminate, &isTerminateLoc, __ATOMIC_SEQ_CST);
-	/* Don't log if:
-	 * 1) Logger is terminating
-	 * 2) 'msg' has an invalid value */
+	/* Don't log if logger is terminating or msg' has an invalid value */
 	if (true == isTerminateLoc || NULL == msg) {
 		return false;
 	}
@@ -568,4 +774,24 @@ static void destroyDynamicallyAllocatedBuffers() {
 		}
 	}
 	pthread_mutex_unlock(&dynamicllyAllocaedLock); /* Unlock */
+}
+
+/* API method - Description located at .h file */
+void changePrivateBuffersSize(const int newSize) {
+	if (2 > newSize) {
+		setArePrivateBuffersChangingSize(true);
+		setArePrivateBuffersActive(false);
+		sem_post(&loggerLoopSem);
+		newPrivateBuffSize = newSize;
+	}
+}
+
+/* API method - Description located at .h file */
+void changePrivateBuffersNumber(const int newNumber) {
+	if (newNumber > 0) {
+		setArePrivateBuffersChangingNumber(true);
+		setArePrivateBuffersActive(false);
+		sem_post(&loggerLoopSem);
+		newPrivateBuffersNumber = newNumber;
+	}
 }

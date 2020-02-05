@@ -36,7 +36,7 @@ struct LinkedListNode;
 struct LinkedListNode* newLinkedListNode(void* data);
 
 /**
- *	Get the next LinkedListNode pointed by the LinkedListNode 'node'
+ * Get the next LinkedListNode pointed by the LinkedListNode 'node'
  * @param node A LinkedListNode in a linked list
  * @return The next LinkedListNode in a list (if the list is empty, NULL is returned)
  */

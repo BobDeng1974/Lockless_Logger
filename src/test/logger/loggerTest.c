@@ -28,12 +28,12 @@
 
 #define ITERATIONS 25000
 #define NUM_THRDS 200
-#define BUF_SIZE 78
+#define BUF_SIZE 77
 
 #define MAX_MSG_LEN 512
 #define ARGS_BUF_SIZE 128
 
-#define BUFFSIZE 25000
+#define BUFFSIZE 1000
 #define SHAREDBUFFSIZE 10000
 
 char chars[] = "0123456789abcdefghijklmnopqrstuvwqxy";
@@ -47,7 +47,8 @@ int main(void) {
 
 	if (LOG_STATUS_SUCCESS
 	        == initLogger(NUM_THRDS, BUFFSIZE, SHAREDBUFFSIZE, LOG_LEVEL_TRACE,
-	                      MAX_MSG_LEN, ARGS_BUF_SIZE, true, asciiWrite)) {
+	        MAX_MSG_LEN,
+	                      ARGS_BUF_SIZE, true, asciiWrite)) {
 		int i;
 		int charsLen;
 		pthread_t threads[NUM_THRDS];
@@ -63,8 +64,9 @@ int main(void) {
 			pthread_create(&threads[i], NULL, threadMethod, data[i]);
 		}
 
-//			sleep(1);
-//			setLoggingLevel(LOG_LEVEL_NONE);
+//		changePrivateBuffersSize(BUFFSIZE / 2);
+//		changePrivateBuffersNumber(NUM_THRDS * 2);
+//		setLoggingLevel(LOG_LEVEL_NONE);
 
 		for (i = 0; i < NUM_THRDS; ++i) {
 			pthread_join(threads[i], NULL);

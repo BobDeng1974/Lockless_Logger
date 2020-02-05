@@ -7,9 +7,11 @@ var searchData=
   ['initprivatebuffers',['initPrivateBuffers',['../logger_8c.html#a4674ed18fd3331ae6634587d392acb55',1,'logger.c']]],
   ['initsharedbuffer',['initsharedBuffer',['../logger_8c.html#a54795cfa448aa4708daed0a65437416b',1,'logger.c']]],
   ['initsynchronizationelements',['initSynchronizationElements',['../logger_8c.html#ac4d0c600e3ee786fe960cfb0e95929cb',1,'logger.c']]],
+  ['isbeingused',['isBeingUsed',['../structMessageQueue.html#a7cd93e2434c29c8a90a47753000b6d8a',1,'MessageQueue']]],
   ['isdecommisionedbuffer',['isDecommisionedBuffer',['../messageQueue_8c.html#a29b29d6a8849c4c9940875ed1ce4c5e5',1,'isDecommisionedBuffer(MessageQueue *mq):&#160;messageQueue.c'],['../messageQueue_8h.html#a32e523e58da56debd84f2bc60643c173',1,'isDecommisionedBuffer(struct MessageQueue *mq):&#160;messageQueue.c']]],
   ['isdecomossioned',['isDecomossioned',['../structMessageQueue.html#a0abb88637c6ed60861e883b9a7c97b8c',1,'MessageQueue']]],
   ['isdynamicallyallocated',['isDynamicallyAllocated',['../structMessageQueue.html#a3f67c1bd42a6b65d4e940d09cc8c16bd',1,'MessageQueue']]],
   ['isloggingvalid',['isLoggingValid',['../logger_8c.html#a3d20b2a79030f26da679ea7c2ff023c5',1,'logger.c']]],
+  ['istaken',['isTaken',['../structMessageQueue.html#af8895945e64d27120dc192b340cdc082',1,'MessageQueue']]],
   ['isvalitinitconditions',['isValitInitConditions',['../logger_8c.html#ac77246c2fc2c92a01f1340139cd029b3',1,'logger.c']]]
 ];

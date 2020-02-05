@@ -97,7 +97,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a56b3ba492f8e4335459115b71086acea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a56b3ba492f8e4335459115b71086acea">LOG_MSG</a>(loggingLevel,  msg ...)&#160;&#160;&#160;<a class="el" href="logger_8c.html#a7a59ae48e89e602072964d2bf93d726b">logMessage</a>(loggingLevel, __FILE__,__PRETTY_FUNCTION__,  __LINE__  , msg)</td></tr>
+<tr class="memitem:a56b3ba492f8e4335459115b71086acea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a56b3ba492f8e4335459115b71086acea">LOG_MSG</a>(loggingLevel,  msg ...)&#160;&#160;&#160;<a class="el" href="logger_8c.html#a2ee085bd4f95fc3de86cdf7d45ebb44a">logMessage</a>(loggingLevel, __FILE__,__PRETTY_FUNCTION__,  __LINE__  , msg)</td></tr>
 <tr class="separator:a56b3ba492f8e4335459115b71086acea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -131,8 +131,8 @@ Functions</h2></td></tr>
 <tr class="separator:a24cb7a769ac91199a40ffd5d0ba0daca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73ce845d8dab297b5d82febb0ae35fec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a73ce845d8dab297b5d82febb0ae35fec">unregisterThread</a> ()</td></tr>
 <tr class="separator:a73ce845d8dab297b5d82febb0ae35fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a59ae48e89e602072964d2bf93d726b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a7a59ae48e89e602072964d2bf93d726b">logMessage</a> (const int loggingLevel, char *file, const char *func, const int line, char *msg,...)</td></tr>
-<tr class="separator:a7a59ae48e89e602072964d2bf93d726b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ee085bd4f95fc3de86cdf7d45ebb44a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a2ee085bd4f95fc3de86cdf7d45ebb44a">logMessage</a> (const int loggingLevel, char *file, const char *func, const int line, char *msg,...)</td></tr>
+<tr class="separator:a2ee085bd4f95fc3de86cdf7d45ebb44a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4339ec77ab029db1548580313b9dc605"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a4339ec77ab029db1548580313b9dc605">terminateLogger</a> ()</td></tr>
 <tr class="separator:a4339ec77ab029db1548580313b9dc605"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b26c3643213fb562e2a488bc28b3786"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a8b26c3643213fb562e2a488bc28b3786">setLoggingLevel</a> (const int loggingLevel)</td></tr>
@@ -141,6 +141,10 @@ Functions</h2></td></tr>
 <tr class="separator:a41be9dce9c45d870615e79736a608e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a329ba222dfd76b4f86a2312711ee5733"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a329ba222dfd76b4f86a2312711ee5733">setDynamicAllocation</a> (const bool isDynamicAllocationArg)</td></tr>
 <tr class="separator:a329ba222dfd76b4f86a2312711ee5733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac4298a5acbf533c6bee149f974d0ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a4ac4298a5acbf533c6bee149f974d0ee">changePrivateBuffersSize</a> (const int newSize)</td></tr>
+<tr class="separator:a4ac4298a5acbf533c6bee149f974d0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a071de11695b6c34a5f29c60a4c52c02d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8h.html#a071de11695b6c34a5f29c60a4c52c02d">changePrivateBuffersNumber</a> (const int newNumber)</td></tr>
+<tr class="separator:a071de11695b6c34a5f29c60a4c52c02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
@@ -175,7 +179,7 @@ long long&#160;</td><td class="memItemRight" valign="bottom"><b>cnt</b></td></tr
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;<a class="el" href="logger_8c.html#a7a59ae48e89e602072964d2bf93d726b">logMessage</a>(loggingLevel, __FILE__,__PRETTY_FUNCTION__,  __LINE__  , msg)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="logger_8c.html#a2ee085bd4f95fc3de86cdf7d45ebb44a">logMessage</a>(loggingLevel, __FILE__,__PRETTY_FUNCTION__,  __LINE__  , msg)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -184,6 +188,54 @@ long long&#160;</td><td class="memItemRight" valign="bottom"><b>cnt</b></td></tr
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a071de11695b6c34a5f29c60a4c52c02d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a071de11695b6c34a5f29c60a4c52c02d">&#9670;&nbsp;</a></span>changePrivateBuffersNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void changePrivateBuffersNumber </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>newNumber</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Change the number of private buffers </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newNumber</td><td>The new number of private buffers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4ac4298a5acbf533c6bee149f974d0ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac4298a5acbf533c6bee149f974d0ee">&#9670;&nbsp;</a></span>changePrivateBuffersSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void changePrivateBuffersSize </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>newSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Change the size of the internal buffers of the private buffers </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newSize</td><td>The new size of the internal buffers of the private buffers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a41be9dce9c45d870615e79736a608e0b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a41be9dce9c45d870615e79736a608e0b">&#9670;&nbsp;</a></span>getMaxMsgLen()</h2>
 
@@ -280,14 +332,14 @@ long long&#160;</td><td class="memItemRight" valign="bottom"><b>cnt</b></td></tr
 
 </div>
 </div>
-<a id="a7a59ae48e89e602072964d2bf93d726b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a59ae48e89e602072964d2bf93d726b">&#9670;&nbsp;</a></span>logMessage()</h2>
+<a id="a2ee085bd4f95fc3de86cdf7d45ebb44a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ee085bd4f95fc3de86cdf7d45ebb44a">&#9670;&nbsp;</a></span>logMessage()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int logMessage </td>
+          <td class="memname">void logMessage </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>loggingLevel</em>, </td>

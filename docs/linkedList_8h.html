@@ -101,8 +101,7 @@ Functions</h2></td></tr>
 <tr class="separator:a045dfa90da00c0360385b291019cd331"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ef2eef8987f2c8a35fd624d5dfc789"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linkedList_8h.html#a99ef2eef8987f2c8a35fd624d5dfc789">addNode</a> (struct <a class="el" href="structLinkedList.html">LinkedList</a> *ll, struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *node)</td></tr>
 <tr class="separator:a99ef2eef8987f2c8a35fd624d5dfc789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a789748640b51c783568079af6d9a5180"><td class="memItemLeft" align="right" valign="top"><a id="a789748640b51c783568079af6d9a5180"></a>
-struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>removeNode</b> (struct <a class="el" href="structLinkedList.html">LinkedList</a> *ll, void *data)</td></tr>
+<tr class="memitem:a789748640b51c783568079af6d9a5180"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linkedList_8h.html#a789748640b51c783568079af6d9a5180">removeNode</a> (struct <a class="el" href="structLinkedList.html">LinkedList</a> *ll, void *data)</td></tr>
 <tr class="separator:a789748640b51c783568079af6d9a5180"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4046dd7e740d08a7ae475c104f434eff"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="linkedList_8h.html#a4046dd7e740d08a7ae475c104f434eff">getHead</a> (const struct <a class="el" href="structLinkedList.html">LinkedList</a> *ll)</td></tr>
 <tr class="separator:a4046dd7e740d08a7ae475c104f434eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,6 +187,42 @@ struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a> *&#160;
       </table>
 </div><div class="memdoc">
 <p>Allocates new <a class="el" href="structLinkedList.html">LinkedList</a> and reset it's values </p><dl class="section return"><dt>Returns</dt><dd>A newly allocated <a class="el" href="structLinkedList.html">LinkedList</a> </dd></dl>
+
+</div>
+</div>
+<a id="a789748640b51c783568079af6d9a5180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a789748640b51c783568079af6d9a5180">&#9670;&nbsp;</a></span>removeNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structLinkedListNode.html">LinkedListNode</a>* removeNode </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structLinkedList.html">LinkedList</a> *&#160;</td>
+          <td class="paramname"><em>ll</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Remove a node from the <a class="el" href="structLinkedList.html">LinkedList</a> 'll' that's containing the specified data 'data' </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ll</td><td>The <a class="el" href="structLinkedList.html">LinkedList</a> to remove the node from </td></tr>
+    <tr><td class="paramname">data</td><td>The data that is stored in the node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The rmoved node (or NULL if not found) </dd></dl>
 
 </div>
 </div>

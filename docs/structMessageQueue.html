@@ -87,12 +87,31 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a7f8ce20aedac278490721198a75a5568"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f67c1bd42a6b65d4e940d09cc8c16bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMessageQueue.html#a3f67c1bd42a6b65d4e940d09cc8c16bd">isDynamicallyAllocated</a></td></tr>
 <tr class="separator:a3f67c1bd42a6b65d4e940d09cc8c16bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8895945e64d27120dc192b340cdc082"><td class="memItemLeft" align="right" valign="top">atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMessageQueue.html#af8895945e64d27120dc192b340cdc082">isTaken</a></td></tr>
+<tr class="separator:af8895945e64d27120dc192b340cdc082"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0abb88637c6ed60861e883b9a7c97b8c"><td class="memItemLeft" align="right" valign="top">atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMessageQueue.html#a0abb88637c6ed60861e883b9a7c97b8c">isDecomossioned</a></td></tr>
 <tr class="separator:a0abb88637c6ed60861e883b9a7c97b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cd93e2434c29c8a90a47753000b6d8a"><td class="memItemLeft" align="right" valign="top">atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMessageQueue.html#a7cd93e2434c29c8a90a47753000b6d8a">isBeingUsed</a></td></tr>
+<tr class="separator:a7cd93e2434c29c8a90a47753000b6d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa00264e9e1df04be918aea1bb7d9def3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structMessageData.html">MessageData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structMessageQueue.html#aa00264e9e1df04be918aea1bb7d9def3">messagesData</a></td></tr>
 <tr class="separator:aa00264e9e1df04be918aea1bb7d9def3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a7cd93e2434c29c8a90a47753000b6d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cd93e2434c29c8a90a47753000b6d8a">&#9670;&nbsp;</a></span>isBeingUsed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">atomic_bool MessageQueue::isBeingUsed</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Whether this buffer is currently being used by a worker thread </p>
+
+</div>
+</div>
 <a id="a0abb88637c6ed60861e883b9a7c97b8c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0abb88637c6ed60861e883b9a7c97b8c">&#9670;&nbsp;</a></span>isDecomossioned</h2>
 
@@ -120,6 +139,21 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Whether this buffer was dynamically allocated </p>
+
+</div>
+</div>
+<a id="af8895945e64d27120dc192b340cdc082"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8895945e64d27120dc192b340cdc082">&#9670;&nbsp;</a></span>isTaken</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">atomic_bool MessageQueue::isTaken</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Whether this buffer has been taken by a worker thread </p>
 
 </div>
 </div>

@@ -83,6 +83,7 @@ $(function() {
 <code>#include &lt;semaphore.h&gt;</code><br />
 <code>#include &lt;stdatomic.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="logger_8h_source.html">../api/logger.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="messageQueue_8h_source.html">messageQueue/messageQueue.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="messageData_8h_source.html">messageQueue/messageData.h</a>&quot;</code><br />
@@ -94,13 +95,13 @@ Include dependency graph for logger.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="logger_8c__incl.png" border="0" usemap="#src_2core_2logger_2logger_8c" alt=""/></div>
 <map name="src_2core_2logger_2logger_8c" id="src_2core_2logger_2logger_8c">
-<area shape="rect" id="node8" href="logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="627,87,737,114"/>
-<area shape="rect" id="node10" href="messageQueue_8h.html" title="This module provides a MessageQueue implementation. " alt="" coords="362,87,602,114"/>
-<area shape="rect" id="node12" href="messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="154,169,383,196"/>
-<area shape="rect" id="node14" href="linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="1219,80,1377,121"/>
-<area shape="rect" id="node16" href="queue_8h_source.html" title="../common/queue/queue.h" alt="" coords="1401,87,1592,114"/>
-<area shape="rect" id="node17" href="writeMethods_8h.html" title="This module provides different writing methods which can be used by the application to write to a fil..." alt="" coords="203,80,337,121"/>
-<area shape="rect" id="node15" href="linkedListNode_8h.html" title="This module provides implementation for node operations in a generic linked list. This module is a su..." alt="" coords="1215,169,1381,196"/>
+<area shape="rect" id="node9" href="logger_8h.html" title="This module provides an implementation of a logger utility which works on 3 levels: Level 1 &#45; Lockles..." alt="" coords="627,87,737,114"/>
+<area shape="rect" id="node11" href="messageQueue_8h.html" title="This module provides a MessageQueue implementation. " alt="" coords="362,87,602,114"/>
+<area shape="rect" id="node13" href="messageData_8h.html" title="This module provides a message struct and related message&#45;specific operations. " alt="" coords="154,169,383,196"/>
+<area shape="rect" id="node15" href="linkedList_8h.html" title="This module provides a generic linked list implementation and is based on &#39;linkedListNode&#39; module..." alt="" coords="1319,80,1477,121"/>
+<area shape="rect" id="node17" href="queue_8h_source.html" title="../common/queue/queue.h" alt="" coords="1501,87,1692,114"/>
+<area shape="rect" id="node18" href="writeMethods_8h.html" title="This module provides different writing methods which can be used by the application to write to a fil..." alt="" coords="203,80,337,121"/>
+<area shape="rect" id="node16" href="linkedListNode_8h.html" title="This module provides implementation for node operations in a generic linked list. This module is a su..." alt="" coords="1315,169,1481,196"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -156,11 +157,22 @@ Functions</h2></td></tr>
 <tr class="separator:a3d20b2a79030f26da679ea7c2ff023c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ba68f2222d8ec8874e268c0c1537e4e"><td class="memItemLeft" align="right" valign="top">static char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a9ba68f2222d8ec8874e268c0c1537e4e">getFileName</a> (char *filePath)</td></tr>
 <tr class="separator:a9ba68f2222d8ec8874e268c0c1537e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb34e58a6cfa73b3f90b3e967ba8ba9a"><td class="memItemLeft" align="right" valign="top"><a id="afb34e58a6cfa73b3f90b3e967ba8ba9a"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>drainDynamicllyAllocaedPrivateBuffers</b> ()</td></tr>
+<tr class="memitem:afb34e58a6cfa73b3f90b3e967ba8ba9a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#afb34e58a6cfa73b3f90b3e967ba8ba9a">drainDynamicllyAllocaedPrivateBuffers</a> ()</td></tr>
 <tr class="separator:afb34e58a6cfa73b3f90b3e967ba8ba9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a933b50e67a52385712ae7ba8c8652762"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a933b50e67a52385712ae7ba8c8652762">destroyDynamicallyAllocatedBuffers</a> ()</td></tr>
 <tr class="separator:a933b50e67a52385712ae7ba8c8652762"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0727a6929c6213af4f6472091eb3936b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a0727a6929c6213af4f6472091eb3936b">setArePrivateBuffersActive</a> (const bool arePrivateBuffersActiveArg)</td></tr>
+<tr class="separator:a0727a6929c6213af4f6472091eb3936b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a305dd94c1d92eedefe44750da407f039"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a305dd94c1d92eedefe44750da407f039">arePrivateBuffersUsed</a> ()</td></tr>
+<tr class="separator:a305dd94c1d92eedefe44750da407f039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af398daef6aea53e45f4d84cd47b038cc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#af398daef6aea53e45f4d84cd47b038cc">doChangePrivateBuffersSize</a> ()</td></tr>
+<tr class="separator:af398daef6aea53e45f4d84cd47b038cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c4567a6855468dffe8ddd5a4373979d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a3c4567a6855468dffe8ddd5a4373979d">setArePrivateBuffersChangingSize</a> (const bool arePrivateBuffersChangingSizeArg)</td></tr>
+<tr class="separator:a3c4567a6855468dffe8ddd5a4373979d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e053d1894d03c46d9070ee963660a0e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a6e053d1894d03c46d9070ee963660a0e">doChangePrivateBuffersNumber</a> ()</td></tr>
+<tr class="separator:a6e053d1894d03c46d9070ee963660a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afed723bf375973a021d0c903e9e7660b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#afed723bf375973a021d0c903e9e7660b">setArePrivateBuffersChangingNumber</a> (const bool arePrivateBuffersChangingNumberArg)</td></tr>
+<tr class="separator:afed723bf375973a021d0c903e9e7660b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa0d960ada2a04847ad83c04cfa633a8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#aaa0d960ada2a04847ad83c04cfa633a8">initLogger</a> (const int threadsNumArg, const int privateBuffSize, const int sharedBuffSize, const int loggingLevel, const int maxMsgLenArg, const int maxArgsLenArg, const bool isDynamicAllocationArg, void(*writeMethod)())</td></tr>
 <tr class="separator:aaa0d960ada2a04847ad83c04cfa633a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b26c3643213fb562e2a488bc28b3786"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a8b26c3643213fb562e2a488bc28b3786">setLoggingLevel</a> (const int loggingLevel)</td></tr>
@@ -173,19 +185,23 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>drainDynamicll
 <tr class="separator:a73ce845d8dab297b5d82febb0ae35fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4339ec77ab029db1548580313b9dc605"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a4339ec77ab029db1548580313b9dc605">terminateLogger</a> ()</td></tr>
 <tr class="separator:a4339ec77ab029db1548580313b9dc605"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a59ae48e89e602072964d2bf93d726b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a7a59ae48e89e602072964d2bf93d726b">logMessage</a> (const int loggingLevel, char *file, const char *func, const int line, char *msg,...)</td></tr>
-<tr class="separator:a7a59ae48e89e602072964d2bf93d726b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ee085bd4f95fc3de86cdf7d45ebb44a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a2ee085bd4f95fc3de86cdf7d45ebb44a">logMessage</a> (const int loggingLevel, char *file, const char *func, const int line, char *msg,...)</td></tr>
+<tr class="separator:a2ee085bd4f95fc3de86cdf7d45ebb44a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41be9dce9c45d870615e79736a608e0b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a41be9dce9c45d870615e79736a608e0b">getMaxMsgLen</a> ()</td></tr>
 <tr class="separator:a41be9dce9c45d870615e79736a608e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac4298a5acbf533c6bee149f974d0ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a4ac4298a5acbf533c6bee149f974d0ee">changePrivateBuffersSize</a> (const int newSize)</td></tr>
+<tr class="separator:a4ac4298a5acbf533c6bee149f974d0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a071de11695b6c34a5f29c60a4c52c02d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="logger_8c.html#a071de11695b6c34a5f29c60a4c52c02d">changePrivateBuffersNumber</a> (const int newNumber)</td></tr>
+<tr class="separator:a071de11695b6c34a5f29c60a4c52c02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a8cfd8fa3618e10bbbf60523c262a5cf7"><td class="memItemLeft" align="right" valign="top"><a id="a8cfd8fa3618e10bbbf60523c262a5cf7"></a>
 static char *&#160;</td><td class="memItemRight" valign="bottom"><b>logFileBuff</b></td></tr>
 <tr class="separator:a8cfd8fa3618e10bbbf60523c262a5cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a176af3086c0486783386990e31566602"><td class="memItemLeft" align="right" valign="top"><a id="a176af3086c0486783386990e31566602"></a>
-static int&#160;</td><td class="memItemRight" valign="bottom"><b>threadsNum</b></td></tr>
-<tr class="separator:a176af3086c0486783386990e31566602"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fa259b679c119ab983bad53614e6b89"><td class="memItemLeft" align="right" valign="top"><a id="a5fa259b679c119ab983bad53614e6b89"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>privateBuffersNum</b></td></tr>
+<tr class="separator:a5fa259b679c119ab983bad53614e6b89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc71b2a459527c1cec94b145ae07a192"><td class="memItemLeft" align="right" valign="top"><a id="abc71b2a459527c1cec94b145ae07a192"></a>
 static int&#160;</td><td class="memItemRight" valign="bottom"><b>maxMsgLen</b></td></tr>
 <tr class="separator:abc71b2a459527c1cec94b145ae07a192"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -195,6 +211,12 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>maxArgsLen</b><
 <tr class="memitem:ab3d65c4bc1878c0cb03876c507f8557e"><td class="memItemLeft" align="right" valign="top"><a id="ab3d65c4bc1878c0cb03876c507f8557e"></a>
 static int&#160;</td><td class="memItemRight" valign="bottom"><b>privateBuffSize</b></td></tr>
 <tr class="separator:ab3d65c4bc1878c0cb03876c507f8557e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea676237b97a26e558e37c8c3d549638"><td class="memItemLeft" align="right" valign="top"><a id="aea676237b97a26e558e37c8c3d549638"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>newPrivateBuffSize</b></td></tr>
+<tr class="separator:aea676237b97a26e558e37c8c3d549638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e98b9517ce3ffb904d602600ca1717d"><td class="memItemLeft" align="right" valign="top"><a id="a2e98b9517ce3ffb904d602600ca1717d"></a>
+static int&#160;</td><td class="memItemRight" valign="bottom"><b>newPrivateBuffersNumber</b></td></tr>
+<tr class="separator:a2e98b9517ce3ffb904d602600ca1717d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99b829ce54ee4d26e86ea3e96fb5c1dc"><td class="memItemLeft" align="right" valign="top"><a id="a99b829ce54ee4d26e86ea3e96fb5c1dc"></a>
 static atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>isTerminate</b></td></tr>
 <tr class="separator:a99b829ce54ee4d26e86ea3e96fb5c1dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,6 +226,15 @@ static atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>isNewDa
 <tr class="memitem:a061554679b5e74c584fba0dd7755de7f"><td class="memItemLeft" align="right" valign="top"><a id="a061554679b5e74c584fba0dd7755de7f"></a>
 static atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>isDynamicAllocation</b></td></tr>
 <tr class="separator:a061554679b5e74c584fba0dd7755de7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab791937666e35de00780f721c9df20d3"><td class="memItemLeft" align="right" valign="top"><a id="ab791937666e35de00780f721c9df20d3"></a>
+static atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>arePrivateBuffersActive</b></td></tr>
+<tr class="separator:ab791937666e35de00780f721c9df20d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ab7b2a9532b29bee61922f98b5fb434"><td class="memItemLeft" align="right" valign="top"><a id="a9ab7b2a9532b29bee61922f98b5fb434"></a>
+static atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>arePrivateBuffersChangingSize</b></td></tr>
+<tr class="separator:a9ab7b2a9532b29bee61922f98b5fb434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac654ceb2a6f1934973f1eb4b360f1ef0"><td class="memItemLeft" align="right" valign="top"><a id="ac654ceb2a6f1934973f1eb4b360f1ef0"></a>
+static atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><b>arePrivateBuffersChangingNumber</b></td></tr>
+<tr class="separator:ac654ceb2a6f1934973f1eb4b360f1ef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3a4cc7648d8e7784fb8931bd3e5098e"><td class="memItemLeft" align="right" valign="top"><a id="aa3a4cc7648d8e7784fb8931bd3e5098e"></a>
 static atomic_int&#160;</td><td class="memItemRight" valign="bottom"><b>logLevel</b></td></tr>
 <tr class="separator:aa3a4cc7648d8e7784fb8931bd3e5098e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -243,6 +274,9 @@ static sem_t&#160;</td><td class="memItemRight" valign="bottom"><b>loggerLoopSem
 <tr class="memitem:a4fb956f4bc9774420e581b3ce78df07b"><td class="memItemLeft" align="right" valign="top"><a id="a4fb956f4bc9774420e581b3ce78df07b"></a>
 static sem_t&#160;</td><td class="memItemRight" valign="bottom"><b>loggerWaitingSem</b></td></tr>
 <tr class="separator:a4fb956f4bc9774420e581b3ce78df07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0ace163b0d044dbf826445a05e35512"><td class="memItemLeft" align="right" valign="top"><a id="ad0ace163b0d044dbf826445a05e35512"></a>
+static sem_t&#160;</td><td class="memItemRight" valign="bottom"><b>buffersChangingSizeSem</b></td></tr>
+<tr class="separator:ad0ace163b0d044dbf826445a05e35512"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a025d183d2d77b51750c974e801cd89e2"><td class="memItemLeft" align="right" valign="top"><a id="a025d183d2d77b51750c974e801cd89e2"></a>
 static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod</b> )()</td></tr>
 <tr class="separator:a025d183d2d77b51750c974e801cd89e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,6 +287,80 @@ static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod<
 <dl class="section user"><dt>License: Apache License, Version 2.0</dt><dd></dd></dl>
 <dl class="section user"><dt>Copywrite: (C) [2019] [Barak Sason Rofman]</dt><dd></dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a305dd94c1d92eedefe44750da407f039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a305dd94c1d92eedefe44750da407f039">&#9670;&nbsp;</a></span>arePrivateBuffersUsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool arePrivateBuffersUsed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Checks if any of the private buffers is currently being used </p><dl class="section return"><dt>Returns</dt><dd>True if any of the private buffers is currently being used of flase otherwise </dd></dl>
+
+</div>
+</div>
+<a id="a071de11695b6c34a5f29c60a4c52c02d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a071de11695b6c34a5f29c60a4c52c02d">&#9670;&nbsp;</a></span>changePrivateBuffersNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void changePrivateBuffersNumber </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>newNumber</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Change the number of private buffers </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newNumber</td><td>The new number of private buffers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4ac4298a5acbf533c6bee149f974d0ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac4298a5acbf533c6bee149f974d0ee">&#9670;&nbsp;</a></span>changePrivateBuffersSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void changePrivateBuffersSize </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>newSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Change the size of the internal buffers of the private buffers </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newSize</td><td>The new size of the internal buffers of the private buffers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aaaedf789894c42fcd6d8ebad5003407d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaaedf789894c42fcd6d8ebad5003407d">&#9670;&nbsp;</a></span>createLogFile()</h2>
 
@@ -302,6 +410,84 @@ static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod<
 </table>
 </div><div class="memdoc">
 <p>Release all dynamically allocated buffers </p>
+
+</div>
+</div>
+<a id="a6e053d1894d03c46d9070ee963660a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e053d1894d03c46d9070ee963660a0e">&#9670;&nbsp;</a></span>doChangePrivateBuffersNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void doChangePrivateBuffersNumber </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initiates the process of changing private buffers number </p>
+
+</div>
+</div>
+<a id="af398daef6aea53e45f4d84cd47b038cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af398daef6aea53e45f4d84cd47b038cc">&#9670;&nbsp;</a></span>doChangePrivateBuffersSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void doChangePrivateBuffersSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initiates the process of changing private buffers size </p>
+
+</div>
+</div>
+<a id="afb34e58a6cfa73b3f90b3e967ba8ba9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb34e58a6cfa73b3f90b3e967ba8ba9a">&#9670;&nbsp;</a></span>drainDynamicllyAllocaedPrivateBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void drainDynamicllyAllocaedPrivateBuffers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Drain data from the dynamically allocated buffers to the log file </p>
 
 </div>
 </div>
@@ -747,14 +933,14 @@ static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod<
 
 </div>
 </div>
-<a id="a7a59ae48e89e602072964d2bf93d726b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a59ae48e89e602072964d2bf93d726b">&#9670;&nbsp;</a></span>logMessage()</h2>
+<a id="a2ee085bd4f95fc3de86cdf7d45ebb44a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ee085bd4f95fc3de86cdf7d45ebb44a">&#9670;&nbsp;</a></span>logMessage()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int logMessage </td>
+          <td class="memname">void logMessage </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>loggingLevel</em>, </td>
@@ -851,6 +1037,102 @@ static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod<
 </table>
 </div><div class="memdoc">
 <p>Logger thread loop - At each iteration, go over all the buffers and drain them to the log file, flush buffer and sleep for a while </p>
+
+</div>
+</div>
+<a id="a0727a6929c6213af4f6472091eb3936b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0727a6929c6213af4f6472091eb3936b">&#9670;&nbsp;</a></span>setArePrivateBuffersActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void setArePrivateBuffersActive </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>arePrivateBuffersActiveArg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set whether private buffers are active or not </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arePrivateBuffersActiveArg</td><td>Whether private buffers are active or not </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="afed723bf375973a021d0c903e9e7660b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afed723bf375973a021d0c903e9e7660b">&#9670;&nbsp;</a></span>setArePrivateBuffersChangingNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void setArePrivateBuffersChangingNumber </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>arePrivateBuffersChangingNumberArg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set whether private buffers are changing number </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arePrivateBuffersChangingNumberArg</td><td>Whether private buffers are changing number </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3c4567a6855468dffe8ddd5a4373979d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c4567a6855468dffe8ddd5a4373979d">&#9670;&nbsp;</a></span>setArePrivateBuffersChangingSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void setArePrivateBuffersChangingSize </td>
+          <td>(</td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>arePrivateBuffersChangingSizeArg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set whether private buffers are changing size </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arePrivateBuffersChangingSizeArg</td><td>Whether private buffers are changing size </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1018,7 +1300,7 @@ static void(*&#160;</td><td class="memItemRight" valign="bottom"><b>writeMethod<
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Starts (and name) the internal logger threads which drains buffers to the log file </p>
+<p>Starts (and names) the internal logger threads which drains buffers to the log file </p>
 
 </div>
 </div>

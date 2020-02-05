@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['queue',['Queue',['../structQueue.html',1,'']]],
-  ['queuelock',['queueLock',['../structQueue.html#a6ff554ffd6e5d48b4aa266f1df4ae9e0',1,'Queue']]]
+  ['preparemessagequeue',['prepareMessageQueue',['../messageQueue_8c.html#ab64fe72e8eada082abf9c55539065628',1,'messageQueue.c']]]
 ];

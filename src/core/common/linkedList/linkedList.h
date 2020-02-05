@@ -43,7 +43,14 @@ struct LinkedList* newLinkedList();
  */
 void addNode(struct LinkedList* ll, struct LinkedListNode* node);
 
+/**
+ * Remove a node from the LinkedList 'll' that's containing the specified data 'data'
+ * @param ll The LinkedList to remove the node from
+ * @param data The data that is stored in the node
+ * @return The rmoved node (or NULL if not found)
+ */
 struct LinkedListNode* removeNode(struct LinkedList* ll, void* data);
+
 /**
  * Returns (without removing) the first node in a list (if the list is empty,
  * NULL is returned)
