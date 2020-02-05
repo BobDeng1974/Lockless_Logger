@@ -83,7 +83,6 @@ __thread struct MessageQueue* tlmq; /* Thread Local Message Queue */
 static struct LinkedList* dynamicllyAllocaedPrivateBuffers;
 static sem_t loggerLoopSem;
 static sem_t loggerWaitingSem;
-static sem_t buffersChangingSizeSem;
 static void (*writeMethod)();
 
 static bool isValitInitConditions(const int threadsNumArg,
@@ -200,7 +199,6 @@ static void initSynchronizationElements() {
 	initDirectWriteLock();
 	sem_init(&loggerLoopSem, 0, 0);
 	sem_init(&loggerWaitingSem, 0, 0);
-	sem_init(&buffersChangingSizeSem, 0, 0);
 }
 
 /**
@@ -422,12 +420,11 @@ static void* runLogger() {
 					/* Waiting for 1 second in order to allow threads to unregister (will be
 					 * performed automatically the next time they try to log a message).
 					 * The buffer of any thread that doesn't unregister and release it's buffer
-					 * will be moved to the dynamically allocated list in order not to loose
-					 * it's pointer */
-					struct timespec timeout = { .tv_nsec = 0 };
+					 * will be moved to the dynamically allocated list in order not to lose
+					 * it's pointer or caused seg-fault when the worker thread tries to use
+					 * deleted buffer */
 
-					timeout.tv_sec = time(NULL) + 1;
-					sem_timedwait(&buffersChangingSizeSem, &timeout);
+					sleep(1);
 					doChangePrivateBuffersNumber();
 					setArePrivateBuffersChangingNumber(false);
 				}
